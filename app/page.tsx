@@ -212,7 +212,36 @@ export default function Portfolio() {
       ],
       link: 'https://foodconnects.vercel.app/',
       icon: '🍰'
-    }
+    },
+    {
+       title: 'WorkSPera',
+    tech: ['Next.js', 'NextAuth.js', 'Socket.io', 'WebRTC', 'Node.js', 'Express.js', 'MongoDB', 'Vercel', 'Render'],
+    description: 'Real-time worker-connection platform combining chat, video calls, work posting, and hiring',
+    features: [
+      'Real-time chat using Socket.io',
+      'Peer-to-peer video calling with WebRTC',
+      'Secure authentication with NextAuth.js',
+      'Work posting & worker hiring system',
+      'Follow & following networking feature',
+      'Frontend on Vercel, backend on Render'
+    ],
+    link: 'https://workspera-backend.onrender.com',
+    icon: '🛠️'
+    },
+    {
+    title: 'SongConnects',
+    tech: ['Next.js', 'Tailwind CSS', 'Vercel'],
+    description: 'Music streaming application similar to Spotify with playlists and dynamic audio player',
+    features: [
+      'Modern Spotify-like UI with Tailwind CSS',
+      'Dynamic audio player with play/pause/seek controls',
+      'Create & manage playlists',
+      'Fast routing with Next.js App Router',
+      'Deployed on Vercel for high performance'
+    ],
+    link: 'https://songconnects.vercel.app/',
+    icon: '🎵'
+  }
   ];
 
   return (
