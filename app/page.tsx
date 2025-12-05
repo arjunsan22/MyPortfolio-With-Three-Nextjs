@@ -548,9 +548,13 @@ export default function Portfolio() {
                     <span className="text-cyan-400">✓</span>
                     MERN Stack Development Course (Ongoing)
                   </li>
+                                    <li className="flex items-start gap-2 hover:text-cyan-400 transition-colors cursor-pointer">
+                    <span className="text-cyan-400">✓</span>
+                    Fundamentals of Cloud Computing — UpGrad, Dec 2025
+                  </li>
                   <li className="flex items-start gap-2 hover:text-cyan-400 transition-colors cursor-pointer">
                     <span className="text-cyan-400">✓</span>
-                    Docker Certification – Udemy
+                    Docker Certification – Udemy, Nov 2025
                   </li>
                   <li className="flex items-start gap-2 hover:text-cyan-400 transition-colors cursor-pointer">
                     <span className="text-cyan-400">✓</span>
