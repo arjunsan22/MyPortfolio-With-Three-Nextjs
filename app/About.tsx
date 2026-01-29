@@ -1,7 +1,14 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, useMotionTemplate } from 'framer-motion';
+import {
+    motion,
+    useMotionValue,
+    useSpring,
+    useTransform,
+    useMotionTemplate,
+    type Variants,
+} from 'framer-motion';
 import { MapPin, Phone, Mail } from 'lucide-react';
 import Image from 'next/image';
 import avatar from './avatar.png';
@@ -23,9 +30,9 @@ const TypewriterText: React.FC<TypewriterTextProps> = ({
 }) => {
     const letters = Array.from(text);
 
-    const container = {
+    const container: Variants = {
         hidden: { opacity: 0 },
-        visible: (i = 1) => ({
+        visible: (i: number = 1) => ({
             opacity: 1,
             transition: {
                 staggerChildren: 0.03,
@@ -34,7 +41,7 @@ const TypewriterText: React.FC<TypewriterTextProps> = ({
         }),
     };
 
-    const child = {
+    const child: Variants = {
         hidden: {
             opacity: 0,
             display: 'none',
@@ -87,12 +94,12 @@ const AboutSection: React.FC = () => {
     const glowY = useMotionValue(0);
 
     const spotlightGlow = useMotionTemplate`
-    radial-gradient(
-      600px circle at ${glowX}px ${glowY}px,
-      rgba(6,182,212,0.15),
-      transparent 80%
-    )
-  `;
+        radial-gradient(
+            600px circle at ${glowX}px ${glowY}px,
+            rgba(6,182,212,0.15),
+            transparent 80%
+        )
+    `;
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!cardRef.current) return;
@@ -181,11 +188,26 @@ const AboutSection: React.FC = () => {
                             >
                                 <div className="space-y-6 mb-10 text-2xl md:text-3xl text-slate-100 leading-snug font-medium">
                                     <TypewriterText text="I'm a passionate " />
-                                    <TypewriterText text="Full-Stack Web Developer " className="text-cyan-400" delay={0.5} />
-                                    <TypewriterText text="with hands-on experience in building dynamic and scalable applications. I specialize in the " delay={1.2} />
-                                    <TypewriterText text="MERN stack " className="text-blue-400 font-bold" delay={3.2} />
+                                    <TypewriterText
+                                        text="Full-Stack Web Developer "
+                                        className="text-cyan-400"
+                                        delay={0.5}
+                                    />
+                                    <TypewriterText
+                                        text="with hands-on experience in building dynamic and scalable applications. I specialize in the "
+                                        delay={1.2}
+                                    />
+                                    <TypewriterText
+                                        text="MERN stack "
+                                        className="text-blue-400 font-bold"
+                                        delay={3.2}
+                                    />
                                     <TypewriterText text="and " delay={3.5} />
-                                    <TypewriterText text="Next.js." className="text-blue-400 font-bold" delay={3.7} />
+                                    <TypewriterText
+                                        text="Next.js."
+                                        className="text-blue-400 font-bold"
+                                        delay={3.7}
+                                    />
                                 </div>
 
                                 <motion.p
@@ -198,8 +220,8 @@ const AboutSection: React.FC = () => {
                                     <span className="text-slate-200 not-italic font-semibold">
                                         Data Structures and Algorithms
                                     </span>
-                                    , I focus on problem-solving and performance optimization to create
-                                    user-focused solutions.
+                                    , I focus on problem-solving and performance optimization to
+                                    create user-focused solutions.
                                 </motion.p>
 
                                 {/* Contact Pills */}
@@ -236,7 +258,12 @@ const AboutSection: React.FC = () => {
                                 className="relative order-1 md:order-2 flex-shrink-0"
                             >
                                 <div className="relative w-48 h-48 md:w-64 md:h-64 rounded-3xl overflow-hidden border-2 border-cyan-500/30 bg-slate-900 shadow-[0_0_30px_rgba(6,182,212,0.2)]">
-                                    <Image src={avatar} alt="Arjun Anil Profile" fill className="object-cover" />
+                                    <Image
+                                        src={avatar}
+                                        alt="Arjun Anil Profile"
+                                        fill
+                                        className="object-cover"
+                                    />
                                 </div>
                             </motion.div>
 
