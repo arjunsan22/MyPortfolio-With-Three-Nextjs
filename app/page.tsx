@@ -11,9 +11,9 @@ import * as THREE from 'three';
 import ProjectsSection from './ProjectSection';
 import EducationSection from './EducationSection';
 import SkillsSection from './SkillsSection';
-import CodingProfiles from './LeetandGit'
 import AboutSection from './About'
 import ContactSection from './ContactSection'
+import CodingProfiles from './LeetandGit'
 
 export default function Portfolio() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -314,7 +314,8 @@ export default function Portfolio() {
         {/* Education Section */}
         <EducationSection />
         {/*Coding Profiles Section*/}
-        <CodingProfiles />
+        {/* leet and git */ }
+        <CodingProfiles/>
 
         {/* Contact Section */}
         <ContactSection />

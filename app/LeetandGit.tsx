@@ -1,70 +1,81 @@
 'use client';
 import React, { useEffect, useRef } from 'react';
-import { Github, Code2, ExternalLink, Terminal, Cpu, GitBranch, Trophy, Target, Zap } from 'lucide-react';
+import { Github, ExternalLink, Code2, Terminal, Flame, GitCommit, LayoutGrid, Globe } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+import { TextPlugin } from 'gsap/dist/TextPlugin';
 
 if (typeof window !== "undefined") {
-    gsap.registerPlugin(ScrollTrigger);
+    gsap.registerPlugin(ScrollTrigger, TextPlugin);
 }
 
-const CodingProfiles = () => {
-    const containerRef = useRef(null);
-    const githubCardRef = useRef(null);
-    const leetcodeCardRef = useRef(null);
+const DevMetrics: React.FC = () => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const gridRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        let ctx = gsap.context(() => {
-            // 1. Title Animation (Split Text Effect)
-            const titleChars = document.querySelectorAll('.title-char');
-            gsap.from(titleChars, {
+        const ctx = gsap.context(() => {
+            // 1. Initial State
+            gsap.set(".metric-card", { y: 100, opacity: 0 });
+            gsap.set(".stagger-text", { opacity: 0, x: -20 });
+
+            // 2. Main Entrance Timeline
+            const tl = gsap.timeline({
                 scrollTrigger: {
-                    trigger: ".section-title",
-                    start: "top 80%",
-                },
-                y: 50,
-                opacity: 0,
-                rotateX: -90,
-                stagger: 0.05,
-                duration: 1,
-                ease: "back.out(1.7)"
+                    trigger: containerRef.current,
+                    start: "top 60%",
+                    end: "bottom bottom",
+                }
             });
 
-            // 2. Card Entrance (3D Rise)
-            gsap.from(".profile-card", {
-                scrollTrigger: {
-                    trigger: ".cards-container",
-                    start: "top 75%",
-                },
-                y: 100,
-                opacity: 0,
-                scale: 0.9,
-                rotationX: -15,
-                stagger: 0.2,
+            tl.to(".stagger-text", {
+                opacity: 1,
+                x: 0,
+                stagger: 0.1,
+                duration: 0.8,
+                ease: "power4.out"
+            })
+            .to(".metric-card", {
+                y: 0,
+                opacity: 1,
+                stagger: 0.1,
                 duration: 1.2,
                 ease: "expo.out"
+            }, "-=0.4")
+            // Scramble Text Effect for the Username
+            .to(".username-scramble", {
+                duration: 1.5,
+                text: "NpXLrsDWZR",
+                ease: "none"
+            }, "-=1");
+
+            // 3. Counter Animation for Solved Problems
+            const counters = document.querySelectorAll(".count-up");
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute("data-target") || "0");
+                ScrollTrigger.create({
+                    trigger: counter,
+                    start: "top 90%",
+                        once: true, // 👈 VERY IMPORTANT
+
+                    onEnter: () => {
+                        gsap.to(counter, {
+                            innerText: target,
+                            duration: 2,
+                            snap: { innerText: 1 },
+                            ease: "power4.out"
+                        });
+                    }
+                });
             });
 
-            // 3. Floating Icon Animation
-            gsap.to(".floating-icon", {
-                y: -15,
-                duration: 2,
+            // 4. Subtle Floating Animation for the Background
+            gsap.to(".bg-gradient", {
+                scale: 1.2,
+                duration: 8,
                 repeat: -1,
                 yoyo: true,
-                ease: "sine.inOut",
-                stagger: 0.3
-            });
-
-            // 4. Progress Bar Animation
-            gsap.from(".progress-fill", {
-                scrollTrigger: {
-                    trigger: ".cards-container",
-                    start: "top 70%",
-                },
-                width: 0,
-                duration: 1.5,
-                ease: "power4.out",
-                stagger: 0.2
+                ease: "sine.inOut"
             });
 
         }, containerRef);
@@ -72,170 +83,109 @@ const CodingProfiles = () => {
         return () => ctx.revert();
     }, []);
 
-    // 5. 3D Tilt & Spotlight Effect (Mouse Follow)
-    const handleMouseMove = (e, cardRef) => {
-        const card = cardRef.current;
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+    // Magnetic Icon Effect
+    const handleMagnetic = (e: React.MouseEvent<HTMLDivElement>) => {
+        const item = e.currentTarget;
+        const { left, top, width, height } = item.getBoundingClientRect();
+        const x = e.clientX - left - width / 2;
+        const y = e.clientY - top - height / 2;
 
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-
-        const rotateX = (y - centerY) / 15;
-        const rotateY = (centerX - x) / 15;
-
-        gsap.to(card, {
-            rotationX: rotateX,
-            rotationY: rotateY,
-            duration: 0.5,
-            ease: "power2.out",
-            transformPerspective: 1000
-        });
-
-        // Move the spotlight glow
-        gsap.to(card.querySelector('.spotlight'), {
-            opacity: 1,
-            x: x,
-            y: y,
-            duration: 0.1
+        gsap.to(item, {
+            x: x * 0.3,
+            y: y * 0.3,
+            duration: 0.4,
+            ease: "power2.out"
         });
     };
 
-    const handleMouseLeave = (cardRef) => {
-        const card = cardRef.current;
-        gsap.to(card, {
-            rotationX: 0,
-            rotationY: 0,
+    const resetMagnetic = (e: React.MouseEvent<HTMLDivElement>) => {
+        gsap.to(e.currentTarget, {
+            x: 0,
+            y: 0,
             duration: 0.7,
-            ease: "elastic.out(1, 0.5)"
-        });
-        gsap.to(card.querySelector('.spotlight'), {
-            opacity: 0,
-            duration: 0.5
+            ease: "elastic.out(1, 0.3)"
         });
     };
-
-    const title = "Coding Ecosystem";
 
     return (
-        <section ref={containerRef} className="py-24 px-4 bg-slate-950 overflow-hidden relative">
-            {/* Ambient Background Blur */}
-            <div className="absolute top-1/4 -left-20 w-96 h-96 bg-violet-600/10 blur-[120px] rounded-full" />
-            <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-amber-500/10 blur-[120px] rounded-full" />
+        <section ref={containerRef} className="relative min-h-screen bg-black py-24 px-6 overflow-hidden flex flex-col justify-center">
+            
+            {/* Background Aesthetic */}
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 blur-[150px] rounded-full pointer-events-none" />
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay" />
 
-            <div className="max-w-6xl mx-auto relative z-10">
-
-                {/* Section Header */}
-                <div className="section-title text-center mb-20">
-                    <h2 className="text-5xl md:text-7xl font-black text-white flex justify-center overflow-hidden">
-                        {title.split("").map((char, i) => (
-                            <span key={i} className="title-char inline-block">
-                                {char === " " ? "\u00A0" : char}
-                            </span>
-                        ))}
+            <div className="max-w-6xl mx-auto w-full relative z-10">
+                
+                {/* Heading Area */}
+                <div className="mb-20">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="h-[1px] w-12 bg-emerald-500 stagger-text" />
+                        <span className="text-emerald-500 font-mono text-sm tracking-[0.3em] uppercase stagger-text">Analytics Engine</span>
+                    </div>
+                    <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tighter mb-4 stagger-text">
+                        The Proof of <span className="text-neutral-500 italic">Work.</span>
                     </h2>
-                    <div className="mt-4 h-1 w-24 bg-gradient-to-r from-violet-500 to-amber-500 mx-auto rounded-full" />
+                    <p className="text-neutral-400 max-w-md font-medium stagger-text">
+                        Tracking algorithmic performance and architectural contributions across platforms.
+                    </p>
                 </div>
 
-                <div className="cards-container grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-                    {/* GITHUB CARD */}
-                    <div
-                        ref={githubCardRef}
-                        onMouseMove={(e) => handleMouseMove(e, githubCardRef)}
-                        onMouseLeave={() => handleMouseLeave(githubCardRef)}
-                        className="profile-card relative group bg-slate-900/40 backdrop-blur-xl border border-white/10 p-8 md:p-12 rounded-[2.5rem] overflow-hidden"
-                    >
-                        <div className="spotlight pointer-events-none absolute -inset-px opacity-0 bg-[radial-gradient(600px_circle_at_var(--x)_var(--y),rgba(139,92,246,0.15),transparent_80%)] translate-x-[-50%] translate-y-[-50%]"
-                            style={{ width: '1000px', height: '1000px' }} />
-
-                        <div className="relative z-10">
-                            <div className="flex justify-between items-start mb-12">
-                                <div className="p-4 bg-violet-500/10 rounded-2xl border border-violet-500/20 floating-icon">
-                                    <Github className="text-violet-400 w-10 h-10" />
+                {/* Bento Grid */}
+                <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    
+                    {/* LeetCode Solved - Large Card */}
+                    <div className="metric-card md:col-span-4 bg-neutral-900/50 border border-neutral-800 rounded-3xl p-8 hover:border-emerald-500/40 transition-colors group">
+                        <div className="flex justify-between items-start mb-12">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-emerald-500/10 rounded-xl">
+                                    <Code2 className="text-emerald-500" size={28} />
                                 </div>
-                                <div className="text-right">
-                                    <span className="text-violet-400 font-mono text-sm">@arjunsan22</span>
-                                    <h3 className="text-3xl font-bold text-white mt-1">GitHub</h3>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4 mb-8">
-                                <div className="bg-slate-800/50 p-6 rounded-2xl border border-white/5 group-hover:border-violet-500/30 transition-colors">
-                                    <div className="flex items-center gap-3 text-slate-400 mb-2">
-                                        <GitBranch size={18} />
-                                        <span className="text-xs uppercase tracking-wider">Projects</span>
-                                    </div>
-                                    <p className="text-3xl font-bold text-white">25+</p>
-                                </div>
-                                <div className="bg-slate-800/50 p-6 rounded-2xl border border-white/5 group-hover:border-violet-500/30 transition-colors">
-                                    <div className="flex items-center gap-3 text-slate-400 mb-2">
-                                        <Zap size={18} />
-                                        <span className="text-xs uppercase tracking-wider">Status</span>
-                                    </div>
-                                    <p className="text-lg font-semibold text-violet-400 italic">Active Contributor</p>
-                                </div>
-                            </div>
-
-                            <a href="#" className="flex items-center justify-center gap-3 w-full bg-violet-600 hover:bg-violet-500 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-violet-900/20 group/btn">
-                                <span>Explore Repositories</span>
-                                <ExternalLink size={18} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
-                            </a>
-                        </div>
-                    </div>
-
-                    {/* LEETCODE CARD */}
-                    <div
-                        ref={leetcodeCardRef}
-                        onMouseMove={(e) => handleMouseMove(e, leetcodeCardRef)}
-                        onMouseLeave={() => handleMouseLeave(leetcodeCardRef)}
-                        className="profile-card relative group bg-slate-900/40 backdrop-blur-xl border border-white/10 p-8 md:p-12 rounded-[2.5rem] overflow-hidden"
-                    >
-                        <div className="spotlight pointer-events-none absolute -inset-px opacity-0 bg-[radial-gradient(600px_circle_at_var(--x)_var(--y),rgba(245,158,11,0.15),transparent_80%)] translate-x-[-50%] translate-y-[-50%]"
-                            style={{ width: '1000px', height: '1000px' }} />
-
-                        <div className="relative z-10">
-                            <div className="flex justify-between items-start mb-12">
-                                <div className="p-4 bg-amber-500/10 rounded-2xl border border-amber-500/20 floating-icon">
-                                    <Trophy className="text-amber-400 w-10 h-10" />
-                                </div>
-                                <div className="text-right">
-                                    <span className="text-amber-400 font-mono text-sm italic">Competitive Programmer</span>
-                                    <h3 className="text-3xl font-bold text-white mt-1">LeetCode</h3>
-                                </div>
-                            </div>
-
-                            <div className="space-y-6 mb-8">
                                 <div>
-                                    <div className="flex justify-between text-sm mb-2 text-slate-400">
-                                        <span>Problem Solving Mastery</span>
-                                        <span className="text-amber-400 font-bold">Top 15%</span>
-                                    </div>
-                                    <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                                        <div className="progress-fill h-full bg-gradient-to-r from-amber-600 to-yellow-400 w-[75%]" />
-                                    </div>
+                                    <h4 className="text-white font-bold">LeetCode</h4>
+                                    <p className="text-neutral-500 text-sm username-scramble">@user_id</p>
                                 </div>
-
-                                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                                    {['Algorithms', 'Data Structures', 'DP', 'Graphs'].map((tag) => (
-                                        <span key={tag} className="px-4 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-200 text-xs font-medium">
-                                            {tag}
-                                        </span>
-                                    ))}
-                                </div>
-
-                                <p className="text-slate-400 text-sm italic leading-relaxed">
-                                    "Continuously refining logic and optimizing time complexity through daily challenges."
-                                </p>
                             </div>
-
-                            <a href="#" className="flex items-center justify-center gap-3 w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-amber-900/20 group/btn">
-                                <span>View LC Profile</span>
-                                <ExternalLink size={18} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                            <a href="https://leetcode.com/u/NpXLrsDWZR" target="_blank" className="p-2 border border-neutral-700 rounded-full hover:bg-white hover:text-black transition-all">
+                                <ExternalLink size={16} />
                             </a>
                         </div>
+                        
+                        <div className="flex items-baseline gap-4">
+<span
+  className="text-8xl md:text-9xl font-black text-white tracking-tighter count-up"
+  data-target="108"
+>
+  0
+</span>
+                            <div className="space-y-1">
+                              
+                                <p className="text-neutral-500 font-medium">Problems Solved</p>
+                            </div>
+                        </div>
                     </div>
+
+                    {/* GitHub Contribution - Small Square */}
+                    <div className="metric-card md:col-span-2 bg-neutral-900/50 border border-neutral-800 rounded-3xl p-8 flex flex-col justify-between">
+                        <Github className="text-neutral-500" size={32} />
+                        <div>
+                            <p className="text-neutral-500 text-sm font-mono mb-2">/arjunsan22</p>
+                            <h4 className="text-4xl font-bold text-white tracking-tight">25</h4>
+                            <p className="text-neutral-400 text-sm">Repositories</p>
+                        </div>
+                         {/* Magnetic CTA */}
+                    <div 
+                        onMouseMove={handleMagnetic}
+                        onMouseLeave={resetMagnetic}
+                        className="metric-card md:col-span-4 lg:col-span-1 bg-white rounded-3xl p-4 flex items-center justify-center cursor-pointer group"
+                    >
+                        <a href="https://github.com/arjunsan22" target="_blank" className="flex items-center flex-col gap-2">
+                            <Globe className="text-black group-hover:rotate-12 transition-transform" size={32} />
+                            <span className="text-black text-[10px] font-black uppercase tracking-tighter">Explore</span>
+                        </a>
+                    </div>
+                    </div>
+
+                
 
                 </div>
             </div>
@@ -243,4 +193,17 @@ const CodingProfiles = () => {
     );
 };
 
-export default CodingProfiles;
+const Trophy = ({ className, size = 20 }: { className?: string, size?: number }) => (
+    <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        width={size} height={size} 
+        viewBox="0 0 24 24" fill="none" 
+        stroke="currentColor" strokeWidth="2" 
+        strokeLinecap="round" strokeLinejoin="round" 
+        className={className}
+    >
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+    </svg>
+);
+
+export default DevMetrics;
