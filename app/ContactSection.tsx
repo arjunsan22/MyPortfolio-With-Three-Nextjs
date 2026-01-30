@@ -31,6 +31,8 @@ const ContactSection = () => {
             stagger: 0.04,
             duration: 0.6,
             ease: "power3.out",
+            immediateRender: false, // ✅ IMPORTANT
+
             scrollTrigger: {
                 trigger: containerRef.current,
                 start: "top 80%",
@@ -45,6 +47,8 @@ const ContactSection = () => {
             duration: 0.5,
             delay: 0.4,
             ease: "power3.out",
+            immediateRender: false, // ✅
+
             scrollTrigger: {
                 trigger: containerRef.current,
                 start: "top 80%",
