@@ -1,224 +1,325 @@
+'use client'
 import React, { useRef } from 'react';
-import {
-    Code, Rocket, Database, Cloud, Sparkles, Wrench,
-    Terminal, Cpu, Layers, Globe, ShieldCheck, Zap
-} from 'lucide-react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const skills = {
+interface Skill {
+    name: string;
+    slug: string;
+}
+
+interface SkillData {
+    [key: string]: Skill[];
+}
+
+const ICON_BASE = "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/";
+
+const skillData: SkillData = {
     languages: [
-        { name: 'JavaScript', icon: <div className="w-2 h-2 rounded-full bg-yellow-400 shadow-[0_0_8px_#facc15]" /> },
-        { name: 'TypeScript', icon: <div className="w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_8px_#60a5fa]" /> },
-        { name: 'C', icon: <div className="w-2 h-2 rounded-full bg-slate-400 shadow-[0_0_8px_#94a3b8]" /> },
-        { name: 'Java', icon: <div className="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_8px_#f97316]" /> }
+        { name: 'JavaScript', slug: 'javascript/javascript-original.svg' },
+        { name: 'TypeScript', slug: 'typescript/typescript-original.svg' },
+        { name: 'C', slug: 'c/c-original.svg' },
+        { name: 'Java', slug: 'java/java-original.svg' }
     ],
     frameworks: [
-        { name: 'Next.js', icon: <Zap size={14} className="text-white" /> },
-        { name: 'React.js', icon: <Zap size={14} className="text-cyan-400" /> },
-        { name: 'Node.js', icon: <Zap size={14} className="text-green-500" /> },
-        { name: 'Express.js', icon: <Zap size={14} className="text-slate-300" /> },
-        { name: 'Socket.io', icon: <Zap size={14} className="text-white" /> },
-        { name: 'Redux Toolkit', icon: <Zap size={14} className="text-purple-500" /> },
-        { name: 'Firebase', icon: <Zap size={14} className="text-orange-400" /> }
+        { name: 'Next.js', slug: 'nextjs/nextjs-original.svg' },
+        { name: 'React.js', slug: 'react/react-original.svg' },
+        { name: 'Node.js', slug: 'nodejs/nodejs-original.svg' },
+        { name: 'Express.js', slug: 'express/express-original.svg' },
+        { name: 'Socket.io', slug: 'socketio/socketio-original.svg' },
+        { name: 'Redux', slug: 'redux/redux-original.svg' },
+        { name: 'Firebase', slug: 'firebase/firebase-plain.svg' }
     ],
     databases: [
-        { name: 'MongoDB', icon: <Database size={14} className="text-green-500" /> },
-        { name: 'SQL', icon: <Database size={14} className="text-blue-500" /> },
-        { name: 'Firebase Firestore', icon: <Database size={14} className="text-orange-500" /> },
-        { name: 'Redis', icon: <Database size={14} className="text-red-500" /> }
+        { name: 'MongoDB', slug: 'mongodb/mongodb-original.svg' },
+        { name: 'MySQL', slug: 'mysql/mysql-original.svg' },
+        { name: 'Redis', slug: 'redis/redis-original.svg' }
     ],
     devops: [
-        { name: 'Docker', icon: <Cloud size={14} className="text-blue-400" /> },
-        { name: 'Jenkins', icon: <Cloud size={14} className="text-red-400" /> },
-        { name: 'Cloudinary', icon: <Cloud size={14} className="text-indigo-400" /> },
-        { name: 'GCP', icon: <Cloud size={14} className="text-yellow-400" /> },
-        { name: 'Render', icon: <Cloud size={14} className="text-emerald-400" /> },
-        { name: 'Vercel', icon: <Cloud size={14} className="text-white" /> }
+        { name: 'Docker', slug: 'docker/docker-original.svg' },
+        { name: 'Jenkins', slug: 'jenkins/jenkins-original.svg' },
+        { name: 'Google Cloud', slug: 'googlecloud/googlecloud-original.svg' },
+        { name: 'Vercel', slug: 'vercel/vercel-original.svg' }
     ],
     frontend: [
-        { name: 'HTML', icon: <Layers size={14} className="text-orange-500" /> },
-        { name: 'CSS', icon: <Layers size={14} className="text-blue-500" /> },
-        { name: 'Bootstrap', icon: <Layers size={14} className="text-purple-600" /> },
-        { name: 'Tailwind CSS', icon: <Layers size={14} className="text-cyan-400" /> },
-        { name: 'EJS', icon: <Layers size={14} className="text-yellow-600" /> },
-        { name: 'Three.js', icon: <Layers size={14} className="text-white" /> },
-        { name: 'GSAP', icon: <Layers size={14} className="text-green-400" /> }
+        { name: 'HTML', slug: 'html5/html5-original.svg' },
+        { name: 'CSS', slug: 'css3/css3-original.svg' },
+        { name: 'Bootstrap', slug: 'bootstrap/bootstrap-original.svg' },
+        { name: 'Tailwind CSS', slug: 'tailwindcss/tailwindcss-original.svg' },
+        { name: 'Three.js', slug: 'threejs/threejs-original.svg' }
     ],
     tools: [
-        { name: 'Git', icon: <Wrench size={14} className="text-orange-600" /> },
-        { name: 'GitHub', icon: <Wrench size={14} className="text-white" /> },
-        { name: 'VS Code', icon: <Wrench size={14} className="text-blue-400" /> },
-        { name: 'Postman', icon: <Wrench size={14} className="text-orange-500" /> },
-        { name: 'Figma', icon: <Wrench size={14} className="text-pink-500" /> },
-        { name: 'Antigravity', icon: <Wrench size={14} className="text-cyan-400" /> }
+        { name: 'Git', slug: 'git/git-original.svg' },
+        { name: 'GitHub', slug: 'github/github-original.svg' },
+        { name: 'VS Code', slug: 'vscode/vscode-original.svg' },
+        { name: 'Postman', slug: 'postman/postman-original.svg' },
+        { name: 'Figma', slug: 'figma/figma-original.svg' }
     ],
     specializations: [
-        { name: 'REST API', icon: <Globe size={14} className="text-emerald-400" /> },
-        { name: 'SEO', icon: <Globe size={14} className="text-blue-400" /> },
-        { name: 'Performance Optimization (SEO)', icon: <Globe size={14} className="text-yellow-400" /> },
-        { name: 'Data Structure and Algorithms (DSA)', icon: <Globe size={14} className="text-red-400" /> }
+        { name: 'REST API', slug: 'nodejs/nodejs-plain.svg' },
+        { name: 'SEO', slug: 'chrome/chrome-original.svg' },
+        { name: 'Performance', slug: 'chrome/chrome-plain.svg' },
+        { name: 'DSA', slug: 'javascript/javascript-plain.svg' }
     ]
 };
 
-const SkillCategory = ({ title, icon: Icon, skills, index, color }: any) => {
+const SkillIcon = ({ name, slug }: Skill) => {
     const cardRef = useRef<HTMLDivElement>(null);
-    const contentRef = useRef<HTMLDivElement>(null);
 
-    useGSAP(() => {
-        // Entrance Animation
-        gsap.from(cardRef.current, {
-            opacity: 0,
-            y: 100,
-            rotateX: -15,
-            duration: 1.2,
-            ease: "expo.out",
-            scrollTrigger: {
-                trigger: cardRef.current,
-                start: "top 95%",
-            }
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!cardRef.current) return;
+
+        const rect = cardRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const rotateX = (y - centerY) / 8;
+        const rotateY = (centerX - x) / 8;
+
+        gsap.to(cardRef.current, {
+            rotateX: rotateX,
+            rotateY: rotateY,
+            duration: 0.5,
+            ease: "power2.out",
+            transformPerspective: 1000
         });
+    };
 
-        // Interactive 3D Tilt Effect
-        const card = cardRef.current;
-        const handleMouseMove = (e: MouseEvent) => {
-            if (!card) return;
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotateX = (y - centerY) / 10;
-            const rotateY = (centerX - x) / 10;
+    const handleMouseLeave = () => {
+        if (!cardRef.current) return;
 
-            gsap.to(contentRef.current, {
-                rotateX,
-                rotateY,
-                duration: 0.5,
-                ease: "power2.out"
-            });
-        };
-
-        const handleMouseLeave = () => {
-            gsap.to(contentRef.current, {
-                rotateX: 0,
-                rotateY: 0,
-                duration: 0.8,
-                ease: "elastic.out(1, 0.3)"
-            });
-        };
-
-        card?.addEventListener("mousemove", handleMouseMove);
-        card?.addEventListener("mouseleave", handleMouseLeave);
-
-        return () => {
-            card?.removeEventListener("mousemove", handleMouseMove);
-            card?.removeEventListener("mouseleave", handleMouseLeave);
-        };
-    }, { scope: cardRef });
+        gsap.to(cardRef.current, {
+            rotateX: 0,
+            rotateY: 0,
+            duration: 0.5,
+            ease: "power2.out"
+        });
+    };
 
     return (
-        <div ref={cardRef} className="perspective-1000">
-            <div
-                ref={contentRef}
-                className="group relative h-full bg-slate-900/50 backdrop-blur-2xl rounded-[2rem] p-8 border border-white/10 hover:border-white/20 transition-colors duration-500"
-                style={{ transformStyle: 'preserve-3d' }}
-            >
-                {/* Floating Gradient Orb */}
-                <div className={`absolute -right-4 -top-4 w-24 h-24 blur-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-700 rounded-full bg-${color}-500`} />
+        <div
+            ref={cardRef}
+            className="skill-card group relative"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            style={{ transformStyle: 'preserve-3d' }}
+        >
+            {/* Background gradient glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-                <div className="relative z-10" style={{ transform: 'translateZ(50px)' }}>
-                    <div className="flex items-center gap-4 mb-8">
-                        <div className={`p-4 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-950 border border-white/10 shadow-2xl text-${color}-400`}>
-                            <Icon size={24} strokeWidth={1.5} />
-                        </div>
-                        <div>
-                            <h3 className="text-xl font-bold text-white tracking-wide">{title}</h3>
-                            <div className={`h-0.5 w-0 group-hover:w-full bg-${color}-500 transition-all duration-500 rounded-full`} />
-                        </div>
-                    </div>
+            {/* Card container */}
+            <div className="relative backdrop-blur-sm bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 p-6 overflow-hidden transition-all duration-300 group-hover:border-white/20">
 
-                    <div className="flex flex-wrap gap-2.5">
-                        {skills.map((skill: any) => (
-                            <div
-                                key={skill.name}
-                                className="flex items-center gap-2 px-4 py-2 bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-white/10 rounded-xl transition-all duration-300 cursor-default group/skill"
-                            >
-                                <span className="shrink-0 transition-transform group-hover/skill:scale-125 duration-300">
-                                    {skill.icon}
-                                </span>
-                                <span className="text-sm font-medium text-slate-400 group-hover/skill:text-white transition-colors">
-                                    {skill.name}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
+                {/* Animated mesh gradient background */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10" />
+                    <div className="absolute top-0 left-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
+                    <div className="absolute bottom-0 right-0 w-32 h-32 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
                 </div>
 
-                {/* Cyber-grid pattern overlay */}
-                <div className="absolute inset-0 opacity-[0.02] pointer-events-none rounded-[2rem]"
-                    style={{ backgroundImage: 'radial-gradient(#fff 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+                {/* Icon container with 3D effect */}
+                <div className="relative z-10 flex flex-col items-center gap-4" style={{ transform: 'translateZ(20px)' }}>
+                    <div className="relative w-16 h-16 group-hover:scale-110 transition-transform duration-500">
+                        {/* Rotating ring */}
+                        <div className="absolute inset-0 rounded-full border-2 border-blue-500/30 opacity-0 group-hover:opacity-100 group-hover:rotate-180 transition-all duration-1000" />
+
+                        {/* Icon glow */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                        {/* Icon */}
+                        <img
+                            src={`${ICON_BASE}${slug}`}
+                            alt={name}
+                            className="relative w-full h-full object-contain drop-shadow-2xl"
+                        />
+                    </div>
+
+                    {/* Name with gradient */}
+                    <p className="relative text-sm font-semibold text-white/80 group-hover:text-white transition-colors duration-300">
+                        <span className="relative z-10">{name}</span>
+                        <span className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-100 bg-clip-text text-transparent transition-opacity duration-500">
+                            {name}
+                        </span>
+                    </p>
+                </div>
+
+                {/* Corner accent */}
+                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-500/10 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
         </div>
     );
 };
 
 const SkillsSection = () => {
-    const containerRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef(null);
+    const titleRef = useRef(null);
 
     useGSAP(() => {
-        // Floating background shapes
-        gsap.to(".bg-shape", {
-            y: "random(-40, 40)",
-            x: "random(-40, 40)",
-            duration: "random(4, 8)",
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut"
+        // Title animation with split text effect
+        if (titleRef.current) {
+            gsap.from(titleRef.current, {
+                scrollTrigger: {
+                    trigger: titleRef.current,
+                    start: "top 85%",
+                },
+                opacity: 0,
+                scale: 0.8,
+                y: 50,
+                duration: 1,
+                ease: "power3.out"
+            });
+
+            // Gradient text animation
+            gsap.to(titleRef.current, {
+                scrollTrigger: {
+                    trigger: titleRef.current,
+                    start: "top 85%",
+                },
+                backgroundPosition: "200% center",
+                duration: 3,
+                ease: "none",
+                repeat: -1
+            });
+        }
+
+        // Category animations with 3D effects
+        const categories = gsap.utils.toArray('.skill-category');
+
+        categories.forEach((category: any, index: number) => {
+            const cards = category.querySelectorAll('.skill-card');
+            const categoryTitle = category.querySelector('.category-title');
+
+            // Category title animation
+            gsap.from(categoryTitle, {
+                scrollTrigger: {
+                    trigger: category,
+                    start: "top 80%",
+                },
+                opacity: 0,
+                x: -50,
+                duration: 0.8,
+                ease: "power3.out"
+            });
+
+            // 3D card entrance animation
+            gsap.from(cards, {
+                scrollTrigger: {
+                    trigger: category,
+                    start: "top 75%",
+                },
+                opacity: 0,
+                y: 100,
+                rotateX: -45,
+                z: -200,
+                duration: 1,
+                stagger: {
+                    each: 0.08,
+                    from: "start"
+                },
+                ease: "power3.out",
+                transformPerspective: 1000
+            });
+
+            // Parallax effect on scroll
+            gsap.to(cards, {
+                scrollTrigger: {
+                    trigger: category,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: 1
+                },
+                y: (i) => i * -20,
+                ease: "none"
+            });
         });
+
+        // Continuous floating animation
+        gsap.to(".skill-card", {
+            y: (i) => (i % 2 === 0 ? -12 : -8),
+            duration: 2.5 + Math.random(),
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1,
+            stagger: {
+                each: 0.2,
+                from: "random"
+            }
+        });
+
+        // Subtle rotation animation
+        gsap.to(".skill-card", {
+            rotateZ: (i) => (i % 2 === 0 ? 1 : -1),
+            duration: 4,
+            ease: "sine.inOut",
+            yoyo: true,
+            repeat: -1,
+            stagger: {
+                each: 0.3,
+                from: "random"
+            }
+        });
+
     }, { scope: containerRef });
 
     return (
-        <section id="skills" ref={containerRef} className="py-32 px-4 bg-[#020617] relative overflow-hidden">
-            {/* High-end Background Glows */}
-            <div className="bg-shape absolute top-20 left-[10%] w-[30vw] h-[30vw] bg-blue-600/10 blur-[120px] rounded-full pointer-events-none" />
-            <div className="bg-shape absolute bottom-20 right-[10%] w-[25vw] h-[25vw] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none" />
-
-            <div className="max-w-7xl mx-auto relative z-10">
-                <header className="mb-24 space-y-4">
-                    <div className="flex items-center gap-3 text-cyan-500 font-mono text-xs tracking-[0.3em] uppercase">
-                        <Terminal size={14} />
-                        <span>System Capabilities</span>
-                        <div className="h-[1px] w-20 bg-gradient-to-r from-cyan-500 to-transparent" />
-                    </div>
-
-                    <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tighter">
-                        Technical <span className="text-slate-500 italic font-light">Arsenal</span>
-                    </h2>
-
-                    <p className="text-slate-400 max-w-xl text-lg leading-relaxed">
-                        A specialized collection of modern tools and technologies I use to build
-                        high-performance digital experiences.
-                    </p>
-                </header>
-
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <SkillCategory title="Languages" icon={Code} skills={skills.languages} color="cyan" />
-                    <SkillCategory title="Frameworks" icon={Rocket} skills={skills.frameworks} color="blue" />
-                    <SkillCategory title="Databases" icon={Database} skills={skills.databases} color="indigo" />
-                    <SkillCategory title="DevOps" icon={ShieldCheck} skills={skills.devops} color="emerald" />
-                    <SkillCategory title="Frontend" icon={Sparkles} skills={skills.frontend} color="purple" />
-                    <SkillCategory title="Tools" icon={Cpu} skills={skills.tools} color="slate" />
-                    <SkillCategory title="Specialties" icon={Globe} skills={skills.specializations} color="fuchsia" />
-                </div>
+        <section
+            ref={containerRef}
+            className="relative min-h-screen py-24 px-6 overflow-hidden"
+            style={{
+                background: 'linear-gradient(to bottom, #0a0a0a 0%, #0f0f1e 50%, #0a0a0a 100%)'
+            }}
+        >
+            {/* Animated background grid */}
+            <div className="absolute inset-0 opacity-20">
+                <div className="absolute inset-0" style={{
+                    backgroundImage: `
+            linear-gradient(to right, rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(59, 130, 246, 0.1) 1px, transparent 1px)
+          `,
+                    backgroundSize: '50px 50px'
+                }} />
             </div>
 
-            <style>{`
-                .perspective-1000 { perspective: 1000px; }
-            `}</style>
+            {/* Gradient orbs */}
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+
+            <div className="relative max-w-7xl mx-auto">
+                {/* Title with gradient */}
+                <h2
+                    ref={titleRef}
+                    className="text-6xl md:text-7xl font-bold text-center mb-20 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
+                    style={{
+                        backgroundSize: '200% auto',
+                        textShadow: '0 0 40px rgba(59, 130, 246, 0.3)'
+                    }}
+                >
+                    Skills.
+                </h2>
+
+                {/* Skills grid */}
+                <div className="space-y-16">
+                    {Object.entries(skillData).map(([category, skills]) => (
+                        <div key={category} className="skill-category">
+                            <h3 className="category-title text-2xl font-bold text-white/70 mb-8 uppercase tracking-wider">
+                                {category}
+                            </h3>
+
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                                {skills.map((skill) => (
+                                    <SkillIcon key={skill.name} {...skill} />
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </section>
     );
 };
