@@ -153,11 +153,7 @@ const ContactSection = () => {
                 <h2
                     className="text-4xl md:text-5xl font-bold mb-8 bg-gradient-to-r from-white to-slate-500 bg-clip-text text-transparent"
                 >
-                    {"Let's Connect".split("").map((char, i) => (
-                        <span key={i} className="contact-title-char inline-block">
-                            {char === " " ? "\u00A0" : char}
-                        </span>
-                    ))}
+                    Let's Connect
                 </h2>
 
                 <p className="text-xl text-slate-400 mb-12">
