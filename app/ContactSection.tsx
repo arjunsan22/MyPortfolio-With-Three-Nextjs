@@ -24,36 +24,48 @@ const ContactSection = () => {
                 start: "top 85%",
             }
         });
-        gsap.from(".contact-title-char", {
-            opacity: 0,
-            y: 20,
-            filter: "blur(6px)",
-            stagger: 0.04,
-            duration: 0.6,
-            ease: "power3.out",
-            immediateRender: false, // ✅ IMPORTANT
-
-            scrollTrigger: {
-                trigger: containerRef.current,
-                start: "top 80%",
+        gsap.fromTo(".contact-title-char",
+            {
+                opacity: 0,
+                y: 20,
+                filter: "blur(6px)"
+            },
+            {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                stagger: 0.04,
+                duration: 0.6,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: containerRef.current,
+                    start: "top 80%",
+                }
             }
-        });
+        );
 
-        gsap.from(".contact-text-char", {
-            opacity: 0,
-            y: 15,
-            filter: "blur(4px)",
-            stagger: 0.015,
-            duration: 0.5,
-            delay: 0.4,
-            ease: "power3.out",
-            immediateRender: false, // ✅
 
-            scrollTrigger: {
-                trigger: containerRef.current,
-                start: "top 80%",
+        gsap.fromTo(".contact-text-char",
+            {
+                opacity: 0,
+                y: 15,
+                filter: "blur(4px)"
+            },
+            {
+                opacity: 1,
+                y: 0,
+                filter: "blur(0px)",
+                stagger: 0.015,
+                duration: 0.5,
+                delay: 0.4,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: containerRef.current,
+                    start: "top 80%",
+                }
             }
-        });
+        );
+
         const cards = gsap.utils.toArray<HTMLElement>(".magnetic-button");
 
         const listeners: Array<{
