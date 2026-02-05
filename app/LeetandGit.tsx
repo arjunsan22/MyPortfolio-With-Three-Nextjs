@@ -158,7 +158,7 @@ const DevMetrics: React.FC = () => {
                         </div>
 
                         <div className="flex items-baseline gap-6 relative z-10">
-                            <span className="text-9xl md:text-[11rem] font-black text-white tracking-tighter count-up leading-none" data-target="108">0</span>
+                            <span className="text-9xl md:text-[11rem] font-black text-white tracking-tighter count-up leading-none" data-target="110">0</span>
                             <div className="space-y-1">
                                 <div className="h-1 w-12 bg-emerald-500 rounded-full mb-3" />
                                 <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs">Problems<br />Solved</p>
