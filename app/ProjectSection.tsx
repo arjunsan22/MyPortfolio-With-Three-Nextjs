@@ -57,7 +57,7 @@ const projects: Project[] = [
             'Follow & following networking feature',
             'Frontend on Vercel, backend on Render'
         ],
-        link: 'https://workspera-backend.onrender.com',
+        link: 'http://workspera.vercel.app',
         icon: '🛠️'
     },
     {
