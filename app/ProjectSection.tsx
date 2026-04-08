@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Code2, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -27,7 +27,7 @@ const projects: Project[] = [
             'Multi-vendor e-commerce',
             'MVC architecture'
         ],
-        link: 'https://farmerslogin.vercel.app',
+        link: 'https://farmers-login.vercel.app/',
         icon: '🌾'
     },
     {
@@ -45,7 +45,6 @@ const projects: Project[] = [
         icon: '🍰'
     },
     {
-
         title: 'WorkSPera',
         tech: ['Next.js', 'React.js', 'Express.js', 'NextAuth.js', 'Socket.io', 'WebRTC', 'Node.js', 'MongoDB', 'Vercel', 'Render'],
         description: 'Real-time worker-connection platform combining chat, video calls, work posting, and hiring',
@@ -57,7 +56,7 @@ const projects: Project[] = [
             'Follow & following networking feature',
             'Frontend on Vercel, backend on Render'
         ],
-        link: 'http://workspera.vercel.app',
+        link: 'https://workspera-backend.onrender.com',
         icon: '🛠️'
     },
     {
@@ -78,217 +77,117 @@ const projects: Project[] = [
 
 const ProjectsSection = () => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const pinRef = useRef<HTMLDivElement>(null);
     const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
-    const titleRef = useRef<HTMLHeadingElement>(null);
 
     useGSAP(() => {
-        // 1. TYPING REVEAL ANIMATION
-        // We target the spans inside the title
-        const chars = titleRef.current?.querySelectorAll('.typing-char');
-        if (chars && chars.length > 0) {
-            gsap.from(chars, {
-                opacity: 0,
-                y: 10,
-                filter: "blur(5px)",
-                stagger: 0.05,
-                duration: 0.4,
-                ease: "power2.out",
-                scrollTrigger: {
-                    trigger: titleRef.current,
-                    start: "top 90%",
-                }
-            });
-        }
+        const cards = cardsRef.current.filter(Boolean) as HTMLDivElement[];
 
-        // Underline Reveal
-        gsap.from(".title-underline", {
-            width: 0,
-            duration: 1,
-            delay: 0.5,
-            ease: "expo.out",
+        // The total scroll distance will be based on the number of projects
+        const tl = gsap.timeline({
             scrollTrigger: {
-                trigger: titleRef.current,
-                start: "top 90%",
+                trigger: pinRef.current,
+                start: "top top",
+                end: `+=${cards.length * 100}%`, // Length of scroll
+                pin: true, // This stops the page from scrolling down
+                scrub: 1,  // Smooth transition with scroll
             }
         });
 
-        // 2. Cards Entrance
-        cardsRef.current.forEach((card, index) => {
-            if (card) {
-                gsap.from(card, {
-                    y: 100,
-                    opacity: 0,
-                    duration: 1,
-                    delay: index * 0.1,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: card,
-                        start: "top 85%",
-                    }
-                });
-
-                // Stack scale down effect: scale down previous cards as next one scrolls in
-                if (index < cardsRef.current.length - 1) {
-                    gsap.to(card, {
-                        scale: 0.9,
-                        opacity: 0.4,
-                        scrollTrigger: {
-                            trigger: cardsRef.current[index + 1],
-                            start: "top center",
-                            end: "top top+=100",
-                            scrub: true,
-                        }
-                    });
-                }
+        // We animate every card EXCEPT the first one (it's already there)
+        cards.forEach((card, index) => {
+            if (index > 0) {
+                tl.fromTo(card,
+                    { y: "100vh" }, // Start from bottom of screen
+                    {
+                        y: "0vh",   // Slide up to cover previous
+                        ease: "none"
+                    },
+                    index * 0.5 // Staggered timing
+                );
             }
         });
     }, { scope: containerRef });
 
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, index: number) => {
-        const card = cardsRef.current[index];
-        if (!card) return;
-
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        const rotateX = (y - rect.height / 2) / 20;
-        const rotateY = -(x - rect.width / 2) / 20;
-
-        gsap.to(card, {
-            rotateX: rotateX,
-            rotateY: rotateY,
-            duration: 0.5,
-            ease: "power2.out",
-        });
-
-        card.style.setProperty("--mouse-x", `${x}px`);
-        card.style.setProperty("--mouse-y", `${y}px`);
-    };
-
-    const handleMouseLeave = (index: number) => {
-        const card = cardsRef.current[index];
-        if (!card) return;
-
-        gsap.to(card, {
-            rotateX: 0,
-            rotateY: 0,
-            duration: 0.8,
-            ease: "elastic.out(1, 0.5)",
-        });
-    };
-
-    const text = "Selected Works";
-
     return (
-        <section id="projects" ref={containerRef} className="py-32 px-4 bg-[#020617] relative overflow-clip">
-            {/* Background Orbs */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-                <div className="absolute top-[-5%] left-[-5%] w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px]" />
-                <div className="absolute bottom-[-5%] right-[-5%] w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[100px]" />
-            </div>
+        <section ref={containerRef} className="bg-[#020617]">
+            {/* The Pinning Container */}
+            <div ref={pinRef} className="h-screen w-full overflow-hidden relative flex flex-col items-center justify-center">
 
-            <div className="max-w-7xl mx-auto relative z-10">
-                <div className="mb-20 text-center">
-                    <h2
-                        ref={titleRef}
-                        className="project-title text-6xl md:text-7xl font-black mb-6 flex justify-center flex-wrap"
-                    >
-                        {text.split("").map((char, i) => (
-                            <span
-                                key={i}
-                                className="typing-char inline-block bg-gradient-to-b from-white to-slate-500 bg-clip-text text-transparent"
-                            >
-                                {char === " " ? "\u00A0" : char}
-                            </span>
-                        ))}
-                    </h2>
-                    <div className="title-underline h-1 w-24 bg-cyan-500 mx-auto rounded-full shadow-[0_0_20px_rgba(6,182,212,0.5)]" />
+                {/* Background Orbs */}
+                <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+                    <div className="absolute top-[-5%] left-[-5%] w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px]" />
+                    <div className="absolute bottom-[-5%] right-[-5%] w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[100px]" />
                 </div>
 
-                <div className="flex flex-col gap-24 pb-24" style={{ perspective: "1000px" }}>
+                {/* Title (Always visible or moves slightly) */}
+                <div className="absolute top-12 text-center z-50 w-full">
+                    <h2 className="text-4xl md:text-6xl font-black bg-gradient-to-b from-white to-slate-500 bg-clip-text text-transparent">
+                        Selected Works
+                    </h2>
+                </div>
+
+                {/* The Stacked Cards Area */}
+                <div className="relative w-full max-w-6xl h-[80vh] flex items-center justify-center px-4">
                     {projects.map((project, index) => (
                         <div
                             key={index}
-                            className="sticky w-full max-w-5xl mx-auto"
-                            style={{
-                                top: `calc(15vh + ${index * 30}px)`,
-                                zIndex: index
-                            }}
+                            ref={(el) => { cardsRef.current[index] = el; }}
+                            className="absolute inset-0 flex items-center justify-center"
+                            style={{ zIndex: index }}
                         >
-                            <div
-                                ref={(el) => { cardsRef.current[index] = el; }}
-                                onMouseMove={(e) => handleMouseMove(e, index)}
-                                onMouseLeave={() => handleMouseLeave(index)}
-                                style={{ transformStyle: "preserve-3d" }}
-                                className="group relative bg-slate-900/80 backdrop-blur-3xl rounded-3xl p-1 border border-white/10 transition-colors duration-500 hover:border-cyan-500/50 shadow-2xl"
-                            >
-                                {/* Spotlight */}
-                                <div
-                                    className="pointer-events-none absolute inset-0 rounded-3xl z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                                    style={{
-                                        background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(34, 211, 238, 0.15), transparent 40%)`
-                                    } as React.CSSProperties}
-                                />
+                            <div className="w-full h-full bg-slate-900 border border-white/10 rounded-[2.5rem] shadow-2xl p-8 md:p-12 flex flex-col lg:flex-row gap-10 items-center overflow-hidden">
 
-                                <div className="relative z-10 p-8 md:p-10 h-full flex flex-col md:flex-row gap-10 bg-slate-900/50 rounded-[22px]">
-                                    {/* Left side: Icon & Tech */}
-                                    <div className="flex flex-col justify-start md:w-1/3 border-b md:border-b-0 md:border-r border-white/5 pb-8 md:pb-0 md:pr-8">
-                                        <div className="flex justify-between items-start mb-8">
-                                            <div className="p-4 bg-slate-800/50 rounded-2xl border border-white/5 group-hover:scale-110 group-hover:bg-cyan-500/10 transition-all duration-500 shadow-md">
-                                                <span className="text-6xl block grayscale group-hover:grayscale-0 transition-all">
-                                                    {project.icon}
-                                                </span>
-                                            </div>
+                                {/* Info Side */}
+                                <div className="flex-1 flex flex-col h-full justify-center">
+                                    <div className="flex items-center gap-4 mb-6">
+                                        <div className="p-4 bg-slate-800/50 rounded-2xl border border-white/5">
+                                            <span className="text-5xl block">{project.icon}</span>
                                         </div>
-
-                                        <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 group-hover:text-cyan-400 transition-colors duration-300">
-                                            {project.title}
-                                        </h3>
-
-                                        <div className="flex flex-wrap gap-2 mt-auto">
-                                            {project.tech.slice(0, 4).map((t, i) => (
-                                                <span key={i} className="text-[10px] md:text-xs font-mono text-cyan-400/80 uppercase tracking-tighter border border-cyan-400/20 bg-cyan-400/5 px-3 py-1.5 rounded-md">
+                                        <div className="flex flex-wrap gap-2">
+                                            {project.tech.slice(0, 3).map((t, i) => (
+                                                <span key={i} className="text-[10px] font-mono text-cyan-400 border border-cyan-400/20 px-2 py-1 rounded-md uppercase tracking-widest">
                                                     {t}
                                                 </span>
                                             ))}
                                         </div>
                                     </div>
 
-                                    {/* Right side: Content */}
-                                    <div className="flex flex-col flex-1">
-                                        <p className="text-slate-300 text-lg leading-relaxed mb-8 flex-grow">
-                                            {project.description}
-                                        </p>
+                                    <h3 className="text-4xl md:text-6xl font-bold text-white mb-6">
+                                        {project.title}
+                                    </h3>
 
-                                        <div className="grid sm:grid-cols-2 gap-4 mb-10">
-                                            {project.features.map((feature, i) => (
-                                                <div key={i} className="flex items-center gap-3 text-sm text-slate-400 bg-white/5 p-3 rounded-xl border border-white/5">
-                                                    <div className="w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)] shrink-0" />
-                                                    {feature}
+                                    <p className="text-slate-400 text-lg leading-relaxed mb-8 max-w-xl">
+                                        {project.description}
+                                    </p>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                                        {project.features.map((feature, i) => (
+                                            <div key={i} className="flex items-center gap-3 text-sm text-slate-300">
+                                                <div className="w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+                                                {feature}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="flex items-center justify-between pt-8 border-t border-white/5 mt-auto">
+                                        <div className="hidden md:flex -space-x-2">
+                                            {project.tech.map((t, i) => (
+                                                <div key={i} title={t} className="w-10 h-10 rounded-full bg-slate-800 border-2 border-[#020617] flex items-center justify-center text-[10px] text-white font-bold hover:-translate-y-2 transition-transform">
+                                                    {t[0]}
                                                 </div>
                                             ))}
                                         </div>
 
-                                        <div className="flex items-center justify-between mt-auto pt-8 border-t border-white/5">
-                                            <div className="flex -space-x-3">
-                                                {project.tech.map((t, i) => (
-                                                    <div key={i} title={t} className="w-10 h-10 rounded-full bg-slate-800 border-2 border-slate-900 flex items-center justify-center text-xs text-white font-bold hover:-translate-y-2 hover:z-10 relative transition-all cursor-default shadow-lg">
-                                                        {t[0]}
-                                                    </div>
-                                                ))}
-                                            </div>
-
-                                            <a
-                                                href={project.link}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-bold hover:bg-cyan-400 hover:scale-105 transition-all duration-300 group/btn shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(34,211,238,0.4)]"
-                                            >
-                                                Explore
-                                                <ArrowRight size={20} className="group-hover/btn:translate-x-1 transition-transform" />
-                                            </a>
-                                        </div>
+                                        <a
+                                            href={project.link}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-bold hover:bg-cyan-400 hover:scale-105 transition-all duration-300 group"
+                                        >
+                                            Explore Project
+                                            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -296,6 +195,9 @@ const ProjectsSection = () => {
                     ))}
                 </div>
             </div>
+
+            {/* Added spacer to let the last card be viewed before moving to next section */}
+            <div className="h-[20vh]" />
         </section>
     );
 };
