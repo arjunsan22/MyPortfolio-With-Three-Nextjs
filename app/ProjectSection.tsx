@@ -47,7 +47,7 @@ const projects: Project[] = [
     {
 
         title: 'WorkSPera',
-        tech: ['Next.js', 'React.js', 'Express.js', 'NextAuth.js', 'Socket.io', 'WebRTC', 'Node.js', 'MongoDB', 'Vercel', 'Render'],
+        tech: ['Next.js', 'React.js', 'Express.js', 'NextAuth.js', 'Socket.io', 'WebRTC', 'Node.js', 'MongoDB', 'Vercel', 'Render', 'Gemini API / Gen AI'],
         description: 'Real-time worker-connection platform combining chat, video calls, work posting, and hiring',
         features: [
             'Real-time chat using Socket.io',
@@ -55,6 +55,10 @@ const projects: Project[] = [
             'Secure authentication with NextAuth.js',
             'Work posting & worker hiring system',
             'Follow & following networking feature',
+            'AI Chatbot for user assistance & queries',
+            'AI-powered smart search (jobs, users, posts)',
+            'Resume parser using AI (extract skills, experience, insights)',
+            'AI-based post/job recommendation system',
             'Frontend on Vercel, backend on Render'
         ],
         link: 'http://workspera.vercel.app',
