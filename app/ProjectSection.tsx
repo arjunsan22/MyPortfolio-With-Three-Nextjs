@@ -83,28 +83,38 @@ const ProjectsSection = () => {
     useGSAP(() => {
         const cards = cardsRef.current.filter(Boolean) as HTMLDivElement[];
 
-        // The total scroll distance will be based on the number of projects
+        // Faster scrolling: We decrease the 'end' to complete the changes more quickly
         const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: pinRef.current,
                 start: "top top",
-                end: `+=${cards.length * 100}%`, // Length of scroll
-                pin: true, // This stops the page from scrolling down
-                scrub: 1,  // Smooth transition with scroll
+                end: `+=${cards.length * 60}%`, // Reduced scroll length for faster changes
+                pin: true, 
+                scrub: true,  
             }
         });
 
-        // We animate every card EXCEPT the first one (it's already there)
         cards.forEach((card, index) => {
             if (index > 0) {
+                // Next card slides in
                 tl.fromTo(card,
-                    { y: "100vh" }, // Start from bottom of screen
+                    { y: "130vh" }, // Start from bottom
                     {
-                        y: "0vh",   // Slide up to cover previous
+                        y: "0vh",   // Slide up correctly
                         ease: "none"
                     },
-                    index * 0.5 // Staggered timing
+                    "-=0.2" // Slight overlap with previous animation
                 );
+            }
+            
+            // If there's a previous card, let's add a slight scale down effect
+            // to make the current one pop out more!
+            if (index < cards.length - 1) {
+                tl.to(card, {
+                    scale: 0.9,
+                    opacity: 0.5,
+                    ease: "none"
+                }, ">"); // Starts as the next one comes up
             }
         });
     }, { scope: containerRef });
@@ -128,49 +138,49 @@ const ProjectsSection = () => {
                 </div>
 
                 {/* The Stacked Cards Area */}
-                <div className="relative w-full max-w-6xl h-[80vh] flex items-center justify-center px-4">
+                <div className="relative w-full max-w-6xl h-[85vh] md:h-[80vh] flex items-center justify-center px-4 mt-16 md:mt-0">
                     {projects.map((project, index) => (
                         <div
                             key={index}
                             ref={(el) => { cardsRef.current[index] = el; }}
-                            className="absolute inset-0 flex items-center justify-center"
+                            className="absolute inset-0 flex items-center justify-center pt-10 pb-4"
                             style={{ zIndex: index }}
                         >
-                            <div className="w-full h-full bg-slate-900 border border-white/10 rounded-[2.5rem] shadow-2xl p-8 md:p-12 flex flex-col lg:flex-row gap-10 items-center overflow-hidden">
+                            <div className="w-full h-full bg-slate-900 border border-white/10 rounded-[2.5rem] shadow-2xl p-6 md:p-12 flex flex-col lg:flex-row gap-8 md:gap-10 items-center overflow-y-auto custom-scrollbar">
 
                                 {/* Info Side */}
-                                <div className="flex-1 flex flex-col h-full justify-center">
-                                    <div className="flex items-center gap-4 mb-6">
-                                        <div className="p-4 bg-slate-800/50 rounded-2xl border border-white/5">
-                                            <span className="text-5xl block">{project.icon}</span>
+                                <div className="flex-1 flex flex-col h-full justify-center w-full">
+                                    <div className="flex items-center gap-4 mb-4 md:mb-6 shrink-0">
+                                        <div className="p-3 md:p-4 bg-slate-800/50 rounded-2xl border border-white/5">
+                                            <span className="text-4xl md:text-5xl block">{project.icon}</span>
                                         </div>
                                         <div className="flex flex-wrap gap-2">
                                             {project.tech.slice(0, 3).map((t, i) => (
-                                                <span key={i} className="text-[10px] font-mono text-cyan-400 border border-cyan-400/20 px-2 py-1 rounded-md uppercase tracking-widest">
+                                                <span key={i} className="text-[9px] md:text-[10px] font-mono text-cyan-400 border border-cyan-400/20 px-2 py-1 rounded-md uppercase tracking-widest">
                                                     {t}
                                                 </span>
                                             ))}
                                         </div>
                                     </div>
 
-                                    <h3 className="text-4xl md:text-6xl font-bold text-white mb-6">
+                                    <h3 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 shrink-0">
                                         {project.title}
                                     </h3>
 
-                                    <p className="text-slate-400 text-lg leading-relaxed mb-8 max-w-xl">
+                                    <p className="text-slate-400 text-sm md:text-lg leading-relaxed mb-6 md:mb-8 max-w-xl shrink-0">
                                         {project.description}
                                     </p>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6 md:mb-8 shrink-0">
                                         {project.features.map((feature, i) => (
-                                            <div key={i} className="flex items-center gap-3 text-sm text-slate-300">
-                                                <div className="w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
-                                                {feature}
+                                            <div key={i} className="flex items-center gap-2 md:gap-3 text-xs md:text-sm text-slate-300">
+                                                <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)] shrink-0" />
+                                                <span>{feature}</span>
                                             </div>
                                         ))}
                                     </div>
 
-                                    <div className="flex items-center justify-between pt-8 border-t border-white/5 mt-auto">
+                                    <div className="flex items-center justify-between pt-6 md:pt-8 border-t border-white/5 mt-auto shrink-0 pb-2">
                                         <div className="hidden md:flex -space-x-2">
                                             {project.tech.map((t, i) => (
                                                 <div key={i} title={t} className="w-10 h-10 rounded-full bg-slate-800 border-2 border-[#020617] flex items-center justify-center text-[10px] text-white font-bold hover:-translate-y-2 transition-transform">
@@ -183,10 +193,10 @@ const ProjectsSection = () => {
                                             href={project.link}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-bold hover:bg-cyan-400 hover:scale-105 transition-all duration-300 group"
+                                            className="flex items-center gap-2 md:gap-3 px-6 md:px-8 py-3 md:py-4 bg-white text-black rounded-full font-bold text-sm md:text-base hover:bg-cyan-400 hover:scale-105 transition-all duration-300 group"
                                         >
-                                            Explore Project
-                                            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                                            Explore
+                                            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                                         </a>
                                     </div>
                                 </div>
