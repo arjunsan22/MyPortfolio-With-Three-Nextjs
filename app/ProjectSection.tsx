@@ -27,7 +27,7 @@ const projects: Project[] = [
             'Multi-vendor e-commerce',
             'MVC architecture'
         ],
-        link: 'https://farmers-login.vercel.app/',
+        link: 'https://farmerslogin.vercel.app',
         icon: '🌾'
     },
     {
@@ -116,17 +116,30 @@ const ProjectsSection = () => {
         cardsRef.current.forEach((card, index) => {
             if (card) {
                 gsap.from(card, {
-                    y: 50,
+                    y: 100,
                     opacity: 0,
-                    scale: 0.9,
                     duration: 1,
                     delay: index * 0.1,
                     ease: "power3.out",
                     scrollTrigger: {
                         trigger: card,
-                        start: "top 90%",
+                        start: "top 85%",
                     }
                 });
+
+                // Stack scale down effect: scale down previous cards as next one scrolls in
+                if (index < cardsRef.current.length - 1) {
+                    gsap.to(card, {
+                        scale: 0.9,
+                        opacity: 0.4,
+                        scrollTrigger: {
+                            trigger: cardsRef.current[index + 1],
+                            start: "top center",
+                            end: "top top+=100",
+                            scrub: true,
+                        }
+                    });
+                }
             }
         });
     }, { scope: containerRef });
@@ -168,7 +181,7 @@ const ProjectsSection = () => {
     const text = "Selected Works";
 
     return (
-        <section id="projects" ref={containerRef} className="py-32 px-4 bg-[#020617] relative overflow-hidden">
+        <section id="projects" ref={containerRef} className="py-32 px-4 bg-[#020617] relative overflow-clip">
             {/* Background Orbs */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
                 <div className="absolute top-[-5%] left-[-5%] w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px]" />
@@ -193,75 +206,90 @@ const ProjectsSection = () => {
                     <div className="title-underline h-1 w-24 bg-cyan-500 mx-auto rounded-full shadow-[0_0_20px_rgba(6,182,212,0.5)]" />
                 </div>
 
-                <div className="grid lg:grid-cols-2 gap-12" style={{ perspective: "1000px" }}>
+                <div className="flex flex-col gap-24 pb-24" style={{ perspective: "1000px" }}>
                     {projects.map((project, index) => (
                         <div
                             key={index}
-                            ref={(el) => { cardsRef.current[index] = el; }}
-                            onMouseMove={(e) => handleMouseMove(e, index)}
-                            onMouseLeave={() => handleMouseLeave(index)}
-                            style={{ transformStyle: "preserve-3d" }}
-                            className="group relative bg-slate-900/40 backdrop-blur-xl rounded-3xl p-1 border border-white/10 transition-colors duration-500 hover:border-cyan-500/50"
+                            className="sticky w-full max-w-5xl mx-auto"
+                            style={{
+                                top: `calc(15vh + ${index * 30}px)`,
+                                zIndex: index
+                            }}
                         >
-                            {/* Spotlight */}
                             <div
-                                className="pointer-events-none absolute inset-0 rounded-3xl z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                                style={{
-                                    background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(34, 211, 238, 0.15), transparent 40%)`
-                                } as React.CSSProperties}
-                            />
+                                ref={(el) => { cardsRef.current[index] = el; }}
+                                onMouseMove={(e) => handleMouseMove(e, index)}
+                                onMouseLeave={() => handleMouseLeave(index)}
+                                style={{ transformStyle: "preserve-3d" }}
+                                className="group relative bg-slate-900/80 backdrop-blur-3xl rounded-3xl p-1 border border-white/10 transition-colors duration-500 hover:border-cyan-500/50 shadow-2xl"
+                            >
+                                {/* Spotlight */}
+                                <div
+                                    className="pointer-events-none absolute inset-0 rounded-3xl z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                    style={{
+                                        background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(34, 211, 238, 0.15), transparent 40%)`
+                                    } as React.CSSProperties}
+                                />
 
-                            <div className="relative z-10 p-8 h-full flex flex-col">
-                                <div className="flex justify-between items-start mb-8">
-                                    <div className="p-4 bg-slate-800/50 rounded-2xl border border-white/5 group-hover:scale-110 group-hover:bg-cyan-500/10 transition-all duration-500">
-                                        <span className="text-5xl block grayscale group-hover:grayscale-0 transition-all">
-                                            {project.icon}
-                                        </span>
-                                    </div>
-                                    <div className="flex gap-2">
-                                        {project.tech.slice(0, 3).map((t, i) => (
-                                            <span key={i} className="text-[10px] font-mono text-cyan-400/60 uppercase tracking-tighter border border-cyan-400/20 px-2 py-1 rounded-md">
-                                                {t}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <h3 className="text-3xl font-bold text-white mb-4 group-hover:text-cyan-400 transition-colors duration-300">
-                                    {project.title}
-                                </h3>
-
-                                <p className="text-slate-400 leading-relaxed mb-8 flex-grow">
-                                    {project.description}
-                                </p>
-
-                                <div className="grid grid-cols-2 gap-4 mb-8">
-                                    {project.features.map((feature, i) => (
-                                        <div key={i} className="flex items-center gap-2 text-xs text-slate-500">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
-                                            {feature}
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
-                                    <div className="flex -space-x-2">
-                                        {project.tech.map((t, i) => (
-                                            <div key={i} title={t} className="w-8 h-8 rounded-full bg-slate-800 border-2 border-[#020617] flex items-center justify-center text-[10px] text-white font-bold hover:-translate-y-2 transition-transform cursor-default">
-                                                {t[0]}
+                                <div className="relative z-10 p-8 md:p-10 h-full flex flex-col md:flex-row gap-10 bg-slate-900/50 rounded-[22px]">
+                                    {/* Left side: Icon & Tech */}
+                                    <div className="flex flex-col justify-start md:w-1/3 border-b md:border-b-0 md:border-r border-white/5 pb-8 md:pb-0 md:pr-8">
+                                        <div className="flex justify-between items-start mb-8">
+                                            <div className="p-4 bg-slate-800/50 rounded-2xl border border-white/5 group-hover:scale-110 group-hover:bg-cyan-500/10 transition-all duration-500 shadow-md">
+                                                <span className="text-6xl block grayscale group-hover:grayscale-0 transition-all">
+                                                    {project.icon}
+                                                </span>
                                             </div>
-                                        ))}
+                                        </div>
+
+                                        <h3 className="text-3xl md:text-4xl font-bold text-white mb-4 group-hover:text-cyan-400 transition-colors duration-300">
+                                            {project.title}
+                                        </h3>
+
+                                        <div className="flex flex-wrap gap-2 mt-auto">
+                                            {project.tech.slice(0, 4).map((t, i) => (
+                                                <span key={i} className="text-[10px] md:text-xs font-mono text-cyan-400/80 uppercase tracking-tighter border border-cyan-400/20 bg-cyan-400/5 px-3 py-1.5 rounded-md">
+                                                    {t}
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
 
-                                    <a
-                                        href={project.link}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="flex items-center gap-2 px-6 py-3 bg-white text-black rounded-full font-bold hover:bg-cyan-400 hover:scale-105 transition-all duration-300 group/btn"
-                                    >
-                                        Explore
-                                        <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
-                                    </a>
+                                    {/* Right side: Content */}
+                                    <div className="flex flex-col flex-1">
+                                        <p className="text-slate-300 text-lg leading-relaxed mb-8 flex-grow">
+                                            {project.description}
+                                        </p>
+
+                                        <div className="grid sm:grid-cols-2 gap-4 mb-10">
+                                            {project.features.map((feature, i) => (
+                                                <div key={i} className="flex items-center gap-3 text-sm text-slate-400 bg-white/5 p-3 rounded-xl border border-white/5">
+                                                    <div className="w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)] shrink-0" />
+                                                    {feature}
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <div className="flex items-center justify-between mt-auto pt-8 border-t border-white/5">
+                                            <div className="flex -space-x-3">
+                                                {project.tech.map((t, i) => (
+                                                    <div key={i} title={t} className="w-10 h-10 rounded-full bg-slate-800 border-2 border-slate-900 flex items-center justify-center text-xs text-white font-bold hover:-translate-y-2 hover:z-10 relative transition-all cursor-default shadow-lg">
+                                                        {t[0]}
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            <a
+                                                href={project.link}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-bold hover:bg-cyan-400 hover:scale-105 transition-all duration-300 group/btn shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_25px_rgba(34,211,238,0.4)]"
+                                            >
+                                                Explore
+                                                <ArrowRight size={20} className="group-hover/btn:translate-x-1 transition-transform" />
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
