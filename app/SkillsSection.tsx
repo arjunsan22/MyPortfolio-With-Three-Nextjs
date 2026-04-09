@@ -10,12 +10,14 @@ import {
     useMotionTemplate,
     useTransform,
 } from 'framer-motion';
+import { BrainCircuit, Network, TerminalSquare, Bot } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
 interface Skill {
     name: string;
-    slug: string;
+    slug?: string;
+    Icon?: React.ElementType;
 }
 
 interface SkillData {
@@ -72,14 +74,14 @@ const skillData: SkillData = {
         { name: 'DSA', slug: 'javascript/javascript-plain.svg' }
     ],
     'generative ai': [
-        { name: 'Generative AI', slug: 'tensorflow/tensorflow-original.svg' },
-        { name: 'LLM APIs', slug: 'postman/postman-original.svg' },
-        { name: 'Prompt Engg', slug: 'bash/bash-original.svg' },
-        { name: 'AI Chatbots', slug: 'python/python-original.svg' }
+        { name: 'Generative AI', Icon: BrainCircuit },
+        { name: 'LLM APIs', Icon: Network },
+        { name: 'Prompt Engg', Icon: TerminalSquare },
+        { name: 'AI Chatbots', Icon: Bot }
     ]
 };
 
-const SkillIcon = ({ name, slug }: Skill) => {
+const SkillIcon = ({ name, slug, Icon }: Skill) => {
     const cardRef = useRef<HTMLDivElement>(null);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -146,11 +148,15 @@ const SkillIcon = ({ name, slug }: Skill) => {
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                         {/* Icon */}
-                        <img
-                            src={`${ICON_BASE}${slug}`}
-                            alt={name}
-                            className="relative w-full h-full object-contain drop-shadow-2xl"
-                        />
+                        {Icon ? (
+                            <Icon className="relative w-full h-full text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.8)]" strokeWidth={1.5} />
+                        ) : (
+                            <img
+                                src={`${ICON_BASE}${slug}`}
+                                alt={name}
+                                className="relative w-full h-full object-contain drop-shadow-2xl"
+                            />
+                        )}
                     </div>
 
                     {/* Name with gradient */}
