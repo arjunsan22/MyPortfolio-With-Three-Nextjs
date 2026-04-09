@@ -3,6 +3,12 @@ import React, { useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import {
+    motion,
+    useMotionValue,
+    useSpring,
+    useMotionTemplate,
+} from 'framer-motion';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -157,8 +163,30 @@ const SkillIcon = ({ name, slug }: Skill) => {
 };
 
 const SkillsSection = () => {
-    const containerRef = useRef(null);
+    const containerRef = useRef<HTMLDivElement>(null);
     const titleRef = useRef(null);
+
+    // Mouse follow logic from About.tsx
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
+
+    const mouseXSpring = useSpring(mouseX);
+    const mouseYSpring = useSpring(mouseY);
+
+    const spotlightGlow = useMotionTemplate`
+        radial-gradient(
+            800px circle at ${mouseXSpring}px ${mouseYSpring}px,
+            rgba(6,182,212,0.15),
+            transparent 80%
+        )
+    `;
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!containerRef.current) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        mouseX.set(e.clientX - rect.left);
+        mouseY.set(e.clientY - rect.top);
+    };
 
     useGSAP(() => {
         // Title animation with split text effect
@@ -270,25 +298,15 @@ const SkillsSection = () => {
     return (
         <section
             ref={containerRef}
-            className="relative min-h-screen py-24 px-6 overflow-hidden"
-            style={{
-                background: 'linear-gradient(to bottom, #0a0a0a 0%, #0f0f1e 50%, #0a0a0a 100%)'
-            }}
+            onMouseMove={handleMouseMove}
+            className="relative min-h-screen py-24 px-6 overflow-hidden bg-slate-900"
         >
-            {/* Animated background grid */}
-            <div className="absolute inset-0 opacity-20">
-                <div className="absolute inset-0" style={{
-                    backgroundImage: `
-            linear-gradient(to right, rgba(59, 130, 246, 0.1) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(59, 130, 246, 0.1) 1px, transparent 1px)
-          `,
-                    backgroundSize: '50px 50px'
-                }} />
-            </div>
+            {/* 3D Background effect from About.tsx */}
+            <motion.div
+                className="absolute inset-0 pointer-events-none z-0"
+                style={{ background: spotlightGlow }}
+            />
 
-            {/* Gradient orbs */}
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
 
             <div className="relative max-w-7xl mx-auto">
                 {/* Title with gradient */}
