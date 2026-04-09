@@ -318,7 +318,7 @@ const SkillsSection = () => {
 
     return (
         <section
-            className="relative min-h-screen py-24 px-6 overflow-hidden bg-slate-900"
+            className="relative min-h-screen py-24 px-6 overflow-hidden bg-transparent"
             style={{ perspective: '1200px' }}
         >
             <div className="max-w-7xl mx-auto">
