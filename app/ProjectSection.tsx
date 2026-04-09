@@ -183,7 +183,7 @@ const ProjectsSection = () => {
                 <div className="mb-20 text-center">
                     <h2
                         ref={titleRef}
-                        className="project-title text-6xl md:text-7xl font-black mb-6 flex justify-center flex-wrap"
+                        className="project-title text-5xl sm:text-6xl md:text-7xl font-black mb-6 flex justify-center flex-wrap"
                     >
                         {text.split("").map((char, i) => (
                             <span
@@ -215,14 +215,14 @@ const ProjectsSection = () => {
                                 } as React.CSSProperties}
                             />
 
-                            <div className="relative z-10 p-8 h-full flex flex-col">
-                                <div className="flex justify-between items-start mb-8">
-                                    <div className="p-4 bg-slate-800/50 rounded-2xl border border-white/5 group-hover:scale-110 group-hover:bg-cyan-500/10 transition-all duration-500">
+                            <div className="relative z-10 p-6 sm:p-8 h-full flex flex-col">
+                                <div className="flex justify-between items-start mb-8 gap-4">
+                                    <div className="p-3 sm:p-4 bg-slate-800/50 rounded-2xl border border-white/5 group-hover:scale-110 group-hover:bg-cyan-500/10 transition-all duration-500 flex-shrink-0">
                                         <span className="text-5xl block grayscale group-hover:grayscale-0 transition-all">
                                             {project.icon}
                                         </span>
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex flex-wrap justify-end gap-2">
                                         {project.tech.slice(0, 3).map((t, i) => (
                                             <span key={i} className="text-[10px] font-mono text-cyan-400/60 uppercase tracking-tighter border border-cyan-400/20 px-2 py-1 rounded-md">
                                                 {t}
@@ -239,17 +239,17 @@ const ProjectsSection = () => {
                                     {project.description}
                                 </p>
 
-                                <div className="grid grid-cols-2 gap-4 mb-8">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-8">
                                     {project.features.map((feature, i) => (
-                                        <div key={i} className="flex items-center gap-2 text-xs text-slate-500">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
-                                            {feature}
+                                        <div key={i} className="flex items-start sm:items-center gap-2 text-xs text-slate-500">
+                                            <div className="w-1.5 h-1.5 mt-1 sm:mt-0 flex-shrink-0 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+                                            <span className="leading-tight">{feature}</span>
                                         </div>
                                     ))}
                                 </div>
 
-                                <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
-                                    <div className="flex -space-x-2">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-4 mt-auto pt-6 border-t border-white/5">
+                                    <div className="flex flex-wrap gap-2 sm:gap-0 sm:-space-x-2">
                                         {project.tech.map((t, i) => (
                                             <div key={i} title={t} className="w-8 h-8 rounded-full bg-slate-800 border-2 border-[#020617] flex items-center justify-center text-[10px] text-white font-bold hover:-translate-y-2 transition-transform cursor-default">
                                                 {t[0]}
@@ -261,7 +261,7 @@ const ProjectsSection = () => {
                                         href={project.link}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="flex items-center gap-2 px-6 py-3 bg-white text-black rounded-full font-bold hover:bg-cyan-400 hover:scale-105 transition-all duration-300 group/btn"
+                                        className="flex items-center justify-center gap-2 px-6 py-3 bg-white text-black rounded-full font-bold hover:bg-cyan-400 hover:scale-105 transition-all duration-300 group/btn w-full sm:w-auto"
                                     >
                                         Explore
                                         <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
