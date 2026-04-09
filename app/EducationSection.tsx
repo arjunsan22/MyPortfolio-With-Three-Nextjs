@@ -175,7 +175,7 @@ const EducationSection = () => {
         <section
             id="education"
             ref={sectionRef}
-            className="py-32 px-6 bg-[#020617] relative overflow-hidden"
+            className="py-32 px-6 bg-slate-800/30 backdrop-blur-sm relative overflow-hidden"
         >
             {/* Cyber Grid Background */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20" />

@@ -171,7 +171,7 @@ const ProjectsSection = () => {
 
 
     return (
-        <section id="projects" ref={containerRef} className="py-32 px-4 bg-[#020617] relative overflow-hidden">
+        <section id="projects" ref={containerRef} className="py-32 px-4 bg-slate-800/30 backdrop-blur-sm relative overflow-hidden">
             {/* Background Orbs */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
                 <div className="absolute top-[-5%] left-[-5%] w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px]" />
