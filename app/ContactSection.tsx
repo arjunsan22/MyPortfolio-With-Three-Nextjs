@@ -143,7 +143,7 @@ const ContactSection = () => {
         <section
             id="contact"
             ref={containerRef}
-            className="py-24 px-4 bg-slate-950 relative overflow-hidden"
+            className="py-24 px-4 bg-slate-800/30 backdrop-blur-sm relative overflow-hidden"
         >
             {/* Background Decor (same vibe as CodingProfiles) */}
             <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 blur-[150px] rounded-full pointer-events-none" />
