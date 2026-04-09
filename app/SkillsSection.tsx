@@ -70,6 +70,12 @@ const skillData: SkillData = {
         { name: 'SEO', slug: 'chrome/chrome-original.svg' },
         { name: 'Performance', slug: 'chrome/chrome-plain.svg' },
         { name: 'DSA', slug: 'javascript/javascript-plain.svg' }
+    ],
+    'generative ai': [
+        { name: 'Generative AI', slug: 'tensorflow/tensorflow-original.svg' },
+        { name: 'LLM APIs', slug: 'postman/postman-original.svg' },
+        { name: 'Prompt Engg', slug: 'bash/bash-original.svg' },
+        { name: 'AI Chatbots', slug: 'python/python-original.svg' }
     ]
 };
 
