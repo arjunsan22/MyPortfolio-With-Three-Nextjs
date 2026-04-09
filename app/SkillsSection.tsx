@@ -8,6 +8,7 @@ import {
     useMotionValue,
     useSpring,
     useMotionTemplate,
+    useTransform,
 } from 'framer-motion';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -166,12 +167,19 @@ const SkillsSection = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const titleRef = useRef(null);
 
-    // Mouse follow logic from About.tsx
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
-
     const mouseXSpring = useSpring(mouseX);
     const mouseYSpring = useSpring(mouseY);
+
+    const xPct = useMotionValue(0);
+    const yPct = useMotionValue(0);
+    const xPctSpring = useSpring(xPct);
+    const yPctSpring = useSpring(yPct);
+
+    // Using smaller tilt angles because the skills section card is very tall
+    const rotateX = useTransform(yPctSpring, [-0.5, 0.5], ['5deg', '-5deg']);
+    const rotateY = useTransform(xPctSpring, [-0.5, 0.5], ['-5deg', '5deg']);
 
     const spotlightGlow = useMotionTemplate`
         radial-gradient(
@@ -184,8 +192,21 @@ const SkillsSection = () => {
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!containerRef.current) return;
         const rect = containerRef.current.getBoundingClientRect();
+        
+        // Spotlight glow tracking
         mouseX.set(e.clientX - rect.left);
         mouseY.set(e.clientY - rect.top);
+
+        // 3D Card tilt tracking
+        const xP = (e.clientX - rect.left) / rect.width - 0.5;
+        const yP = (e.clientY - rect.top) / rect.height - 0.5;
+        xPct.set(xP);
+        yPct.set(yP);
+    };
+
+    const handleMouseLeave = () => {
+        xPct.set(0);
+        yPct.set(0);
     };
 
     useGSAP(() => {
@@ -297,32 +318,37 @@ const SkillsSection = () => {
 
     return (
         <section
-            ref={containerRef}
-            onMouseMove={handleMouseMove}
             className="relative min-h-screen py-24 px-6 overflow-hidden bg-slate-900"
+            style={{ perspective: '1200px' }}
         >
-            {/* 3D Background effect from About.tsx */}
-            <motion.div
-                className="absolute inset-0 pointer-events-none z-0"
-                style={{ background: spotlightGlow }}
-            />
-
-
-            <div className="relative max-w-7xl mx-auto">
-                {/* Title with gradient */}
-                <h2
-                    ref={titleRef}
-                    className="text-6xl md:text-7xl font-bold text-center mb-20 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
-                    style={{
-                        backgroundSize: '200% auto',
-                        textShadow: '0 0 40px rgba(59, 130, 246, 0.3)'
-                    }}
+            <div className="max-w-7xl mx-auto">
+                <motion.div
+                    ref={containerRef}
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseLeave}
+                    style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
+                    className="relative bg-slate-800/40 backdrop-blur-xl rounded-[2.5rem] border border-slate-700/50 shadow-2xl p-8 md:p-16 overflow-hidden"
                 >
-                    Skills.
-                </h2>
+                    {/* 3D Background spotlight effect */}
+                    <motion.div
+                        className="absolute inset-0 pointer-events-none z-0"
+                        style={{ background: spotlightGlow }}
+                    />
 
-                {/* Skills grid */}
-                <div className="space-y-16">
+                    {/* Title with gradient */}
+                    <h2
+                        ref={titleRef}
+                        className="relative z-10 text-6xl md:text-7xl font-bold text-center mb-20 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
+                        style={{
+                            backgroundSize: '200% auto',
+                            textShadow: '0 0 40px rgba(59, 130, 246, 0.3)'
+                        }}
+                    >
+                        Skills.
+                    </h2>
+
+                    {/* Skills grid */}
+                    <div className="space-y-16 relative z-10" style={{ transform: 'translateZ(40px)' }}>
                     {Object.entries(skillData).map(([category, skills]) => (
                         <div key={category} className="skill-category">
                             <h3 className="category-title text-2xl font-bold text-white/70 mb-8 uppercase tracking-wider">
@@ -336,7 +362,8 @@ const SkillsSection = () => {
                             </div>
                         </div>
                     ))}
-                </div>
+                    </div>
+                </motion.div>
             </div>
         </section>
     );
