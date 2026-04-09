@@ -169,7 +169,6 @@ const ProjectsSection = () => {
         });
     };
 
-    const text = "Selected Works";
 
     return (
         <section id="projects" ref={containerRef} className="py-32 px-4 bg-[#020617] relative overflow-hidden">
@@ -183,16 +182,28 @@ const ProjectsSection = () => {
                 <div className="mb-20 text-center">
                     <h2
                         ref={titleRef}
-                        className="project-title text-5xl sm:text-6xl md:text-7xl font-black mb-6 flex justify-center flex-wrap"
+                        className="project-title text-5xl md:text-6xl lg:text-7xl font-black mb-6 flex flex-col sm:flex-row justify-center items-center sm:gap-4"
                     >
-                        {text.split("").map((char, i) => (
-                            <span
-                                key={i}
-                                className="typing-char inline-block bg-gradient-to-b from-white to-slate-500 bg-clip-text text-transparent"
-                            >
-                                {char === " " ? "\u00A0" : char}
-                            </span>
-                        ))}
+                        <div className="flex">
+                            {"Selected".split("").map((char, i) => (
+                                <span
+                                    key={`sel-${i}`}
+                                    className="typing-char inline-block bg-gradient-to-b from-white to-slate-500 bg-clip-text text-transparent"
+                                >
+                                    {char}
+                                </span>
+                            ))}
+                        </div>
+                        <div className="flex">
+                            {"Works".split("").map((char, i) => (
+                                <span
+                                    key={`wrk-${i}`}
+                                    className="typing-char inline-block bg-gradient-to-b from-white to-slate-500 bg-clip-text text-transparent py-1 sm:py-0"
+                                >
+                                    {char}
+                                </span>
+                            ))}
+                        </div>
                     </h2>
                     <div className="title-underline h-1 w-24 bg-cyan-500 mx-auto rounded-full shadow-[0_0_20px_rgba(6,182,212,0.5)]" />
                 </div>
