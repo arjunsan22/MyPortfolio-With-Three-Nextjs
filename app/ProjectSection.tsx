@@ -72,7 +72,6 @@ const projects: Project[] = [
             'Scalable MERN Stack architecture',
             'Implemented JWT authentication with access & refresh tokens',
             'Developed job search, filtering, and pagination',
-            'Created resume upload system using Multer (PDF/DOCX, 5MB)',
             'Built admin dashboard for job & candidate management',
             'Enabled real-time application tracking (status updates)'
         ],

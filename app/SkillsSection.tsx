@@ -204,7 +204,7 @@ const SkillsSection = () => {
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!containerRef.current) return;
         const rect = containerRef.current.getBoundingClientRect();
-        
+
         // Spotlight glow tracking
         mouseX.set(e.clientX - rect.left);
         mouseY.set(e.clientY - rect.top);
@@ -361,19 +361,19 @@ const SkillsSection = () => {
 
                     {/* Skills grid */}
                     <div className="space-y-16 relative z-10" style={{ transform: 'translateZ(40px)' }}>
-                    {Object.entries(skillData).map(([category, skills]) => (
-                        <div key={category} className="skill-category">
-                            <h3 className="category-title text-2xl font-bold text-white/70 mb-8 uppercase tracking-wider">
-                                {category}
-                            </h3>
+                        {Object.entries(skillData).map(([category, skills]) => (
+                            <div key={category} className="skill-category">
+                                <h3 className="category-title text-2xl font-bold text-white/70 mb-8 uppercase tracking-wider">
+                                    {category}
+                                </h3>
 
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                                {skills.map((skill) => (
-                                    <SkillIcon key={skill.name} {...skill} />
-                                ))}
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                                    {skills.map((skill) => (
+                                        <SkillIcon key={skill.name} {...skill} />
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
                     </div>
                 </motion.div>
             </div>
