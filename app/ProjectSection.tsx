@@ -65,18 +65,19 @@ const projects: Project[] = [
         icon: '🛠️'
     },
     {
-        title: 'SongConnects',
-        tech: ['Next.js', 'Tailwind CSS', 'Vercel'],
-        description: 'Music streaming application similar to Spotify with playlists and dynamic audio player',
+        title: 'FindMyWork',
+        tech: ['MERN', 'Redux', 'Tailwind CSS', 'JWT'],
+        description: 'A full-stack Job Portal for job search, application management, and real-time tracking',
         features: [
-            'Modern Spotify-like UI with Tailwind CSS',
-            'Dynamic audio player with play/pause/seek controls',
-            'Create & manage playlists',
-            'Fast routing with Next.js App Router',
-            'Deployed on Vercel for high performance'
+            'Scalable MERN Stack architecture',
+            'Implemented JWT authentication with access & refresh tokens',
+            'Developed job search, filtering, and pagination',
+            'Created resume upload system using Multer (PDF/DOCX, 5MB)',
+            'Built admin dashboard for job & candidate management',
+            'Enabled real-time application tracking (status updates)'
         ],
-        link: 'https://songconnects.vercel.app/',
-        icon: '🎵'
+        link: 'https://findmywork-one.vercel.app/',
+        icon: '💼🔎'
     }
 ];
 
