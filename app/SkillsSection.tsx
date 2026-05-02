@@ -1,18 +1,13 @@
-'use client'
+'use client';
 import React, { useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import {
-    motion,
-    useMotionValue,
-    useSpring,
-    useMotionTemplate,
-    useTransform,
-} from 'framer-motion';
 import { BrainCircuit, Network, TerminalSquare, Bot } from 'lucide-react';
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+    gsap.registerPlugin(ScrollTrigger, useGSAP);
+}
 
 interface Skill {
     name: string;
@@ -81,293 +76,270 @@ const skillData: SkillData = {
     ]
 };
 
+const CyberGridBackground = () => {
+    const bgRef = useRef<HTMLDivElement>(null);
+    const [elements, setElements] = React.useState<{ dots: { id: number, left: number, top: number }[], lines: { id: number, top: number, width: number }[] } | null>(null);
+
+    React.useEffect(() => {
+        setElements({
+            dots: Array.from({ length: 50 }).map((_, i) => ({
+                id: i,
+                left: Math.random() * 100,
+                top: Math.random() * 100,
+            })),
+            lines: Array.from({ length: 20 }).map((_, i) => ({
+                id: i,
+                top: Math.random() * 100,
+                width: Math.random() * 50 + 10,
+            }))
+        });
+    }, []);
+
+    useGSAP(() => {
+        if (!elements) return;
+
+        gsap.to('.cyber-dot', {
+            opacity: "random(0.1, 0.8)",
+            scale: "random(0.5, 1.5)",
+            duration: "random(1.5, 3)",
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            stagger: { amount: 2, from: "random" }
+        });
+
+        gsap.to('.cyber-line', {
+            x: "150vw",
+            duration: "random(4, 10)",
+            repeat: -1,
+            ease: "linear",
+            stagger: { amount: 8, from: "random" }
+        });
+    }, { dependencies: [elements], scope: bgRef });
+
+    return (
+        <div ref={bgRef} className="absolute inset-0 pointer-events-none overflow-hidden z-0 rounded-[2.5rem]">
+            {/* Core gradient */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-cyan-900/10 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-purple-900/10 blur-[150px] rounded-full pointer-events-none" />
+
+            {/* Grid Lines */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_20%,transparent_100%)]" />
+
+            {elements && (
+                <>
+                    {elements.dots.map(dot => (
+                        <div
+                            key={`dot-${dot.id}`}
+                            className="cyber-dot absolute w-1 h-1 bg-cyan-500 rounded-full shadow-[0_0_8px_#22d3ee]"
+                            style={{ left: `${dot.left}%`, top: `${dot.top}%`, opacity: 0.1 }}
+                        />
+                    ))}
+                    {elements.lines.map(line => (
+                        <div
+                            key={`line-${line.id}`}
+                            className="cyber-line absolute h-[1px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_10px_#22d3ee] opacity-30"
+                            style={{ top: `${line.top}%`, left: '-50%', width: `${line.width}%` }}
+                        />
+                    ))}
+                </>
+            )}
+        </div>
+    );
+};
+
 const SkillIcon = ({ name, slug, Icon }: Skill) => {
     const cardRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!cardRef.current) return;
-
+        if (!cardRef.current || !contentRef.current) return;
         const rect = cardRef.current.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
 
-        const rotateX = (y - centerY) / 8;
-        const rotateY = (centerX - x) / 8;
+        const rotateX = ((y - centerY) / centerY) * -20;
+        const rotateY = ((x - centerX) / centerX) * 20;
 
         gsap.to(cardRef.current, {
-            rotateX: rotateX,
-            rotateY: rotateY,
-            duration: 0.5,
+            rotateX, rotateY,
+            transformPerspective: 1000,
+            ease: "power3.out",
+            duration: 0.4
+        });
+
+        gsap.to(contentRef.current, {
+            x: (x - centerX) * 0.15,
+            y: (y - centerY) * 0.15,
             ease: "power2.out",
-            transformPerspective: 1000
+            duration: 0.4
+        });
+
+        gsap.to(cardRef.current.querySelector('.skill-glow'), {
+            x: x - 64, // Center the 128px glow
+            y: y - 64,
+            opacity: 1,
+            ease: "power2.out",
+            duration: 0.4
         });
     };
 
     const handleMouseLeave = () => {
-        if (!cardRef.current) return;
-
-        gsap.to(cardRef.current, {
-            rotateX: 0,
-            rotateY: 0,
-            duration: 0.5,
-            ease: "power2.out"
-        });
+        if (!cardRef.current || !contentRef.current) return;
+        gsap.to(cardRef.current, { rotateX: 0, rotateY: 0, ease: "power3.out", duration: 0.8 });
+        gsap.to(contentRef.current, { x: 0, y: 0, ease: "power3.out", duration: 0.8 });
+        gsap.to(cardRef.current.querySelector('.skill-glow'), { opacity: 0, ease: "power2.out", duration: 0.8 });
     };
 
     return (
         <div
             ref={cardRef}
-            className="skill-card group relative"
+            className="skill-card group relative w-full h-32 md:h-40 rounded-[2rem] border border-white/5 bg-[#050510]/50 backdrop-blur-md overflow-hidden cursor-crosshair [transform-style:preserve-3d]"
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            style={{ transformStyle: 'preserve-3d' }}
         >
-            {/* Background gradient glow */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            {/* Hover Glow */}
+            <div className="skill-glow absolute top-0 left-0 w-32 h-32 bg-cyan-500/30 rounded-full blur-[40px] pointer-events-none opacity-0 mix-blend-screen" />
 
-            {/* Card container */}
-            <div className="relative backdrop-blur-sm bg-gradient-to-br from-white/5 to-white/[0.02] rounded-2xl border border-white/10 p-6 overflow-hidden transition-all duration-300 group-hover:border-white/20">
-
-                {/* Animated mesh gradient background */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10" />
-                    <div className="absolute top-0 left-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
-                    <div className="absolute bottom-0 right-0 w-32 h-32 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+            <div ref={contentRef} className="absolute inset-0 flex flex-col items-center justify-center p-4 [transform-style:preserve-3d]">
+                <div className="relative w-12 h-12 md:w-16 md:h-16 mb-3 drop-shadow-[0_0_15px_rgba(34,211,238,0.2)] group-hover:scale-110 group-hover:drop-shadow-[0_0_25px_rgba(34,211,238,0.8)] transition-all duration-300">
+                    {Icon ? (
+                        <Icon className="w-full h-full text-cyan-400" strokeWidth={1.5} />
+                    ) : (
+                        <img src={`${ICON_BASE}${slug}`} alt={name} className="w-full h-full object-contain" />
+                    )}
                 </div>
-
-                {/* Icon container with 3D effect */}
-                <div className="relative z-10 flex flex-col items-center gap-4" style={{ transform: 'translateZ(20px)' }}>
-                    <div className="relative w-16 h-16 group-hover:scale-110 transition-transform duration-500">
-                        {/* Rotating ring */}
-                        <div className="absolute inset-0 rounded-full border-2 border-blue-500/30 opacity-0 group-hover:opacity-100 group-hover:rotate-180 transition-all duration-1000" />
-
-                        {/* Icon glow */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                        {/* Icon */}
-                        {Icon ? (
-                            <Icon className="relative w-full h-full text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.8)]" strokeWidth={1.5} />
-                        ) : (
-                            <img
-                                src={`${ICON_BASE}${slug}`}
-                                alt={name}
-                                className="relative w-full h-full object-contain drop-shadow-2xl"
-                            />
-                        )}
-                    </div>
-
-                    {/* Name with gradient */}
-                    <p className="relative text-sm font-semibold text-white/80 group-hover:text-white transition-colors duration-300">
-                        <span className="relative z-10">{name}</span>
-                        <span className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-100 bg-clip-text text-transparent transition-opacity duration-500">
-                            {name}
-                        </span>
-                    </p>
-                </div>
-
-                {/* Corner accent */}
-                <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-500/10 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <span className="text-sm md:text-base font-bold text-slate-400 group-hover:text-white transition-colors duration-300 tracking-wide text-center drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
+                    {name}
+                </span>
             </div>
+
+            {/* Tech border reveal */}
+            <div className="absolute inset-0 border-2 border-transparent group-hover:border-cyan-500/30 rounded-[2rem] transition-colors duration-500 pointer-events-none mix-blend-overlay" />
         </div>
     );
 };
 
 const SkillsSection = () => {
+    const sectionRef = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const titleRef = useRef(null);
 
-    const mouseX = useMotionValue(0);
-    const mouseY = useMotionValue(0);
-    const mouseXSpring = useSpring(mouseX);
-    const mouseYSpring = useSpring(mouseY);
+    useGSAP(() => {
+        // Main Title
+        gsap.from(".skills-title-char", {
+            y: 100,
+            opacity: 0,
+            rotationX: -90,
+            stagger: 0.05,
+            duration: 1,
+            ease: "back.out(1.5)",
+            scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top 80%",
+            }
+        });
 
-    const xPct = useMotionValue(0);
-    const yPct = useMotionValue(0);
-    const xPctSpring = useSpring(xPct);
-    const yPctSpring = useSpring(yPct);
+        // Category Containers
+        gsap.from(".skill-category", {
+            y: 50,
+            opacity: 0,
+            stagger: 0.2,
+            duration: 1,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: containerRef.current,
+                start: "top 80%",
+            }
+        });
 
-    // Using smaller tilt angles because the skills section card is very tall
-    const rotateX = useTransform(yPctSpring, [-0.5, 0.5], ['5deg', '-5deg']);
-    const rotateY = useTransform(xPctSpring, [-0.5, 0.5], ['-5deg', '5deg']);
+        // Skill Cards Stagger
+        const categories = gsap.utils.toArray<HTMLElement>('.skill-category');
+        categories.forEach((cat) => {
+            gsap.fromTo(cat.querySelectorAll('.skill-card'),
+                { scale: 0.8, opacity: 0, y: 30, rotationX: -15 },
+                {
+                    scale: 1,
+                    opacity: 1,
+                    y: 0,
+                    rotationX: 0,
+                    stagger: 0.05,
+                    duration: 0.8,
+                    ease: "back.out(1.2)",
+                    scrollTrigger: {
+                        trigger: cat,
+                        start: "top 85%",
+                    }
+                }
+            );
+        });
 
-    const spotlightGlow = useMotionTemplate`
-        radial-gradient(
-            800px circle at ${mouseXSpring}px ${mouseYSpring}px,
-            rgba(6,182,212,0.15),
-            transparent 80%
-        )
-    `;
+    }, { scope: sectionRef });
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!containerRef.current) return;
         const rect = containerRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
 
-        // Spotlight glow tracking
-        mouseX.set(e.clientX - rect.left);
-        mouseY.set(e.clientY - rect.top);
+        // Very subtle tilt for the huge container
+        const rotateX = ((y - centerY) / centerY) * -2;
+        const rotateY = ((x - centerX) / centerX) * 2;
 
-        // 3D Card tilt tracking
-        const xP = (e.clientX - rect.left) / rect.width - 0.5;
-        const yP = (e.clientY - rect.top) / rect.height - 0.5;
-        xPct.set(xP);
-        yPct.set(yP);
+        gsap.to(containerRef.current, {
+            rotateX, rotateY,
+            transformPerspective: 2000,
+            ease: "power2.out",
+            duration: 1
+        });
     };
 
     const handleMouseLeave = () => {
-        xPct.set(0);
-        yPct.set(0);
+        if (!containerRef.current) return;
+        gsap.to(containerRef.current, { rotateX: 0, rotateY: 0, ease: "power3.out", duration: 1.5 });
     };
 
-    useGSAP(() => {
-        // Title animation with split text effect
-        if (titleRef.current) {
-            gsap.from(titleRef.current, {
-                scrollTrigger: {
-                    trigger: titleRef.current,
-                    start: "top 85%",
-                },
-                opacity: 0,
-                scale: 0.8,
-                y: 50,
-                duration: 1,
-                ease: "power3.out"
-            });
-
-            // Gradient text animation
-            gsap.to(titleRef.current, {
-                scrollTrigger: {
-                    trigger: titleRef.current,
-                    start: "top 85%",
-                },
-                backgroundPosition: "200% center",
-                duration: 3,
-                ease: "none",
-                repeat: -1
-            });
-        }
-
-        // Category animations with 3D effects
-        const categories = gsap.utils.toArray('.skill-category');
-
-        categories.forEach((category: any, index: number) => {
-            const cards = category.querySelectorAll('.skill-card');
-            const categoryTitle = category.querySelector('.category-title');
-
-            // Category title animation
-            gsap.from(categoryTitle, {
-                scrollTrigger: {
-                    trigger: category,
-                    start: "top 80%",
-                },
-                opacity: 0,
-                x: -50,
-                duration: 0.8,
-                ease: "power3.out"
-            });
-
-            // 3D card entrance animation
-            gsap.from(cards, {
-                scrollTrigger: {
-                    trigger: category,
-                    start: "top 75%",
-                },
-                opacity: 0,
-                y: 100,
-                rotateX: -45,
-                z: -200,
-                duration: 1,
-                stagger: {
-                    each: 0.08,
-                    from: "start"
-                },
-                ease: "power3.out",
-                transformPerspective: 1000
-            });
-
-            // Parallax effect on scroll
-            gsap.to(cards, {
-                scrollTrigger: {
-                    trigger: category,
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: 1
-                },
-                y: (i) => i * -20,
-                ease: "none"
-            });
-        });
-
-        // Continuous floating animation
-        gsap.to(".skill-card", {
-            y: (i) => (i % 2 === 0 ? -12 : -8),
-            duration: 2.5 + Math.random(),
-            ease: "sine.inOut",
-            yoyo: true,
-            repeat: -1,
-            stagger: {
-                each: 0.2,
-                from: "random"
-            }
-        });
-
-        // Subtle rotation animation
-        gsap.to(".skill-card", {
-            rotateZ: (i) => (i % 2 === 0 ? 1 : -1),
-            duration: 4,
-            ease: "sine.inOut",
-            yoyo: true,
-            repeat: -1,
-            stagger: {
-                each: 0.3,
-                from: "random"
-            }
-        });
-
-    }, { scope: containerRef });
+    const titleText = "Skills";
 
     return (
-        <section
-            className="relative min-h-screen py-24 px-6 overflow-hidden bg-transparent"
-            style={{ perspective: '1200px' }}
-        >
+        <section id="skills" ref={sectionRef} className="py-24 px-4 bg-transparent overflow-hidden relative z-10 perspective-[2000px]">
             <div className="max-w-7xl mx-auto">
-                <motion.div
+                {/* Title */}
+                <div className="text-center mb-20 perspective-[1000px]">
+                    <h2 className="text-5xl md:text-7xl lg:text-8xl font-black flex justify-center gap-[2px] tracking-tighter">
+                        {titleText.split('').map((char, i) => (
+                            <span
+                                key={i}
+                                className="skills-title-char inline-block bg-gradient-to-br from-cyan-300 via-blue-500 to-purple-600 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(34,211,238,0.3)]"
+                            >
+                                {char === ' ' ? '\u00A0' : char}
+                            </span>
+                        ))}
+                    </h2>
+                    <div className="h-[2px] w-32 bg-gradient-to-r from-transparent via-cyan-400 to-transparent mx-auto mt-6 shadow-[0_0_10px_#22d3ee]" />
+                </div>
+
+                {/* Main 3D Container */}
+                <div
                     ref={containerRef}
                     onMouseMove={handleMouseMove}
                     onMouseLeave={handleMouseLeave}
-                    style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
-                    className="relative bg-slate-800/40 backdrop-blur-xl rounded-[2.5rem] border border-slate-700/50 shadow-2xl p-8 md:p-16 overflow-hidden"
+                    className="relative bg-[#050510]/60 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] p-8 md:p-12 lg:p-16 [transform-style:preserve-3d]"
                 >
-                    {/* 3D Background spotlight effect */}
-                    <motion.div
-                        className="absolute inset-0 pointer-events-none z-0"
-                        style={{ background: spotlightGlow }}
-                    />
+                    <CyberGridBackground />
 
-                    {/* Title with gradient */}
-                    <h2
-                        ref={titleRef}
-                        className="relative z-10 text-6xl md:text-7xl font-bold text-center mb-20 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
-                        style={{
-                            backgroundSize: '200% auto',
-                            textShadow: '0 0 40px rgba(59, 130, 246, 0.3)'
-                        }}
-                    >
-                        Skills.
-                    </h2>
-
-                    {/* Skills grid */}
-                    <div className="space-y-16 relative z-10" style={{ transform: 'translateZ(40px)' }}>
+                    <div className="relative z-10 space-y-20 [transform-style:preserve-3d]" style={{ transform: 'translateZ(50px)' }}>
                         {Object.entries(skillData).map(([category, skills]) => (
                             <div key={category} className="skill-category">
-                                <h3 className="category-title text-2xl font-bold text-white/70 mb-8 uppercase tracking-wider">
+                                <h3 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-8 uppercase tracking-widest flex items-center gap-4">
                                     {category}
+                                    <div className="h-[1px] flex-1 bg-gradient-to-r from-cyan-500/50 to-transparent" />
                                 </h3>
 
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
                                     {skills.map((skill) => (
                                         <SkillIcon key={skill.name} {...skill} />
                                     ))}
@@ -375,7 +347,7 @@ const SkillsSection = () => {
                             </div>
                         ))}
                     </div>
-                </motion.div>
+                </div>
             </div>
         </section>
     );
