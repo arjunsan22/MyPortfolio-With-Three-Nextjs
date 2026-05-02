@@ -262,17 +262,20 @@ const AboutSection: React.FC = () => {
         });
 
         // Contact Pills Entry
-        gsap.from(".about-pill", {
-            y: 30,
-            opacity: 0,
-            stagger: 0.15,
-            duration: 0.8,
-            ease: "back.out(1.5)",
-            scrollTrigger: {
-                trigger: cardRef.current,
-                start: "top 80%",
+        gsap.fromTo(".about-pill", 
+            { y: 30, opacity: 0 },
+            {
+                y: 0,
+                opacity: 1,
+                stagger: 0.15,
+                duration: 0.8,
+                ease: "back.out(1.5)",
+                scrollTrigger: {
+                    trigger: cardRef.current,
+                    start: "top 80%",
+                }
             }
-        });
+        );
 
     }, { scope: sectionRef });
 
