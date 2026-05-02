@@ -183,9 +183,13 @@ const AIBackground = () => {
 
 const SplitText = ({ text, className = "" }: { text: string, className?: string }) => (
     <span className={className}>
-        {text.split('').map((char, i) => (
-            <span key={i} className="about-char inline-block">
-                {char === ' ' ? '\u00A0' : char}
+        {text.split(/(\s+)/).map((word, wordIndex) => (
+            <span key={wordIndex} className="inline-block whitespace-pre">
+                {word.split('').map((char, charIndex) => (
+                    <span key={charIndex} className="about-char inline-block">
+                        {char}
+                    </span>
+                ))}
             </span>
         ))}
     </span>
