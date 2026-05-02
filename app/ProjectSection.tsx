@@ -75,7 +75,7 @@ const projects: Project[] = [
             'Built admin dashboard for job & candidate management',
             'Enabled real-time application tracking (status updates)'
         ],
-        link: 'https://findmywork-one.vercel.app/',
+        link: 'https://findmywork-one.vercel.app',
         icon: '💼🔎'
     }
 ];
