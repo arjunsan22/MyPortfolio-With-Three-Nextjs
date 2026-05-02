@@ -1,10 +1,12 @@
 import React, { useRef } from 'react';
-import { Code2, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+    gsap.registerPlugin(ScrollTrigger, useGSAP);
+}
 
 interface Project {
     title: string;
@@ -76,211 +78,250 @@ const projects: Project[] = [
             'Enabled real-time application tracking (status updates)'
         ],
         link: 'https://findmywork-one.vercel.app',
-        icon: '💼🔎'
+        icon: '💼'
     }
 ];
 
-const ProjectsSection = () => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
-    const titleRef = useRef<HTMLHeadingElement>(null);
+const PortalBackground = () => {
+    const bgRef = useRef<HTMLDivElement>(null);
+    const [rings, setRings] = React.useState<{id: number, size: number}[] | null>(null);
+
+    React.useEffect(() => {
+        setRings(Array.from({ length: 5 }).map((_, i) => ({
+            id: i,
+            size: (i + 1) * 25
+        })));
+    }, []);
 
     useGSAP(() => {
-        // 1. TYPING REVEAL ANIMATION
-        // We target the spans inside the title
-        const chars = titleRef.current?.querySelectorAll('.typing-char');
-        if (chars && chars.length > 0) {
-            gsap.from(chars, {
-                opacity: 0,
-                y: 10,
-                filter: "blur(5px)",
-                stagger: 0.05,
-                duration: 0.4,
-                ease: "power2.out",
-                scrollTrigger: {
-                    trigger: titleRef.current,
-                    start: "top 90%",
-                }
-            });
-        }
+        if (!rings) return;
 
-        // Underline Reveal
-        gsap.from(".title-underline", {
-            width: 0,
-            duration: 1,
-            delay: 0.5,
-            ease: "expo.out",
-            scrollTrigger: {
-                trigger: titleRef.current,
-                start: "top 90%",
-            }
+        gsap.to('.portal-ring', {
+            rotation: 360,
+            duration: "random(40, 80)",
+            repeat: -1,
+            ease: "none",
+            stagger: { amount: 10, from: "edges" }
         });
 
-        // 2. Cards Entrance
-        cardsRef.current.forEach((card, index) => {
-            if (card) {
-                gsap.from(card, {
-                    y: 50,
-                    opacity: 0,
-                    scale: 0.9,
-                    duration: 1,
-                    delay: index * 0.1,
-                    ease: "power3.out",
-                    scrollTrigger: {
-                        trigger: card,
-                        start: "top 90%",
-                    }
-                });
-            }
+        gsap.to('.portal-ring', {
+            scale: 1.05,
+            opacity: "random(0.1, 0.3)",
+            duration: "random(4, 8)",
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            stagger: { amount: 2, from: "center" }
         });
-    }, { scope: containerRef });
-
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, index: number) => {
-        const card = cardsRef.current[index];
-        if (!card) return;
-
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        const rotateX = (y - rect.height / 2) / 20;
-        const rotateY = -(x - rect.width / 2) / 20;
-
-        gsap.to(card, {
-            rotateX: rotateX,
-            rotateY: rotateY,
-            duration: 0.5,
-            ease: "power2.out",
-        });
-
-        card.style.setProperty("--mouse-x", `${x}px`);
-        card.style.setProperty("--mouse-y", `${y}px`);
-    };
-
-    const handleMouseLeave = (index: number) => {
-        const card = cardsRef.current[index];
-        if (!card) return;
-
-        gsap.to(card, {
-            rotateX: 0,
-            rotateY: 0,
-            duration: 0.8,
-            ease: "elastic.out(1, 0.5)",
-        });
-    };
-
+    }, { dependencies: [rings], scope: bgRef });
 
     return (
-        <section id="projects" ref={containerRef} className="py-32 px-4 bg-slate-800/30 backdrop-blur-sm relative overflow-hidden">
-            {/* Background Orbs */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-                <div className="absolute top-[-5%] left-[-5%] w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px]" />
-                <div className="absolute bottom-[-5%] right-[-5%] w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[100px]" />
+        <div ref={bgRef} className="absolute inset-0 pointer-events-none overflow-hidden z-0 rounded-[3rem]">
+            {/* Core glows */}
+            <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-purple-900/20 blur-[120px] rounded-full pointer-events-none" />
+            <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-900/20 blur-[120px] rounded-full pointer-events-none" />
+
+            {/* Futuristic portal rings */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] opacity-40 mix-blend-screen pointer-events-none">
+                {rings && rings.map((ring) => (
+                    <div 
+                        key={`ring-${ring.id}`}
+                        className="portal-ring absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-cyan-500/20 shadow-[0_0_30px_rgba(34,211,238,0.1)_inset]"
+                        style={{ width: `${ring.size}%`, height: `${ring.size}%` }}
+                    />
+                ))}
             </div>
 
-            <div className="max-w-7xl mx-auto relative z-10">
-                <div className="mb-20 text-center">
-                    <h2
-                        ref={titleRef}
-                        className="project-title text-5xl md:text-6xl lg:text-7xl font-black mb-6 flex flex-col sm:flex-row justify-center items-center sm:gap-4"
+            {/* Matrix dot grid overlay */}
+            <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:24px_24px] opacity-40 mix-blend-overlay pointer-events-none" />
+        </div>
+    );
+};
+
+const ProjectCard = ({ project }: { project: Project }) => {
+    const cardRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!cardRef.current || !contentRef.current) return;
+        const rect = cardRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+
+        const rotateX = ((y - centerY) / centerY) * -10;
+        const rotateY = ((x - centerX) / centerX) * 10;
+
+        gsap.to(cardRef.current, {
+            rotateX, rotateY,
+            transformPerspective: 1500,
+            ease: "power2.out",
+            duration: 0.5
+        });
+
+        gsap.to(contentRef.current, {
+            x: (x - centerX) * 0.05,
+            y: (y - centerY) * 0.05,
+            ease: "power2.out",
+            duration: 0.5
+        });
+
+        gsap.to(cardRef.current.querySelector('.project-glow'), {
+            x: x - 200,
+            y: y - 200,
+            opacity: 1,
+            ease: "power2.out",
+            duration: 0.5
+        });
+    };
+
+    const handleMouseLeave = () => {
+        if (!cardRef.current || !contentRef.current) return;
+        gsap.to(cardRef.current, { rotateX: 0, rotateY: 0, ease: "power3.out", duration: 1 });
+        gsap.to(contentRef.current, { x: 0, y: 0, ease: "power3.out", duration: 1 });
+        gsap.to(cardRef.current.querySelector('.project-glow'), { opacity: 0, ease: "power2.out", duration: 1 });
+    };
+
+    return (
+        <div
+            ref={cardRef}
+            className="project-card relative w-full h-full rounded-[2.5rem] bg-[#050510]/60 backdrop-blur-2xl border border-white/5 overflow-hidden cursor-crosshair group [transform-style:preserve-3d]"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+        >
+            {/* Hover Glow */}
+            <div className="project-glow absolute top-0 left-0 w-[400px] h-[400px] bg-cyan-500/20 rounded-full blur-[80px] pointer-events-none opacity-0 mix-blend-screen" />
+            
+            {/* Inner Border */}
+            <div className="absolute inset-0 border-2 border-transparent group-hover:border-cyan-500/30 rounded-[2.5rem] transition-colors duration-500 pointer-events-none mix-blend-overlay z-20" />
+
+            {/* Inner Content */}
+            <div ref={contentRef} className="relative z-10 p-8 md:p-10 flex flex-col h-full [transform-style:preserve-3d]">
+                <div className="flex justify-between items-start mb-10">
+                    <div className="text-6xl md:text-7xl group-hover:scale-110 group-hover:-rotate-12 transition-transform duration-700 drop-shadow-[0_0_20px_rgba(34,211,238,0.2)]">
+                        {project.icon}
+                    </div>
+                    <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-3 px-6 py-3 rounded-full bg-white/5 border border-white/10 hover:bg-cyan-400 hover:text-black hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(34,211,238,0.4)] transition-all duration-300 group/link"
+                        style={{ transform: 'translateZ(40px)' }}
                     >
-                        <div className="flex">
-                            {"Selected".split("").map((char, i) => (
-                                <span
-                                    key={`sel-${i}`}
-                                    className="typing-char inline-block bg-gradient-to-b from-white to-slate-500 bg-clip-text text-transparent"
-                                >
-                                    {char}
-                                </span>
-                            ))}
-                        </div>
-                        <div className="flex">
-                            {"Works".split("").map((char, i) => (
-                                <span
-                                    key={`wrk-${i}`}
-                                    className="typing-char inline-block bg-gradient-to-b from-white to-slate-500 bg-clip-text text-transparent py-1 sm:py-0"
-                                >
-                                    {char}
-                                </span>
-                            ))}
-                        </div>
-                    </h2>
-                    <div className="title-underline h-1 w-24 bg-cyan-500 mx-auto rounded-full shadow-[0_0_20px_rgba(6,182,212,0.5)]" />
+                        <span className="text-sm font-black tracking-widest uppercase">Visit</span>
+                        <ArrowRight size={18} className="group-hover/link:translate-x-1 group-hover/link:-rotate-45 transition-transform" />
+                    </a>
                 </div>
 
-                <div className="grid lg:grid-cols-2 gap-12" style={{ perspective: "1000px" }}>
-                    {projects.map((project, index) => (
-                        <div
-                            key={index}
-                            ref={(el) => { cardsRef.current[index] = el; }}
-                            onMouseMove={(e) => handleMouseMove(e, index)}
-                            onMouseLeave={() => handleMouseLeave(index)}
-                            style={{ transformStyle: "preserve-3d" }}
-                            className="group relative bg-slate-900/40 backdrop-blur-xl rounded-3xl p-1 border border-white/10 transition-colors duration-500 hover:border-cyan-500/50"
-                        >
-                            {/* Spotlight */}
-                            <div
-                                className="pointer-events-none absolute inset-0 rounded-3xl z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                                style={{
-                                    background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(34, 211, 238, 0.15), transparent 40%)`
-                                } as React.CSSProperties}
-                            />
+                <h3 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 mb-6 group-hover:from-cyan-400 group-hover:to-blue-500 transition-all duration-500" style={{ transform: 'translateZ(30px)' }}>
+                    {project.title}
+                </h3>
 
-                            <div className="relative z-10 p-6 sm:p-8 h-full flex flex-col">
-                                <div className="flex justify-between items-start mb-8 gap-4">
-                                    <div className="p-3 sm:p-4 bg-slate-800/50 rounded-2xl border border-white/5 group-hover:scale-110 group-hover:bg-cyan-500/10 transition-all duration-500 flex-shrink-0">
-                                        <span className="text-5xl block grayscale group-hover:grayscale-0 transition-all">
-                                            {project.icon}
-                                        </span>
-                                    </div>
-                                    <div className="flex flex-wrap justify-end gap-2">
-                                        {project.tech.slice(0, 3).map((t, i) => (
-                                            <span key={i} className="text-[10px] font-mono text-cyan-400/60 uppercase tracking-tighter border border-cyan-400/20 px-2 py-1 rounded-md">
-                                                {t}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
+                <p className="text-lg md:text-xl text-slate-400 leading-relaxed mb-10 flex-grow group-hover:text-slate-300 transition-colors duration-300" style={{ transform: 'translateZ(20px)' }}>
+                    {project.description}
+                </p>
 
-                                <h3 className="text-3xl font-bold text-white mb-4 group-hover:text-cyan-400 transition-colors duration-300">
-                                    {project.title}
-                                </h3>
-
-                                <p className="text-slate-400 leading-relaxed mb-8 flex-grow">
-                                    {project.description}
-                                </p>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-8">
-                                    {project.features.map((feature, i) => (
-                                        <div key={i} className="flex items-start sm:items-center gap-2 text-xs text-slate-500">
-                                            <div className="w-1.5 h-1.5 mt-1 sm:mt-0 flex-shrink-0 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
-                                            <span className="leading-tight">{feature}</span>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-4 mt-auto pt-6 border-t border-white/5">
-                                    <div className="flex flex-wrap gap-2 sm:gap-0 sm:-space-x-2">
-                                        {project.tech.map((t, i) => (
-                                            <div key={i} title={t} className="w-8 h-8 rounded-full bg-slate-800 border-2 border-[#020617] flex items-center justify-center text-[10px] text-white font-bold hover:-translate-y-2 transition-transform cursor-default">
-                                                {t[0]}
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    <a
-                                        href={project.link}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="flex items-center justify-center gap-2 px-6 py-3 bg-white text-black rounded-full font-bold hover:bg-cyan-400 hover:scale-105 transition-all duration-300 group/btn w-full sm:w-auto"
-                                    >
-                                        Explore
-                                        <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
-                                    </a>
-                                </div>
-                            </div>
+                <div className="space-y-4 mb-10" style={{ transform: 'translateZ(25px)' }}>
+                    {project.features.map((feature, i) => (
+                        <div key={i} className="flex items-start gap-4">
+                            <div className="w-2 h-2 mt-2 rounded-full bg-purple-500 shadow-[0_0_10px_#a855f7]" />
+                            <span className="text-base text-slate-300/80 leading-snug">{feature}</span>
                         </div>
                     ))}
+                </div>
+
+                <div className="pt-8 border-t border-white/10 mt-auto" style={{ transform: 'translateZ(10px)' }}>
+                    <div className="flex flex-wrap gap-2 md:gap-3">
+                        {project.tech.map((t, i) => (
+                            <span key={i} className="text-xs md:text-sm font-mono font-bold text-cyan-400/80 bg-cyan-950/40 px-4 py-2 rounded-xl border border-cyan-500/20 group-hover:border-cyan-500/50 group-hover:bg-cyan-900/40 group-hover:text-cyan-300 transition-colors duration-300 shadow-[0_0_10px_rgba(34,211,238,0.05)_inset]">
+                                {t}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const ProjectsSection = () => {
+    const sectionRef = useRef<HTMLDivElement>(null);
+    const titleRef = useRef<HTMLHeadingElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useGSAP(() => {
+        // Main Title
+        gsap.from(".projects-title-char", {
+            y: 100,
+            opacity: 0,
+            rotationX: -90,
+            stagger: 0.05,
+            duration: 1.2,
+            ease: "back.out(1.5)",
+            scrollTrigger: {
+                trigger: sectionRef.current,
+                start: "top 80%",
+            }
+        });
+
+        // 3D Card Stagger Entry
+        const cards = gsap.utils.toArray('.project-card');
+        gsap.fromTo(cards, 
+            { y: 150, opacity: 0, rotationX: 15, scale: 0.9 },
+            {
+                y: 0,
+                opacity: 1,
+                rotationX: 0,
+                scale: 1,
+                stagger: 0.15,
+                duration: 1.2,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: containerRef.current,
+                    start: "top 75%",
+                }
+            }
+        );
+
+    }, { scope: sectionRef });
+
+    const titleText = "Selected Works";
+
+    return (
+        <section id="projects" ref={sectionRef} className="py-32 px-4 bg-transparent overflow-hidden relative z-10 perspective-[2000px]">
+            <div className="max-w-7xl mx-auto relative z-10">
+                {/* Title */}
+                <div className="text-center mb-24 perspective-[1000px]">
+                    <h2 ref={titleRef} className="text-5xl md:text-7xl lg:text-8xl font-black flex justify-center gap-[2px] tracking-tighter flex-wrap">
+                        {titleText.split(' ').map((word, wordIndex) => (
+                            <span key={`word-${wordIndex}`} className="inline-block whitespace-pre mr-4 md:mr-8">
+                                {word.split('').map((char, charIndex) => (
+                                    <span
+                                        key={`char-${charIndex}`}
+                                        className="projects-title-char inline-block bg-gradient-to-br from-cyan-300 via-blue-500 to-purple-600 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(34,211,238,0.3)]"
+                                    >
+                                        {char}
+                                    </span>
+                                ))}
+                            </span>
+                        ))}
+                    </h2>
+                    <div className="h-[2px] w-48 bg-gradient-to-r from-transparent via-purple-500 to-transparent mx-auto mt-8 shadow-[0_0_15px_#a855f7]" />
+                </div>
+
+                {/* Main 3D Container wrapper */}
+                <div 
+                    ref={containerRef}
+                    className="relative rounded-[3rem] p-4 md:p-8 lg:p-12 border border-white/5 bg-[#030108]/80 backdrop-blur-2xl shadow-[0_30px_100px_rgba(0,0,0,0.8)] [transform-style:preserve-3d]"
+                >
+                    <PortalBackground />
+                    
+                    <div className="relative z-10 grid lg:grid-cols-2 gap-8 md:gap-12" style={{ transform: 'translateZ(60px)' }}>
+                        {projects.map((project, index) => (
+                            <ProjectCard key={index} project={project} />
+                        ))}
+                    </div>
                 </div>
             </div>
         </section>
