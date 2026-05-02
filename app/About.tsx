@@ -2,7 +2,6 @@
 import React, { useRef } from 'react';
 import { MapPin, Phone, Mail, Network, Database } from 'lucide-react';
 import Image from 'next/image';
-import avatar from './avatar.png';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -458,7 +457,7 @@ const AboutSection: React.FC = () => {
                                         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none mix-blend-overlay"></div>
                                         <div className="relative w-full h-full rounded-[2rem] overflow-hidden">
                                             <Image
-                                                src={avatar}
+                                                src="/arjun.jpeg"
                                                 alt="Arjun Anil Profile"
                                                 fill
                                                 className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
