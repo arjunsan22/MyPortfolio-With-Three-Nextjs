@@ -269,8 +269,8 @@ const AboutSection: React.FC = () => {
             duration: 0.8,
             ease: "back.out(1.5)",
             scrollTrigger: {
-                trigger: ".about-pills-container",
-                start: "top 90%",
+                trigger: cardRef.current,
+                start: "top 80%",
             }
         });
 
