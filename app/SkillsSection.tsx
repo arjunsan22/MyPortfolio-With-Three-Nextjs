@@ -78,7 +78,7 @@ const skillData: SkillData = {
 
 const CyberGridBackground = () => {
     const bgRef = useRef<HTMLDivElement>(null);
-    const [elements, setElements] = React.useState<{ dots: {id: number, left: number, top: number}[], lines: {id: number, top: number, width: number}[] } | null>(null);
+    const [elements, setElements] = React.useState<{ dots: { id: number, left: number, top: number }[], lines: { id: number, top: number, width: number }[] } | null>(null);
 
     React.useEffect(() => {
         setElements({
@@ -129,14 +129,14 @@ const CyberGridBackground = () => {
             {elements && (
                 <>
                     {elements.dots.map(dot => (
-                        <div 
-                            key={`dot-${dot.id}`} 
+                        <div
+                            key={`dot-${dot.id}`}
                             className="cyber-dot absolute w-1 h-1 bg-cyan-500 rounded-full shadow-[0_0_8px_#22d3ee]"
                             style={{ left: `${dot.left}%`, top: `${dot.top}%`, opacity: 0.1 }}
                         />
                     ))}
                     {elements.lines.map(line => (
-                        <div 
+                        <div
                             key={`line-${line.id}`}
                             className="cyber-line absolute h-[1px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_10px_#22d3ee] opacity-30"
                             style={{ top: `${line.top}%`, left: '-50%', width: `${line.width}%` }}
@@ -159,7 +159,7 @@ const SkillIcon = ({ name, slug, Icon }: Skill) => {
         const y = e.clientY - rect.top;
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
-        
+
         const rotateX = ((y - centerY) / centerY) * -20;
         const rotateY = ((x - centerX) / centerX) * 20;
 
@@ -169,14 +169,14 @@ const SkillIcon = ({ name, slug, Icon }: Skill) => {
             ease: "power3.out",
             duration: 0.4
         });
-        
+
         gsap.to(contentRef.current, {
             x: (x - centerX) * 0.15,
             y: (y - centerY) * 0.15,
             ease: "power2.out",
             duration: 0.4
         });
-        
+
         gsap.to(cardRef.current.querySelector('.skill-glow'), {
             x: x - 64, // Center the 128px glow
             y: y - 64,
@@ -202,7 +202,7 @@ const SkillIcon = ({ name, slug, Icon }: Skill) => {
         >
             {/* Hover Glow */}
             <div className="skill-glow absolute top-0 left-0 w-32 h-32 bg-cyan-500/30 rounded-full blur-[40px] pointer-events-none opacity-0 mix-blend-screen" />
-            
+
             <div ref={contentRef} className="absolute inset-0 flex flex-col items-center justify-center p-4 [transform-style:preserve-3d]">
                 <div className="relative w-12 h-12 md:w-16 md:h-16 mb-3 drop-shadow-[0_0_15px_rgba(34,211,238,0.2)] group-hover:scale-110 group-hover:drop-shadow-[0_0_25px_rgba(34,211,238,0.8)] transition-all duration-300">
                     {Icon ? (
@@ -215,7 +215,7 @@ const SkillIcon = ({ name, slug, Icon }: Skill) => {
                     {name}
                 </span>
             </div>
-            
+
             {/* Tech border reveal */}
             <div className="absolute inset-0 border-2 border-transparent group-hover:border-cyan-500/30 rounded-[2rem] transition-colors duration-500 pointer-events-none mix-blend-overlay" />
         </div>
@@ -257,7 +257,7 @@ const SkillsSection = () => {
         // Skill Cards Stagger
         const categories = gsap.utils.toArray<HTMLElement>('.skill-category');
         categories.forEach((cat) => {
-            gsap.fromTo(cat.querySelectorAll('.skill-card'), 
+            gsap.fromTo(cat.querySelectorAll('.skill-card'),
                 { scale: 0.8, opacity: 0, y: 30, rotationX: -15 },
                 {
                     scale: 1,
@@ -284,7 +284,7 @@ const SkillsSection = () => {
         const y = e.clientY - rect.top;
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
-        
+
         // Very subtle tilt for the huge container
         const rotateX = ((y - centerY) / centerY) * -2;
         const rotateY = ((x - centerX) / centerX) * 2;
@@ -302,7 +302,7 @@ const SkillsSection = () => {
         gsap.to(containerRef.current, { rotateX: 0, rotateY: 0, ease: "power3.out", duration: 1.5 });
     };
 
-    const titleText = "My Skills";
+    const titleText = "Skills";
 
     return (
         <section id="skills" ref={sectionRef} className="py-24 px-4 bg-transparent overflow-hidden relative z-10 perspective-[2000px]">
@@ -323,14 +323,14 @@ const SkillsSection = () => {
                 </div>
 
                 {/* Main 3D Container */}
-                <div 
+                <div
                     ref={containerRef}
                     onMouseMove={handleMouseMove}
                     onMouseLeave={handleMouseLeave}
                     className="relative bg-[#050510]/60 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] p-8 md:p-12 lg:p-16 [transform-style:preserve-3d]"
                 >
                     <CyberGridBackground />
-                    
+
                     <div className="relative z-10 space-y-20 [transform-style:preserve-3d]" style={{ transform: 'translateZ(50px)' }}>
                         {Object.entries(skillData).map(([category, skills]) => (
                             <div key={category} className="skill-category">
