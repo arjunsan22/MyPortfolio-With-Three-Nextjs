@@ -426,26 +426,6 @@ const AboutSection: React.FC = () => {
                                         </p>
                                     </div>
 
-                                    {/* Contact Pills */}
-                                    <div className="about-pills-container flex flex-wrap gap-4 mt-10">
-                                        {[
-                                            { icon: MapPin, text: 'Kottayam, Kerala, India', color: 'cyan' },
-                                            { icon: Phone, text: '+91 8590924584', color: 'blue' },
-                                            { icon: Mail, text: 'arjunanil2114@gmail.com', color: 'purple' },
-                                        ].map((item, idx) => (
-                                            <a
-                                                href={item.icon === Mail ? `mailto:${item.text}` : undefined}
-                                                key={idx}
-                                                style={{ transform: 'translateZ(80px)' }}
-                                                className={`about-pill flex items-center gap-3 bg-[#050510]/80 backdrop-blur-xl px-6 py-4 rounded-2xl border border-white/10 ${colorMap[item.color]} transition-all duration-300 group`}
-                                            >
-                                                <item.icon size={20} className={`${iconColorMap[item.color]} group-hover:scale-110 transition-transform`} />
-                                                <span className="text-slate-300 text-sm md:text-base font-semibold tracking-wide group-hover:text-white transition-colors">
-                                                    {item.text}
-                                                </span>
-                                            </a>
-                                        ))}
-                                    </div>
                                 </div>
 
                                 {/* Profile Image */}
@@ -475,6 +455,27 @@ const AboutSection: React.FC = () => {
                                     </div>
                                 </div>
 
+                            </div>
+
+                            {/* Contact Pills - Footer */}
+                            <div className="about-pills-container flex flex-wrap justify-center gap-4 mt-12 pt-8 border-t border-white/10">
+                                {[
+                                    { icon: MapPin, text: 'Kottayam, Kerala, India', color: 'cyan' },
+                                    { icon: Phone, text: '+91 8590924584', color: 'blue' },
+                                    { icon: Mail, text: 'arjunanil2114@gmail.com', color: 'purple' },
+                                ].map((item, idx) => (
+                                    <a
+                                        href={item.icon === Mail ? `mailto:${item.text}` : undefined}
+                                        key={idx}
+                                        style={{ transform: 'translateZ(80px)' }}
+                                        className={`about-pill flex items-center gap-3 bg-[#050510]/80 backdrop-blur-xl px-6 py-4 rounded-2xl border border-white/10 ${colorMap[item.color]} transition-all duration-300 group`}
+                                    >
+                                        <item.icon size={20} className={`${iconColorMap[item.color]} group-hover:scale-110 transition-transform`} />
+                                        <span className="text-slate-300 text-sm md:text-base font-semibold tracking-wide group-hover:text-white transition-colors">
+                                            {item.text}
+                                        </span>
+                                    </a>
+                                ))}
                             </div>
                         </div>
                     </div>
