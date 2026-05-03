@@ -1,12 +1,10 @@
 import React, { useRef } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowUpRight, Sparkles, Terminal } from 'lucide-react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-if (typeof window !== "undefined") {
-    gsap.registerPlugin(ScrollTrigger, useGSAP);
-}
+gsap.registerPlugin(ScrollTrigger);
 
 interface Project {
     title: string;
@@ -14,7 +12,7 @@ interface Project {
     description: string;
     features: string[];
     link: string;
-    icon: string;
+    image: string;
 }
 
 const projects: Project[] = [
@@ -30,7 +28,7 @@ const projects: Project[] = [
             'MVC architecture'
         ],
         link: 'https://farmerslogin.vercel.app',
-        icon: '🌾'
+        image: '/farmerlogin.png'
     },
     {
         title: 'FoodConnects',
@@ -44,10 +42,9 @@ const projects: Project[] = [
             'Responsive design with Tailwind CSS'
         ],
         link: 'https://foodconnects.vercel.app/',
-        icon: '🍰'
+        image: '/foodconnect.png'
     },
     {
-
         title: 'WorkSPera',
         tech: ['Next.js', 'React.js', 'Express.js', 'NextAuth.js', 'Socket.io', 'WebRTC', 'Node.js', 'MongoDB', 'Vercel', 'Render', 'Gemini API / Gen AI'],
         description: 'Real-time worker-connection platform combining chat, video calls, work posting, and hiring',
@@ -64,7 +61,7 @@ const projects: Project[] = [
             'Frontend on Vercel, backend on Render'
         ],
         link: 'http://workspera.vercel.app',
-        icon: '🛠️'
+        image: '/workspera.png'
     },
     {
         title: 'FindMyWork',
@@ -74,262 +71,321 @@ const projects: Project[] = [
             'Scalable MERN Stack architecture',
             'Implemented JWT authentication with access & refresh tokens',
             'Developed job search, filtering, and pagination',
+            'Created resume upload system using Multer (PDF/DOCX, 5MB)',
             'Built admin dashboard for job & candidate management',
             'Enabled real-time application tracking (status updates)'
         ],
-        link: 'https://findmywork-one.vercel.app',
-        icon: '💼'
+        link: 'https://findmywork-one.vercel.app/',
+        image: '/findmywork.png'
     }
 ];
 
-const PortalBackground = () => {
-    const bgRef = useRef<HTMLDivElement>(null);
-    const [rings, setRings] = React.useState<{id: number, size: number}[] | null>(null);
-
-    React.useEffect(() => {
-        setRings(Array.from({ length: 5 }).map((_, i) => ({
-            id: i,
-            size: (i + 1) * 25
-        })));
-    }, []);
-
-    useGSAP(() => {
-        if (!rings) return;
-
-        gsap.to('.portal-ring', {
-            rotation: 360,
-            duration: "random(40, 80)",
-            repeat: -1,
-            ease: "none",
-            stagger: { amount: 10, from: "edges" }
-        });
-
-        gsap.to('.portal-ring', {
-            scale: 1.05,
-            opacity: "random(0.1, 0.3)",
-            duration: "random(4, 8)",
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut",
-            stagger: { amount: 2, from: "center" }
-        });
-    }, { dependencies: [rings], scope: bgRef });
-
-    return (
-        <div ref={bgRef} className="absolute inset-0 pointer-events-none overflow-hidden z-0 rounded-[3rem]">
-            {/* Core glows */}
-            <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[600px] h-[600px] bg-purple-900/20 blur-[120px] rounded-full pointer-events-none" />
-            <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-900/20 blur-[120px] rounded-full pointer-events-none" />
-
-            {/* Futuristic portal rings */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] opacity-40 mix-blend-screen pointer-events-none">
-                {rings && rings.map((ring) => (
-                    <div 
-                        key={`ring-${ring.id}`}
-                        className="portal-ring absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-cyan-500/20 shadow-[0_0_30px_rgba(34,211,238,0.1)_inset]"
-                        style={{ width: `${ring.size}%`, height: `${ring.size}%` }}
-                    />
-                ))}
-            </div>
-
-            {/* Matrix dot grid overlay */}
-            <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:24px_24px] opacity-40 mix-blend-overlay pointer-events-none" />
-        </div>
-    );
-};
-
-const ProjectCard = ({ project }: { project: Project }) => {
-    const cardRef = useRef<HTMLDivElement>(null);
-    const contentRef = useRef<HTMLDivElement>(null);
-
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!cardRef.current || !contentRef.current) return;
-        const rect = cardRef.current.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-
-        const rotateX = ((y - centerY) / centerY) * -10;
-        const rotateY = ((x - centerX) / centerX) * 10;
-
-        gsap.to(cardRef.current, {
-            rotateX, rotateY,
-            transformPerspective: 1500,
-            ease: "power2.out",
-            duration: 0.5
-        });
-
-        gsap.to(contentRef.current, {
-            x: (x - centerX) * 0.05,
-            y: (y - centerY) * 0.05,
-            ease: "power2.out",
-            duration: 0.5
-        });
-
-        gsap.to(cardRef.current.querySelector('.project-glow'), {
-            x: x - 200,
-            y: y - 200,
-            opacity: 1,
-            ease: "power2.out",
-            duration: 0.5
-        });
-    };
-
-    const handleMouseLeave = () => {
-        if (!cardRef.current || !contentRef.current) return;
-        gsap.to(cardRef.current, { rotateX: 0, rotateY: 0, ease: "power3.out", duration: 1 });
-        gsap.to(contentRef.current, { x: 0, y: 0, ease: "power3.out", duration: 1 });
-        gsap.to(cardRef.current.querySelector('.project-glow'), { opacity: 0, ease: "power2.out", duration: 1 });
-    };
-
-    return (
-        <div
-            ref={cardRef}
-            className="project-card relative w-full h-full rounded-[2.5rem] bg-[#050510]/60 backdrop-blur-2xl border border-white/5 overflow-hidden cursor-crosshair group [transform-style:preserve-3d]"
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-        >
-            {/* Hover Glow */}
-            <div className="project-glow absolute top-0 left-0 w-[400px] h-[400px] bg-cyan-500/20 rounded-full blur-[80px] pointer-events-none opacity-0 mix-blend-screen" />
-            
-            {/* Inner Border */}
-            <div className="absolute inset-0 border-2 border-transparent group-hover:border-cyan-500/30 rounded-[2.5rem] transition-colors duration-500 pointer-events-none mix-blend-overlay z-20" />
-
-            {/* Inner Content */}
-            <div ref={contentRef} className="relative z-10 p-8 md:p-10 flex flex-col h-full [transform-style:preserve-3d]">
-                <div className="flex justify-between items-start mb-10">
-                    <div className="text-6xl md:text-7xl group-hover:scale-110 group-hover:-rotate-12 transition-transform duration-700 drop-shadow-[0_0_20px_rgba(34,211,238,0.2)]">
-                        {project.icon}
-                    </div>
-                    <a
-                        href={project.link}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center gap-3 px-6 py-3 rounded-full bg-white/5 border border-white/10 hover:bg-cyan-400 hover:text-black hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(34,211,238,0.4)] transition-all duration-300 group/link"
-                        style={{ transform: 'translateZ(40px)' }}
-                    >
-                        <span className="text-sm font-black tracking-widest uppercase">Visit</span>
-                        <ArrowRight size={18} className="group-hover/link:translate-x-1 group-hover/link:-rotate-45 transition-transform" />
-                    </a>
-                </div>
-
-                <h3 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 mb-6 group-hover:from-cyan-400 group-hover:to-blue-500 transition-all duration-500" style={{ transform: 'translateZ(30px)' }}>
-                    {project.title}
-                </h3>
-
-                <p className="text-lg md:text-xl text-slate-400 leading-relaxed mb-10 flex-grow group-hover:text-slate-300 transition-colors duration-300" style={{ transform: 'translateZ(20px)' }}>
-                    {project.description}
-                </p>
-
-                <div className="space-y-4 mb-10" style={{ transform: 'translateZ(25px)' }}>
-                    {project.features.map((feature, i) => (
-                        <div key={i} className="flex items-start gap-4">
-                            <div className="w-2 h-2 mt-2 rounded-full bg-purple-500 shadow-[0_0_10px_#a855f7]" />
-                            <span className="text-base text-slate-300/80 leading-snug">{feature}</span>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="pt-8 border-t border-white/10 mt-auto" style={{ transform: 'translateZ(10px)' }}>
-                    <div className="flex flex-wrap gap-2 md:gap-3">
-                        {project.tech.map((t, i) => (
-                            <span key={i} className="text-xs md:text-sm font-mono font-bold text-cyan-400/80 bg-cyan-950/40 px-4 py-2 rounded-xl border border-cyan-500/20 group-hover:border-cyan-500/50 group-hover:bg-cyan-900/40 group-hover:text-cyan-300 transition-colors duration-300 shadow-[0_0_10px_rgba(34,211,238,0.05)_inset]">
-                                {t}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
-
 const ProjectsSection = () => {
-    const sectionRef = useRef<HTMLDivElement>(null);
-    const titleRef = useRef<HTMLHeadingElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const titleRef = useRef<HTMLHeadingElement>(null);
+    const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
     useGSAP(() => {
-        // Main Title
-        gsap.from(".projects-title-char", {
+        // Title Entrance
+        gsap.from('.title-word', {
             y: 100,
             opacity: 0,
-            rotationX: -90,
-            stagger: 0.05,
-            duration: 1.2,
-            ease: "back.out(1.5)",
+            rotationX: -80,
+            transformOrigin: "bottom center",
+            stagger: 0.1,
+            duration: 1.5,
+            ease: "expo.out",
             scrollTrigger: {
-                trigger: sectionRef.current,
+                trigger: titleRef.current,
                 start: "top 80%",
             }
         });
 
-        // 3D Card Stagger Entry
-        const cards = gsap.utils.toArray('.project-card');
-        gsap.fromTo(cards, 
-            { y: 150, opacity: 0, rotationX: 15, scale: 0.9 },
-            {
-                y: 0,
-                opacity: 1,
-                rotationX: 0,
-                scale: 1,
-                stagger: 0.15,
-                duration: 1.2,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: containerRef.current,
-                    start: "top 75%",
-                }
+        // The Cards
+        const cards = cardsRef.current;
+        
+        cards.forEach((card, index) => {
+            if (!card) return;
+            
+            const inner = card.querySelector('.card-inner');
+            const projectImage = card.querySelector('.project-image');
+            const content = card.querySelector('.project-content');
+            const features = card.querySelectorAll('.feature-item');
+            const techBadges = card.querySelectorAll('.tech-badge');
+
+            // Set initial state for sticky to work perfectly
+            gsap.set(card, { clearProps: "all" });
+
+            // Entrance animation for the INNER card (wrapper must remain pure for sticky)
+            if (inner) {
+                gsap.from(inner, {
+                    y: "50vh",
+                    scale: 0.8,
+                    rotationX: 30,
+                    opacity: 0,
+                    duration: 1.5,
+                    ease: "power4.out",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 95%",
+                        end: "top 30%",
+                        scrub: 1,
+                    }
+                });
             }
-        );
 
-    }, { scope: sectionRef });
+            // Animate content elements as the card comes in
+            if (content) {
+                gsap.from([content.querySelector('h3'), content.querySelector('p')], {
+                    x: -50,
+                    opacity: 0,
+                    stagger: 0.2,
+                    duration: 1,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 70%",
+                    }
+                });
+            }
 
-    const titleText = "Selected Works";
+            if (features.length) {
+                gsap.from(features, {
+                    opacity: 0,
+                    x: -20,
+                    stagger: 0.1,
+                    duration: 0.8,
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 60%",
+                    }
+                });
+            }
+
+            // Image hover float animation
+            if (projectImage) {
+                gsap.from(projectImage, {
+                    y: 80,
+                    opacity: 0,
+                    scale: 0.9,
+                    duration: 1.2,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 65%",
+                    }
+                });
+            }
+
+            // The Overlapping Stacking Effect is handled natively by CSS sticky to prevent GSAP reversing bugs on scroll up!
+        });
+
+    }, { scope: containerRef });
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, index: number) => {
+        const card = cardsRef.current[index];
+        if (!card) return;
+
+        const inner = card.querySelector('.card-inner') as HTMLElement;
+        if (!inner) return;
+
+        const rect = inner.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Mouse coordinates for background gradient effect
+        inner.style.setProperty("--mouse-x", `${x}px`);
+        inner.style.setProperty("--mouse-y", `${y}px`);
+
+        // Calculate 3D rotation based on mouse position
+        const rotateX = ((y / rect.height) - 0.5) * -20;
+        const rotateY = ((x / rect.width) - 0.5) * 20;
+
+        gsap.to(inner, {
+            rotateX,
+            rotateY,
+            duration: 0.5,
+            ease: "power2.out",
+        });
+    };
+
+    const handleMouseLeave = (index: number) => {
+        const card = cardsRef.current[index];
+        if (!card) return;
+        
+        const inner = card.querySelector('.card-inner') as HTMLElement;
+        if (!inner) return;
+
+        gsap.to(inner, {
+            rotateX: 0,
+            rotateY: 0,
+            duration: 1,
+            ease: "elastic.out(1, 0.3)",
+        });
+    };
 
     return (
-        <section id="projects" ref={sectionRef} className="py-32 px-4 bg-transparent overflow-hidden relative z-10 perspective-[2000px]">
+        <section id="projects" ref={containerRef} className="py-32 px-4 bg-[#050505] relative min-h-screen">
+            {/* NO OVERFLOW CLIP HERE, allows sticky to work perfectly */}
+            
+            {/* Background elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+                <div className="absolute top-0 left-1/4 w-[1000px] h-[1000px] bg-cyan-900/20 rounded-full blur-[150px] mix-blend-screen opacity-50" />
+                <div className="absolute bottom-0 right-1/4 w-[800px] h-[800px] bg-purple-900/20 rounded-full blur-[120px] mix-blend-screen opacity-50" />
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
+            </div>
+
             <div className="max-w-7xl mx-auto relative z-10">
-                {/* Title */}
-                <div className="text-center mb-24 perspective-[1000px]">
-                    <h2 ref={titleRef} className="text-5xl md:text-7xl lg:text-8xl font-black flex justify-center gap-[2px] tracking-tighter flex-wrap">
-                        {titleText.split(' ').map((word, wordIndex) => (
-                            <span key={`word-${wordIndex}`} className="inline-block whitespace-pre mr-4 md:mr-8">
-                                {word.split('').map((char, charIndex) => (
-                                    <span
-                                        key={`char-${charIndex}`}
-                                        className="projects-title-char inline-block bg-gradient-to-br from-cyan-300 via-blue-500 to-purple-600 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(34,211,238,0.3)]"
-                                    >
-                                        {char}
-                                    </span>
-                                ))}
-                            </span>
-                        ))}
+                
+                <div className="mb-40 text-center flex flex-col items-center">
+                    <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl mb-8 overflow-hidden relative group">
+                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300" />
+                        <Sparkles size={18} className="text-cyan-400 relative z-10" />
+                        <span className="text-white text-sm font-bold tracking-widest uppercase relative z-10">Portfolio Showcase</span>
+                    </div>
+                    
+                    <h2 ref={titleRef} className="text-6xl md:text-8xl lg:text-9xl font-black flex flex-wrap justify-center gap-4" style={{ perspective: '1000px' }}>
+                        <span className="title-word inline-block text-transparent bg-clip-text bg-gradient-to-br from-white to-white/30">SELECTED</span>
+                        <span className="title-word inline-block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400">WORKS</span>
                     </h2>
-                    <div className="h-[2px] w-48 bg-gradient-to-r from-transparent via-purple-500 to-transparent mx-auto mt-8 shadow-[0_0_15px_#a855f7]" />
                 </div>
 
-                {/* Main 3D Container wrapper */}
-                <div 
-                    ref={containerRef}
-                    className="relative rounded-[3rem] p-4 md:p-8 lg:p-12 border border-white/5 bg-[#030108]/80 backdrop-blur-2xl shadow-[0_30px_100px_rgba(0,0,0,0.8)] [transform-style:preserve-3d]"
-                >
-                    <PortalBackground />
-                    
-                    <div className="relative z-10 grid lg:grid-cols-2 gap-8 md:gap-12" style={{ transform: 'translateZ(60px)' }}>
-                        {projects.map((project, index) => (
-                            <ProjectCard key={index} project={project} />
-                        ))}
-                    </div>
+                <div className="projects-container flex flex-col relative pb-[20vh]">
+                    {projects.map((project, index) => (
+                        <div
+                            key={index}
+                            ref={(el) => { cardsRef.current[index] = el; }}
+                            className="project-card sticky w-full"
+                            style={{ 
+                                top: `5vh`, 
+                                marginBottom: '15vh',
+                                perspective: '2000px',
+                                zIndex: index
+                            }}
+                        >
+                            <div 
+                                className="card-inner w-full min-h-[85vh] lg:h-[85vh] rounded-[2.5rem] bg-[#0a0a0a]/80 backdrop-blur-3xl border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row relative origin-top"
+                                style={{ transformStyle: 'preserve-3d' }}
+                                onMouseMove={(e) => handleMouseMove(e, index)}
+                                onMouseLeave={() => handleMouseLeave(index)}
+                            >
+                                {/* Glowing Spotlight tracking mouse */}
+                                <div
+                                    className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-300 hover:opacity-100"
+                                    style={{
+                                        background: `radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(34, 211, 238, 0.1), transparent 40%)`
+                                    } as React.CSSProperties}
+                                />
+
+                                {/* Background Grid overlay */}
+                                <div className="absolute inset-0 z-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_20%,transparent_100%)] pointer-events-none" />
+
+                                {/* Left Content Section */}
+                                <div className="project-content lg:w-1/2 p-8 md:p-12 lg:p-16 flex flex-col lg:h-full relative z-10 border-b lg:border-b-0 lg:border-r border-white/5 overflow-y-auto custom-scrollbar">
+                                    
+                                    <div className="flex items-center gap-3 mb-6" style={{ transform: 'translateZ(30px)' }}>
+                                        <div className="w-12 h-px bg-cyan-500" />
+                                        <span className="text-cyan-400 font-mono text-sm tracking-widest uppercase">Project 0{index + 1}</span>
+                                    </div>
+
+                                    <h3 className="text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-none tracking-tight" style={{ transform: 'translateZ(60px)' }}>
+                                        {project.title}
+                                    </h3>
+                                    
+                                    {/* Tech Stack Area - Moved here for all sizes */}
+                                    <div className="mb-8" style={{ transform: 'translateZ(40px)' }}>
+                                        <div className="flex flex-wrap gap-2">
+                                            {project.tech.map((t, i) => (
+                                                <span 
+                                                    key={i} 
+                                                    className="tech-badge px-3 py-1.5 text-xs font-semibold text-cyan-50 bg-cyan-950/40 border border-cyan-500/30 rounded-lg backdrop-blur-md shadow-[0_0_10px_rgba(34,211,238,0.1)] hover:scale-105 hover:border-cyan-400 hover:bg-cyan-900/60 transition-all cursor-default"
+                                                >
+                                                    {t}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <p className="text-lg md:text-xl text-slate-400 leading-relaxed mb-8" style={{ transform: 'translateZ(40px)' }}>
+                                        {project.description}
+                                    </p>
+
+                                    {/* Features List */}
+                                    <div className="space-y-4 mb-10" style={{ transform: 'translateZ(30px)' }}>
+                                        {project.features.map((feature, i) => (
+                                            <div key={i} className="feature-item flex items-start gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.05] transition-colors">
+                                                <Terminal className="text-cyan-400 mt-0.5 flex-shrink-0" size={18} />
+                                                <span className="text-slate-300 leading-snug">{feature}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="mt-auto pt-8" style={{ transform: 'translateZ(50px)' }}>
+                                        <a
+                                            href={project.link}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="group flex items-center justify-between w-full p-6 bg-white text-black rounded-2xl font-bold text-xl transition-all duration-300 hover:bg-cyan-400 overflow-hidden relative"
+                                        >
+                                            <span className="relative z-10 flex items-center gap-3 group-hover:text-white transition-colors">
+                                                Live Preview
+                                            </span>
+                                            <div className="w-12 h-12 rounded-full bg-black/10 flex items-center justify-center relative z-10 group-hover:bg-white/20 transition-colors">
+                                                <ArrowUpRight className="group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" size={24} />
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                {/* Right Visual Section - Project Screenshot */}
+                                <div className="lg:w-1/2 relative h-[350px] lg:h-full flex flex-col p-6 md:p-8 overflow-hidden items-center justify-center">
+                                    
+                                    {/* Huge background text watermark */}
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10rem] md:text-[20rem] font-black text-white/[0.03] whitespace-nowrap pointer-events-none select-none z-0 tracking-tighter mix-blend-overlay">
+                                        {project.title.substring(0, 4).toUpperCase()}
+                                    </div>
+
+                                    {/* Glowing core behind image */}
+                                    <div className="absolute w-48 h-48 md:w-64 md:h-64 bg-gradient-to-tr from-cyan-500/40 to-purple-500/40 rounded-full blur-[80px] z-0" />
+
+                                    {/* Project Screenshot */}
+                                    <div className="project-image relative z-10 w-full h-full flex items-center justify-center">
+                                        <div className="relative w-full max-w-[500px] group/img">
+                                            {/* Glowing border effect */}
+                                            <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/30 via-purple-500/30 to-cyan-500/30 rounded-2xl blur-sm opacity-0 group-hover/img:opacity-100 transition-opacity duration-500" />
+                                            <img 
+                                                src={project.image} 
+                                                alt={project.title}
+                                                className="relative w-full h-auto rounded-2xl border border-white/10 shadow-2xl shadow-black/50 object-cover group-hover/img:scale-[1.02] group-hover/img:border-cyan-500/30 transition-all duration-500"
+                                            />
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
+
+            {/* Custom scrollbar styles for inner content if needed */}
+            <style>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 6px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: rgba(255, 255, 255, 0.1);
+                    border-radius: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: rgba(34, 211, 238, 0.5);
+                }
+            `}</style>
         </section>
     );
 };
 
 export default ProjectsSection;
-
-
-
-
