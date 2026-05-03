@@ -101,53 +101,54 @@ const ProjectsSection = () => {
             }
         });
 
-        // Cards - Pin + Auto-scroll content
+        // The Cards
         const cards = cardsRef.current;
 
         cards.forEach((card, index) => {
             if (!card) return;
 
-            const inner = card.querySelector('.card-inner') as HTMLElement;
-            const contentEl = card.querySelector('.project-content') as HTMLElement;
-            const scrollInner = card.querySelector('.content-scroll-inner') as HTMLElement;
+            const inner = card.querySelector('.card-inner');
             const projectImage = card.querySelector('.project-image');
+            const content = card.querySelector('.project-content');
             const features = card.querySelectorAll('.feature-item');
+            const techBadges = card.querySelectorAll('.tech-badge');
 
-            if (!inner) return;
+            // Set initial state for sticky to work perfectly
+            gsap.set(card, { clearProps: "all" });
 
-            // Entrance animation for the card
-            gsap.from(inner, {
-                y: 120,
-                opacity: 0,
-                scale: 0.95,
-                duration: 1,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: card,
-                    start: "top 90%",
-                }
-            });
-
-            // Pin card + auto-scroll inner content via translateY
-            if (contentEl && scrollInner) {
-                const getOverflow = () => Math.max(0, scrollInner.scrollHeight - contentEl.clientHeight);
-
-                gsap.to(scrollInner, {
-                    y: () => -getOverflow(),
-                    ease: "none",
+            // Entrance animation for the INNER card (wrapper must remain pure for sticky)
+            if (inner) {
+                gsap.from(inner, {
+                    y: "50vh",
+                    scale: 0.8,
+                    rotationX: 30,
+                    opacity: 0,
+                    duration: 1.5,
+                    ease: "power4.out",
                     scrollTrigger: {
                         trigger: card,
-                        start: "top 5%",
-                        end: () => `+=${getOverflow() + 400}`,
-                        pin: inner,
-                        pinSpacing: true,
-                        scrub: 0.8,
-                        invalidateOnRefresh: true,
+                        start: "top 95%",
+                        end: "top 30%",
+                        scrub: 1,
                     }
                 });
             }
 
-            // Feature items entrance
+            // Animate content elements as the card comes in
+            if (content) {
+                gsap.from([content.querySelector('h3'), content.querySelector('p')], {
+                    x: -50,
+                    opacity: 0,
+                    stagger: 0.2,
+                    duration: 1,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 70%",
+                    }
+                });
+            }
+
             if (features.length) {
                 gsap.from(features, {
                     opacity: 0,
@@ -161,7 +162,7 @@ const ProjectsSection = () => {
                 });
             }
 
-            // Image entrance
+            // Image hover float animation
             if (projectImage) {
                 gsap.from(projectImage, {
                     y: 80,
@@ -175,6 +176,8 @@ const ProjectsSection = () => {
                     }
                 });
             }
+
+            // The Overlapping Stacking Effect is handled natively by CSS sticky to prevent GSAP reversing bugs on scroll up!
         });
 
     }, { scope: containerRef });
@@ -190,9 +193,11 @@ const ProjectsSection = () => {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
+        // Mouse coordinates for background gradient effect
         inner.style.setProperty("--mouse-x", `${x}px`);
         inner.style.setProperty("--mouse-y", `${y}px`);
 
+        // Calculate 3D rotation based on mouse position
         const rotateX = ((y / rect.height) - 0.5) * -20;
         const rotateY = ((x / rect.width) - 0.5) * 20;
 
@@ -221,6 +226,8 @@ const ProjectsSection = () => {
 
     return (
         <section id="projects" ref={containerRef} className="py-32 px-4 bg-[#050505] relative min-h-screen">
+            {/* NO OVERFLOW CLIP HERE, allows sticky to work perfectly */}
+
             {/* Background elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
                 <div className="absolute top-0 left-1/4 w-[1000px] h-[1000px] bg-cyan-900/20 rounded-full blur-[150px] mix-blend-screen opacity-50" />
@@ -243,16 +250,21 @@ const ProjectsSection = () => {
                     </h2>
                 </div>
 
-                <div className="projects-container flex flex-col gap-8 relative pb-[20vh]">
+                <div className="projects-container flex flex-col relative pb-[20vh]">
                     {projects.map((project, index) => (
                         <div
                             key={index}
                             ref={(el) => { cardsRef.current[index] = el; }}
-                            className="project-card relative w-full"
-                            style={{ perspective: '2000px' }}
+                            className="project-card sticky w-full"
+                            style={{
+                                top: `5vh`,
+                                marginBottom: '15vh',
+                                perspective: '2000px',
+                                zIndex: index
+                            }}
                         >
                             <div
-                                className="card-inner w-full h-[90vh] rounded-[2.5rem] bg-[#0a0a0a]/80 backdrop-blur-3xl border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row relative origin-top"
+                                className="card-inner w-full min-h-[85vh] lg:h-[85vh] rounded-[2.5rem] bg-[#0a0a0a]/80 backdrop-blur-3xl border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row relative origin-top"
                                 style={{ transformStyle: 'preserve-3d' }}
                                 onMouseMove={(e) => handleMouseMove(e, index)}
                                 onMouseLeave={() => handleMouseLeave(index)}
@@ -268,67 +280,65 @@ const ProjectsSection = () => {
                                 {/* Background Grid overlay */}
                                 <div className="absolute inset-0 z-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_20%,transparent_100%)] pointer-events-none" />
 
-                                {/* Left Content Section - overflow hidden, GSAP controls scroll */}
-                                <div className="project-content lg:w-1/2 relative z-10 border-b lg:border-b-0 lg:border-r border-white/5 overflow-hidden h-1/2 lg:h-full">
-                                    <div className="content-scroll-inner p-8 md:p-12 lg:p-16 flex flex-col">
+                                {/* Left Content Section */}
+                                <div className="project-content lg:w-1/2 p-8 md:p-12 lg:p-16 flex flex-col lg:h-full relative z-10 border-b lg:border-b-0 lg:border-r border-white/5 overflow-y-auto custom-scrollbar">
 
-                                        <div className="flex items-center gap-3 mb-6" style={{ transform: 'translateZ(30px)' }}>
-                                            <div className="w-12 h-px bg-cyan-500" />
-                                            <span className="text-cyan-400 font-mono text-sm tracking-widest uppercase">Project 0{index + 1}</span>
-                                        </div>
+                                    <div className="flex items-center gap-3 mb-6" style={{ transform: 'translateZ(30px)' }}>
+                                        <div className="w-12 h-px bg-cyan-500" />
+                                        <span className="text-cyan-400 font-mono text-sm tracking-widest uppercase">Project 0{index + 1}</span>
+                                    </div>
 
-                                        <h3 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-none tracking-tight" style={{ transform: 'translateZ(60px)' }}>
-                                            {project.title}
-                                        </h3>
+                                    <h3 className="text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-none tracking-tight" style={{ transform: 'translateZ(60px)' }}>
+                                        {project.title}
+                                    </h3>
 
-                                        {/* Tech Stack */}
-                                        <div className="mb-8" style={{ transform: 'translateZ(40px)' }}>
-                                            <div className="flex flex-wrap gap-2">
-                                                {project.tech.map((t, i) => (
-                                                    <span
-                                                        key={i}
-                                                        className="tech-badge px-3 py-1.5 text-xs font-semibold text-cyan-50 bg-cyan-950/40 border border-cyan-500/30 rounded-lg backdrop-blur-md shadow-[0_0_10px_rgba(34,211,238,0.1)] hover:scale-105 hover:border-cyan-400 hover:bg-cyan-900/60 transition-all cursor-default"
-                                                    >
-                                                        {t}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        <p className="text-lg md:text-xl text-slate-400 leading-relaxed mb-8" style={{ transform: 'translateZ(40px)' }}>
-                                            {project.description}
-                                        </p>
-
-                                        {/* Features List */}
-                                        <div className="space-y-4 mb-10" style={{ transform: 'translateZ(30px)' }}>
-                                            {project.features.map((feature, i) => (
-                                                <div key={i} className="feature-item flex items-start gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.05] transition-colors">
-                                                    <Terminal className="text-cyan-400 mt-0.5 flex-shrink-0" size={18} />
-                                                    <span className="text-slate-300 leading-snug">{feature}</span>
-                                                </div>
+                                    {/* Tech Stack Area - Moved here for all sizes */}
+                                    <div className="mb-8" style={{ transform: 'translateZ(40px)' }}>
+                                        <div className="flex flex-wrap gap-2">
+                                            {project.tech.map((t, i) => (
+                                                <span
+                                                    key={i}
+                                                    className="tech-badge px-3 py-1.5 text-xs font-semibold text-cyan-50 bg-cyan-950/40 border border-cyan-500/30 rounded-lg backdrop-blur-md shadow-[0_0_10px_rgba(34,211,238,0.1)] hover:scale-105 hover:border-cyan-400 hover:bg-cyan-900/60 transition-all cursor-default"
+                                                >
+                                                    {t}
+                                                </span>
                                             ))}
                                         </div>
+                                    </div>
 
-                                        <div className="pt-8" style={{ transform: 'translateZ(50px)' }}>
-                                            <a
-                                                href={project.link}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="group flex items-center justify-between w-full p-6 bg-white text-black rounded-2xl font-bold text-xl transition-all duration-300 hover:bg-cyan-400 overflow-hidden relative"
-                                            >
-                                                <span className="relative z-10 flex items-center gap-3 group-hover:text-white transition-colors">
-                                                    Live Preview
-                                                </span>
-                                                <div className="w-12 h-12 rounded-full bg-black/10 flex items-center justify-center relative z-10 group-hover:bg-white/20 transition-colors">
-                                                    <ArrowUpRight className="group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" size={24} />
-                                                </div>
-                                            </a>
-                                        </div>
+                                    <p className="text-lg md:text-xl text-slate-400 leading-relaxed mb-8" style={{ transform: 'translateZ(40px)' }}>
+                                        {project.description}
+                                    </p>
+
+                                    {/* Features List */}
+                                    <div className="space-y-4 mb-10" style={{ transform: 'translateZ(30px)' }}>
+                                        {project.features.map((feature, i) => (
+                                            <div key={i} className="feature-item flex items-start gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.05] transition-colors">
+                                                <Terminal className="text-cyan-400 mt-0.5 flex-shrink-0" size={18} />
+                                                <span className="text-slate-300 leading-snug">{feature}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="mt-auto pt-8" style={{ transform: 'translateZ(50px)' }}>
+                                        <a
+                                            href={project.link}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="group flex items-center justify-between w-full p-6 bg-white text-black rounded-2xl font-bold text-xl transition-all duration-300 hover:bg-cyan-400 overflow-hidden relative"
+                                        >
+                                            <span className="relative z-10 flex items-center gap-3 group-hover:text-white transition-colors">
+                                                Live Preview
+                                            </span>
+                                            <div className="w-12 h-12 rounded-full bg-black/10 flex items-center justify-center relative z-10 group-hover:bg-white/20 transition-colors">
+                                                <ArrowUpRight className="group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" size={24} />
+                                            </div>
+                                        </a>
                                     </div>
                                 </div>
 
                                 {/* Right Visual Section - Project Screenshot */}
-                                <div className="lg:w-1/2 relative h-1/2 lg:h-full flex flex-col p-6 md:p-8 overflow-hidden items-center justify-center">
+                                <div className="lg:w-1/2 relative h-[350px] lg:h-full flex flex-col p-6 md:p-8 overflow-hidden items-center justify-center">
 
                                     {/* Huge background text watermark */}
                                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10rem] md:text-[20rem] font-black text-white/[0.03] whitespace-nowrap pointer-events-none select-none z-0 tracking-tighter mix-blend-overlay">
@@ -357,6 +367,19 @@ const ProjectsSection = () => {
                     ))}
                 </div>
             </div>
+
+            {/* Custom scrollbar styles for inner content if needed */}
+            <style>{`
+                /* Hide scrollbar for Chrome, Safari and Opera */
+                .custom-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+                /* Hide scrollbar for IE, Edge and Firefox */
+                .custom-scrollbar {
+                    -ms-overflow-style: none;  /* IE and Edge */
+                    scrollbar-width: none;  /* Firefox */
+                }
+            `}</style>
         </section>
     );
 };
