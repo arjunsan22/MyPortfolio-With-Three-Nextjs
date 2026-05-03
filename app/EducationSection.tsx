@@ -34,7 +34,7 @@ const EducationSection = () => {
             year: "DEC 2025",
             type: "Professional",
             icon: Binary,
-            details: ["Intensive Industrial Training", "Full-stack Projects", "MVC / Clean Architecture Principles", "Data Structures & Algorithms (LeetCode Practice)"]
+            details: ["Intensive Industrial Training", "Full-stack Projects", "MVC / Clean Architecture Principles", "Data Structures & Algorithms"]
         },
         {
             title: "Docker Certification",
