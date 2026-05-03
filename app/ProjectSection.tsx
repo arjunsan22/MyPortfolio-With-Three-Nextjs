@@ -76,7 +76,7 @@ const projects: Project[] = [
             'Enabled real-time application tracking (status updates)'
         ],
         link: 'https://findmywork-one.vercel.app/',
-        icon: '💼🔎'
+        icon: '💼'
     }
 ];
 
@@ -189,26 +189,7 @@ const ProjectsSection = () => {
                 });
             }
 
-            // The Overlapping Stacking Effect!
-            // When the NEXT card scrolls up, this card scales down and fades slightly to create 3D depth
-            if (index < cards.length - 1) {
-                const nextCard = cards[index + 1];
-                
-                if (inner) {
-                    gsap.to(inner, {
-                        scale: 0.92,
-                        y: -40,
-                        opacity: 0.4,
-                        filter: "blur(8px)", 
-                        scrollTrigger: {
-                            trigger: nextCard,
-                            start: "top 90%", // When next card enters viewport
-                            end: "top 15%",   // When next card is fully stacked
-                            scrub: true,
-                        }
-                    });
-                }
-            }
+            // The Overlapping Stacking Effect is handled natively by CSS sticky to prevent GSAP reversing bugs on scroll up!
         });
 
     }, { scope: containerRef });
@@ -288,15 +269,14 @@ const ProjectsSection = () => {
                             ref={(el) => { cardsRef.current[index] = el; }}
                             className="project-card sticky w-full"
                             style={{ 
-                                top: `10vh`, 
-                                height: '80vh', 
-                                marginBottom: '20vh',
+                                top: `5vh`, 
+                                marginBottom: '15vh',
                                 perspective: '2000px',
                                 zIndex: index
                             }}
                         >
                             <div 
-                                className="card-inner w-full h-full rounded-[2.5rem] bg-[#0a0a0a]/80 backdrop-blur-3xl border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row relative origin-top"
+                                className="card-inner w-full min-h-[85vh] lg:h-[85vh] rounded-[2.5rem] bg-[#0a0a0a]/80 backdrop-blur-3xl border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row relative origin-top"
                                 style={{ transformStyle: 'preserve-3d' }}
                                 onMouseMove={(e) => handleMouseMove(e, index)}
                                 onMouseLeave={() => handleMouseLeave(index)}
@@ -313,7 +293,7 @@ const ProjectsSection = () => {
                                 <div className="absolute inset-0 z-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_20%,transparent_100%)] pointer-events-none" />
 
                                 {/* Left Content Section */}
-                                <div className="project-content lg:w-1/2 p-8 md:p-12 lg:p-16 flex flex-col h-full relative z-10 border-r border-white/5 overflow-y-auto custom-scrollbar">
+                                <div className="project-content lg:w-1/2 p-8 md:p-12 lg:p-16 flex flex-col lg:h-full relative z-10 border-b lg:border-b-0 lg:border-r border-white/5 overflow-y-auto custom-scrollbar">
                                     
                                     <div className="flex items-center gap-3 mb-6" style={{ transform: 'translateZ(30px)' }}>
                                         <div className="w-12 h-px bg-cyan-500" />
@@ -324,7 +304,21 @@ const ProjectsSection = () => {
                                         {project.title}
                                     </h3>
                                     
-                                    <p className="text-lg md:text-xl text-slate-400 leading-relaxed mb-10" style={{ transform: 'translateZ(40px)' }}>
+                                    {/* Tech Stack Area - Moved here for all sizes */}
+                                    <div className="mb-8" style={{ transform: 'translateZ(40px)' }}>
+                                        <div className="flex flex-wrap gap-2">
+                                            {project.tech.map((t, i) => (
+                                                <span 
+                                                    key={i} 
+                                                    className="tech-badge px-3 py-1.5 text-xs font-semibold text-cyan-50 bg-cyan-950/40 border border-cyan-500/30 rounded-lg backdrop-blur-md shadow-[0_0_10px_rgba(34,211,238,0.1)] hover:scale-105 hover:border-cyan-400 hover:bg-cyan-900/60 transition-all cursor-default"
+                                                >
+                                                    {t}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <p className="text-lg md:text-xl text-slate-400 leading-relaxed mb-8" style={{ transform: 'translateZ(40px)' }}>
                                         {project.description}
                                     </p>
 
@@ -356,41 +350,26 @@ const ProjectsSection = () => {
                                 </div>
 
                                 {/* Right Visual Section */}
-                                <div className="lg:w-1/2 relative h-[400px] lg:h-full flex flex-col p-8 overflow-hidden">
+                                <div className="lg:w-1/2 relative h-[350px] lg:h-full flex flex-col p-8 overflow-hidden items-center justify-center">
                                     
                                     {/* Huge background text watermark */}
-                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[12rem] md:text-[20rem] font-black text-white/[0.03] whitespace-nowrap pointer-events-none select-none z-0 tracking-tighter mix-blend-overlay">
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10rem] md:text-[20rem] font-black text-white/[0.03] whitespace-nowrap pointer-events-none select-none z-0 tracking-tighter mix-blend-overlay">
                                         {project.title.substring(0, 4).toUpperCase()}
                                     </div>
 
-                                    {/* Tech Stack Area - SHOW ALL */}
-                                    <div className="relative z-10 mb-auto" style={{ transform: 'translateZ(40px)' }}>
-                                        <div className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Tech Stack</div>
-                                        <div className="flex flex-wrap gap-2">
-                                            {project.tech.map((t, i) => (
-                                                <span 
-                                                    key={i} 
-                                                    className="tech-badge px-4 py-2 text-sm font-semibold text-cyan-50 bg-cyan-950/40 border border-cyan-500/30 rounded-xl backdrop-blur-md shadow-[0_0_15px_rgba(34,211,238,0.1)] hover:scale-110 hover:border-cyan-400 hover:bg-cyan-900/60 transition-all cursor-default"
-                                                >
-                                                    {t}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-
                                     {/* 3D Icon Area */}
-                                    <div className="flex-grow flex items-center justify-center relative z-10" style={{ transformStyle: 'preserve-3d' }}>
+                                    <div className="flex-grow flex items-center justify-center relative z-10 w-full" style={{ transformStyle: 'preserve-3d' }}>
                                         
                                         {/* Glowing core behind icon */}
-                                        <div className="absolute w-64 h-64 bg-gradient-to-tr from-cyan-500/50 to-purple-500/50 rounded-full blur-[80px]" style={{ transform: 'translateZ(10px)' }} />
+                                        <div className="absolute w-48 h-48 md:w-64 md:h-64 bg-gradient-to-tr from-cyan-500/50 to-purple-500/50 rounded-full blur-[80px]" style={{ transform: 'translateZ(10px)' }} />
                                         
                                         {/* Abstract geometric rings */}
-                                        <div className="absolute w-full aspect-square max-w-[400px] border border-white/5 rounded-full animate-[spin_40s_linear_infinite]" style={{ transform: 'translateZ(20px)' }} />
-                                        <div className="absolute w-[80%] aspect-square max-w-[320px] border border-cyan-500/20 rounded-full animate-[spin_20s_linear_infinite_reverse]" style={{ transform: 'translateZ(30px)' }} />
+                                        <div className="absolute w-[90%] aspect-square max-w-[400px] border border-white/5 rounded-full animate-[spin_40s_linear_infinite]" style={{ transform: 'translateZ(20px)' }} />
+                                        <div className="absolute w-[70%] aspect-square max-w-[320px] border border-cyan-500/20 rounded-full animate-[spin_20s_linear_infinite_reverse]" style={{ transform: 'translateZ(30px)' }} />
                                         
                                         {/* The Icon */}
                                         <div 
-                                            className="project-icon-3d text-[8rem] md:text-[10rem] filter drop-shadow-[0_0_40px_rgba(255,255,255,0.3)] select-none"
+                                            className="project-icon-3d text-[6rem] md:text-[10rem] filter drop-shadow-[0_0_40px_rgba(255,255,255,0.3)] select-none"
                                             style={{ transform: 'translateZ(100px)' }}
                                         >
                                             {project.icon}
