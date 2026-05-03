@@ -370,18 +370,14 @@ const ProjectsSection = () => {
 
             {/* Custom scrollbar styles for inner content if needed */}
             <style>{`
+                /* Hide scrollbar for Chrome, Safari and Opera */
                 .custom-scrollbar::-webkit-scrollbar {
-                    width: 6px;
+                    display: none;
                 }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: rgba(255, 255, 255, 0.1);
-                    border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: rgba(34, 211, 238, 0.5);
+                /* Hide scrollbar for IE, Edge and Firefox */
+                .custom-scrollbar {
+                    -ms-overflow-style: none;  /* IE and Edge */
+                    scrollbar-width: none;  /* Firefox */
                 }
             `}</style>
         </section>
