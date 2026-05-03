@@ -103,10 +103,10 @@ const ProjectsSection = () => {
 
         // The Cards
         const cards = cardsRef.current;
-        
+
         cards.forEach((card, index) => {
             if (!card) return;
-            
+
             const inner = card.querySelector('.card-inner');
             const projectImage = card.querySelector('.project-image');
             const content = card.querySelector('.project-content');
@@ -212,7 +212,7 @@ const ProjectsSection = () => {
     const handleMouseLeave = (index: number) => {
         const card = cardsRef.current[index];
         if (!card) return;
-        
+
         const inner = card.querySelector('.card-inner') as HTMLElement;
         if (!inner) return;
 
@@ -227,7 +227,7 @@ const ProjectsSection = () => {
     return (
         <section id="projects" ref={containerRef} className="py-32 px-4 bg-[#050505] relative min-h-screen">
             {/* NO OVERFLOW CLIP HERE, allows sticky to work perfectly */}
-            
+
             {/* Background elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
                 <div className="absolute top-0 left-1/4 w-[1000px] h-[1000px] bg-cyan-900/20 rounded-full blur-[150px] mix-blend-screen opacity-50" />
@@ -236,14 +236,14 @@ const ProjectsSection = () => {
             </div>
 
             <div className="max-w-7xl mx-auto relative z-10">
-                
+
                 <div className="mb-40 text-center flex flex-col items-center">
                     <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl mb-8 overflow-hidden relative group">
                         <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300" />
                         <Sparkles size={18} className="text-cyan-400 relative z-10" />
                         <span className="text-white text-sm font-bold tracking-widest uppercase relative z-10">Portfolio Showcase</span>
                     </div>
-                    
+
                     <h2 ref={titleRef} className="text-6xl md:text-8xl lg:text-9xl font-black flex flex-wrap justify-center gap-4" style={{ perspective: '1000px' }}>
                         <span className="title-word inline-block text-transparent bg-clip-text bg-gradient-to-br from-white to-white/30">SELECTED</span>
                         <span className="title-word inline-block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400">WORKS</span>
@@ -256,14 +256,14 @@ const ProjectsSection = () => {
                             key={index}
                             ref={(el) => { cardsRef.current[index] = el; }}
                             className="project-card sticky w-full"
-                            style={{ 
-                                top: `5vh`, 
+                            style={{
+                                top: `5vh`,
                                 marginBottom: '15vh',
                                 perspective: '2000px',
                                 zIndex: index
                             }}
                         >
-                            <div 
+                            <div
                                 className="card-inner w-full min-h-[85vh] lg:h-[85vh] rounded-[2.5rem] bg-[#0a0a0a]/80 backdrop-blur-3xl border border-white/10 overflow-hidden shadow-2xl flex flex-col lg:flex-row relative origin-top"
                                 style={{ transformStyle: 'preserve-3d' }}
                                 onMouseMove={(e) => handleMouseMove(e, index)}
@@ -282,7 +282,7 @@ const ProjectsSection = () => {
 
                                 {/* Left Content Section */}
                                 <div className="project-content lg:w-1/2 p-8 md:p-12 lg:p-16 flex flex-col lg:h-full relative z-10 border-b lg:border-b-0 lg:border-r border-white/5 overflow-y-auto custom-scrollbar">
-                                    
+
                                     <div className="flex items-center gap-3 mb-6" style={{ transform: 'translateZ(30px)' }}>
                                         <div className="w-12 h-px bg-cyan-500" />
                                         <span className="text-cyan-400 font-mono text-sm tracking-widest uppercase">Project 0{index + 1}</span>
@@ -291,13 +291,13 @@ const ProjectsSection = () => {
                                     <h3 className="text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-none tracking-tight" style={{ transform: 'translateZ(60px)' }}>
                                         {project.title}
                                     </h3>
-                                    
+
                                     {/* Tech Stack Area - Moved here for all sizes */}
                                     <div className="mb-8" style={{ transform: 'translateZ(40px)' }}>
                                         <div className="flex flex-wrap gap-2">
                                             {project.tech.map((t, i) => (
-                                                <span 
-                                                    key={i} 
+                                                <span
+                                                    key={i}
                                                     className="tech-badge px-3 py-1.5 text-xs font-semibold text-cyan-50 bg-cyan-950/40 border border-cyan-500/30 rounded-lg backdrop-blur-md shadow-[0_0_10px_rgba(34,211,238,0.1)] hover:scale-105 hover:border-cyan-400 hover:bg-cyan-900/60 transition-all cursor-default"
                                                 >
                                                     {t}
@@ -339,7 +339,7 @@ const ProjectsSection = () => {
 
                                 {/* Right Visual Section - Project Screenshot */}
                                 <div className="lg:w-1/2 relative h-[350px] lg:h-full flex flex-col p-6 md:p-8 overflow-hidden items-center justify-center">
-                                    
+
                                     {/* Huge background text watermark */}
                                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10rem] md:text-[20rem] font-black text-white/[0.03] whitespace-nowrap pointer-events-none select-none z-0 tracking-tighter mix-blend-overlay">
                                         {project.title.substring(0, 4).toUpperCase()}
@@ -353,14 +353,14 @@ const ProjectsSection = () => {
                                         <div className="relative w-full max-w-[500px] group/img">
                                             {/* Glowing border effect */}
                                             <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/30 via-purple-500/30 to-cyan-500/30 rounded-2xl blur-sm opacity-0 group-hover/img:opacity-100 transition-opacity duration-500" />
-                                            <img 
-                                                src={project.image} 
+                                            <img
+                                                src={project.image}
                                                 alt={project.title}
                                                 className="relative w-full h-auto rounded-2xl border border-white/10 shadow-2xl shadow-black/50 object-cover group-hover/img:scale-[1.02] group-hover/img:border-cyan-500/30 transition-all duration-500"
                                             />
                                         </div>
                                     </div>
-                                    
+
                                 </div>
                             </div>
                         </div>
@@ -370,18 +370,14 @@ const ProjectsSection = () => {
 
             {/* Custom scrollbar styles for inner content if needed */}
             <style>{`
+                /* Hide scrollbar for Chrome, Safari and Opera */
                 .custom-scrollbar::-webkit-scrollbar {
-                    width: 6px;
+                    display: none;
                 }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: rgba(255, 255, 255, 0.1);
-                    border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: rgba(34, 211, 238, 0.5);
+                /* Hide scrollbar for IE, Edge and Firefox */
+                .custom-scrollbar {
+                    -ms-overflow-style: none;  /* IE and Edge */
+                    scrollbar-width: none;  /* Firefox */
                 }
             `}</style>
         </section>
