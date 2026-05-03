@@ -55,9 +55,9 @@ const projects: Project[] = [
             'Work posting & worker hiring system',
             'Follow & following networking feature',
             'AI Chatbot for user assistance & queries',
-            'AI-powered smart search (jobs, users, posts)',
-            'Resume parser using AI (extract skills, experience, insights)',
-            'AI-based post/job recommendation system',
+            'AI-powered smart search',
+            'Resume parser using AI',
+            'AI-based recommendation system',
             'Frontend on Vercel, backend on Render'
         ],
         link: 'http://workspera.vercel.app',
@@ -69,11 +69,11 @@ const projects: Project[] = [
         description: 'A full-stack Job Portal for job search, application management, and real-time tracking',
         features: [
             'Scalable MERN Stack architecture',
-            'Implemented JWT authentication with access & refresh tokens',
+            'Implemented JWT authentication',
             'Developed job search, filtering, and pagination',
-            'Created resume upload system using Multer (PDF/DOCX, 5MB)',
-            'Built admin dashboard for job & candidate management',
-            'Enabled real-time application tracking (status updates)'
+            'Created resume upload system using Multer',
+            'Built admin dashboard',
+            'Enabled real-time application tracking'
         ],
         link: 'https://findmywork-one.vercel.app/',
         icon: '💼🔎'
@@ -103,24 +103,34 @@ const ProjectsSection = () => {
             });
         }
 
-        // Stacked Cards Animation
-        const cards = cardsRef.current;
-        
-        cards.forEach((card, index) => {
+        // --- STACKING CARDS ANIMATION ---
+        cardsRef.current.forEach((card, index) => {
             if (!card) return;
-
-            // Entrance - target the inner card to avoid breaking position: sticky on the wrapper
             const inner = card.querySelector('.card-inner');
-            if (inner) {
-                gsap.from(inner, {
-                    y: 150,
-                    opacity: 0,
-                    rotateX: 15,
-                    duration: 1.2,
-                    ease: "power3.out",
+            
+            // Initial Entrance
+            gsap.from(inner, {
+                y: 100,
+                opacity: 0,
+                duration: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 90%",
+                }
+            });
+
+            // The "Override" Stacking Effect
+            // As the NEXT card comes up, this card scales down and darkens
+            if (index < projects.length - 1) {
+                gsap.to(inner, {
+                    scale: 0.9,
+                    filter: "brightness(0.3)",
                     scrollTrigger: {
-                        trigger: card,
-                        start: "top 85%",
+                        trigger: cardsRef.current[index + 1],
+                        start: "top 50%", 
+                        end: "top 0%",
+                        scrub: true,
                     }
                 });
             }
@@ -175,12 +185,11 @@ const ProjectsSection = () => {
     };
 
     return (
-        <section id="projects" ref={containerRef} className="py-32 px-4 bg-[#020617] relative min-h-screen">
+        <section id="projects" ref={containerRef} className="py-32 px-4 bg-[#020617] relative">
             {/* Cosmic Background Elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] mix-blend-screen" />
                 <div className="absolute bottom-[20%] right-[-10%] w-[600px] h-[600px] bg-cyan-600/20 rounded-full blur-[150px] mix-blend-screen" />
-                <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-600/10 rounded-full blur-[150px] mix-blend-screen" />
             </div>
 
             <div className="max-w-6xl mx-auto relative z-10">
@@ -196,20 +205,14 @@ const ProjectsSection = () => {
                     >
                         <div className="flex overflow-hidden">
                             {"SELECTED".split("").map((char, i) => (
-                                <span
-                                    key={`sel-${i}`}
-                                    className="typing-char inline-block bg-gradient-to-br from-white via-white to-white/40 bg-clip-text text-transparent"
-                                >
+                                <span key={`sel-${i}`} className="typing-char inline-block bg-gradient-to-br from-white via-white to-white/40 bg-clip-text text-transparent">
                                     {char}
                                 </span>
                             ))}
                         </div>
                         <div className="flex overflow-hidden">
                             {"WORKS".split("").map((char, i) => (
-                                <span
-                                    key={`wrk-${i}`}
-                                    className="typing-char inline-block bg-gradient-to-r from-cyan-400 to-indigo-500 bg-clip-text text-transparent"
-                                >
+                                <span key={`wrk-${i}`} className="typing-char inline-block bg-gradient-to-r from-cyan-400 to-indigo-500 bg-clip-text text-transparent">
                                     {char}
                                 </span>
                             ))}
@@ -217,16 +220,21 @@ const ProjectsSection = () => {
                     </h2>
                 </div>
 
-                <div className="projects-container flex flex-col gap-16 md:gap-24 pb-32">
+                {/* Container for Stacking Cards */}
+                <div className="projects-container relative flex flex-col gap-[10vh]">
                     {projects.map((project, index) => (
                         <div
                             key={index}
                             ref={(el) => { cardsRef.current[index] = el; }}
-                            className="project-card sticky top-[15vh] w-full"
-                            style={{ perspective: '1000px' }}
+                            className="project-card sticky w-full"
+                            style={{ 
+                                top: `${100 + (index * 20)}px`, // Staggered sticky position
+                                zIndex: index,
+                                perspective: '1000px' 
+                            }}
                         >
                             <div 
-                                className="card-inner relative w-full rounded-[2.5rem] border border-white/10 bg-black/40 backdrop-blur-3xl overflow-hidden shadow-2xl shadow-black/50"
+                                className="card-inner relative w-full rounded-[2.5rem] border border-white/10 bg-[#0a0f1e] backdrop-blur-3xl overflow-hidden shadow-2xl shadow-black/50"
                                 style={{ transformStyle: 'preserve-3d' }}
                                 onMouseMove={(e) => handleMouseMove(e, index)}
                                 onMouseLeave={() => handleMouseLeave(index)}
@@ -239,40 +247,32 @@ const ProjectsSection = () => {
                                     }}
                                 />
                                 
-                                {/* Top inner highlight */}
-                                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-
                                 <div className="grid lg:grid-cols-12 gap-0 relative z-10 min-h-[500px]">
                                     
                                     {/* Left Content */}
                                     <div className="lg:col-span-7 p-8 md:p-12 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-white/5">
-                                        <div className="flex items-center gap-4 mb-8" style={{ transform: 'translateZ(30px)' }}>
+                                        <div className="flex items-center gap-4 mb-8">
                                             <div className="flex flex-wrap gap-2">
                                                 {project.tech.slice(0, 3).map((t, i) => (
                                                     <span key={i} className="px-3 py-1 text-xs font-medium text-cyan-300 bg-cyan-950/50 border border-cyan-500/20 rounded-full backdrop-blur-md">
                                                         {t}
                                                     </span>
                                                 ))}
-                                                {project.tech.length > 3 && (
-                                                    <span className="px-3 py-1 text-xs font-medium text-slate-400 bg-white/5 border border-white/10 rounded-full backdrop-blur-md">
-                                                        +{project.tech.length - 3}
-                                                    </span>
-                                                )}
                                             </div>
                                         </div>
 
-                                        <h3 className="text-4xl md:text-5xl font-bold text-white mb-6" style={{ transform: 'translateZ(50px)' }}>
+                                        <h3 className="text-4xl md:text-5xl font-bold text-white mb-6">
                                             {project.title}
                                         </h3>
                                         
-                                        <p className="text-lg text-slate-400 leading-relaxed mb-8" style={{ transform: 'translateZ(40px)' }}>
+                                        <p className="text-lg text-slate-400 leading-relaxed mb-8">
                                             {project.description}
                                         </p>
 
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 mb-10" style={{ transform: 'translateZ(30px)' }}>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 mb-10">
                                             {project.features.map((feature, i) => (
                                                 <div key={i} className="flex items-start gap-3 group/feature">
-                                                    <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-indigo-500 group-hover/feature:bg-cyan-400 group-hover/feature:shadow-[0_0_10px_rgba(34,211,238,0.8)] transition-all flex-shrink-0" />
+                                                    <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-indigo-500 group-hover/feature:bg-cyan-400 transition-all flex-shrink-0" />
                                                     <span className="text-sm text-slate-500 group-hover/feature:text-slate-300 transition-colors">
                                                         {feature}
                                                     </span>
@@ -280,7 +280,7 @@ const ProjectsSection = () => {
                                             ))}
                                         </div>
 
-                                        <div className="mt-auto" style={{ transform: 'translateZ(60px)' }}>
+                                        <div className="mt-auto">
                                             <a
                                                 href={project.link}
                                                 target="_blank"
@@ -296,28 +296,14 @@ const ProjectsSection = () => {
                                         </div>
                                     </div>
 
-                                    {/* Right Visual 3D Area */}
-                                    <div className="lg:col-span-5 relative min-h-[300px] lg:min-h-full flex items-center justify-center p-8 overflow-hidden group/visual" style={{ transformStyle: 'preserve-3d' }}>
-                                        {/* Animated Rings */}
-                                        <div className="absolute w-[150%] aspect-square border border-white/5 rounded-full animate-[spin_60s_linear_infinite]" style={{ transform: 'translateZ(10px)' }} />
-                                        <div className="absolute w-[100%] aspect-square border border-indigo-500/10 rounded-full animate-[spin_40s_linear_infinite_reverse]" style={{ transform: 'translateZ(20px)' }} />
-                                        <div className="absolute w-[50%] aspect-square border border-cyan-500/20 rounded-full animate-[spin_20s_linear_infinite]" style={{ transform: 'translateZ(30px)' }} />
-                                        
-                                        {/* Glowing Core */}
-                                        <div className="absolute w-48 h-48 bg-gradient-to-tr from-cyan-500/40 to-indigo-500/40 rounded-full blur-[60px] group-hover/visual:blur-[80px] group-hover/visual:scale-110 transition-all duration-700" style={{ transform: 'translateZ(5px)' }} />
-                                        
-                                        {/* The 3D Icon */}
-                                        <div 
-                                            className="project-icon-3d text-8xl md:text-9xl filter drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] select-none group-hover/visual:scale-110 transition-transform duration-500"
-                                            style={{ transform: 'translateZ(100px)' }}
-                                        >
+                                    {/* Right Visual Area */}
+                                    <div className="lg:col-span-5 relative min-h-[300px] lg:min-h-full flex items-center justify-center p-8 overflow-hidden group/visual">
+                                        <div className="absolute w-[150%] aspect-square border border-white/5 rounded-full animate-[spin_60s_linear_infinite]" />
+                                        <div className="absolute w-48 h-48 bg-gradient-to-tr from-cyan-500/40 to-indigo-500/40 rounded-full blur-[60px]" />
+                                        <div className="project-icon-3d text-8xl md:text-9xl filter drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] select-none">
                                             {project.icon}
                                         </div>
-                                        
-                                        {/* Floating particles (CSS only) */}
-                                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20 pointer-events-none" style={{ transform: 'translateZ(0)' }} />
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -329,7 +315,3 @@ const ProjectsSection = () => {
 };
 
 export default ProjectsSection;
-
-
-
-
