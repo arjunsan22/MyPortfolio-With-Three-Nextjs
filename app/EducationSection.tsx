@@ -6,99 +6,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const EducationCard = ({ item, index, isLast }: any) => {
-    const cardRef = useRef<HTMLDivElement>(null);
-    const lineRef = useRef<HTMLDivElement>(null);
-
-    useGSAP(() => {
-        // Shutter entrance animation
-        gsap.from(cardRef.current, {
-            rotateX: -30,
-            opacity: 0,
-            y: 50,
-            transformPerspective: 1000,
-            duration: 1,
-            scrollTrigger: {
-                trigger: cardRef.current,
-                start: "top 85%",
-                toggleActions: "play none none reverse"
-            }
-        });
-
-        // Floating ambient movement
-        gsap.to(cardRef.current, {
-            y: -10,
-            duration: 2,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut",
-            delay: index * 0.5
-        });
-    }, { scope: cardRef });
-
-    return (
-        <div className="relative flex gap-8 md:gap-12 pb-20 last:pb-0">
-            {/* Timeline Column */}
-            <div className="flex flex-col items-center">
-                <div className="relative z-10 w-12 h-12 rounded-full bg-slate-900 border-2 border-cyan-500/50 flex items-center justify-center group-hover:border-cyan-400 transition-colors shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-                    <item.icon size={20} className="text-cyan-400" />
-                    <div className="absolute inset-0 rounded-full bg-cyan-500/20 animate-ping opacity-20" />
-                </div>
-                {!isLast && (
-                    <div className="w-[2px] h-full bg-gradient-to-b from-cyan-500/50 to-transparent" />
-                )}
-            </div>
-
-            {/* Content Card */}
-            <div
-                ref={cardRef}
-                className="flex-1 bg-slate-900/40 backdrop-blur-xl rounded-[2rem] p-6 md:p-8 border border-white/5 relative overflow-hidden group hover:border-cyan-500/30 transition-all duration-500"
-            >
-                {/* Background Decor */}
-                <div className="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
-                    <item.icon size={120} />
-                </div>
-
-                {/* Border Beam Animation */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent animate-[shimmer_2s_infinite]" />
-                </div>
-
-                <div className="relative z-10">
-                    <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-                        <span className="px-4 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-mono tracking-tighter border border-cyan-500/20">
-                            {item.year}
-                        </span>
-                        <div className="flex items-center gap-2 text-slate-500 text-sm">
-                            <Zap size={14} className="text-yellow-500" />
-                            <span>{item.type}</span>
-                        </div>
-                    </div>
-
-                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">
-                        {item.title}
-                    </h3>
-                    <p className="text-slate-400 font-medium mb-6">{item.institution}</p>
-
-                    {item.details && (
-                        <div className="space-y-3">
-                            {item.details.map((detail: string, i: number) => (
-                                <div key={i} className="flex items-start gap-2 text-sm text-slate-500 group-hover:text-slate-300 transition-colors">
-                                    <CheckCircle2 size={16} className="text-cyan-500/50 mt-0.5" />
-                                    <span>{detail}</span>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-};
-
 const EducationSection = () => {
     const sectionRef = useRef<HTMLElement>(null);
     const titleRef = useRef<HTMLHeadingElement>(null);
+    const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
     const educationData = [
         {
@@ -124,13 +35,14 @@ const EducationSection = () => {
             type: "Professional",
             icon: Binary,
             details: ["Intensive Industrial Training", "Full-stack Projects", "MVC / Clean Architecture Principles", "Data Structures & Algorithms (LeetCode Practice)"]
-        },         {
+        },
+        {
             title: "Docker Certification",
             institution: "Udemy",
             year: "NOV 2025",
             type: "Certification",
             icon: Award,
-            details: ["Docker Containerization Expert", "CI/CD",'Basic of KubKubernetes']
+            details: ["Docker Containerization Expert", "CI/CD", 'Basic of KubKubernetes']
         },
         {
             title: "Cloud & DevOps Certifications",
@@ -143,80 +55,252 @@ const EducationSection = () => {
     ];
 
     useGSAP(() => {
-        // Title reveal
-        gsap.from(".edu-title-char", {
+        // Title words entrance
+        gsap.from('.edu-title-word', {
+            y: 120,
             opacity: 0,
-            y: 50,
-            rotateX: -90,
-            stagger: 0.05,
-            duration: 0.8,
-            ease: "back.out(1.7)",
+            rotationX: -90,
+            transformOrigin: "bottom center",
+            stagger: 0.15,
+            duration: 1.5,
+            ease: "expo.out",
             scrollTrigger: {
                 trigger: titleRef.current,
-                start: "top 90%",
+                start: "top 85%",
             }
         });
 
-        // Background line animation
-        gsap.from(".bg-line", {
-            scaleY: 0,
-            transformOrigin: "top",
-            duration: 2,
+        // Subtitle
+        gsap.from('.edu-subtitle', {
+            y: 30,
+            opacity: 0,
+            duration: 1,
+            delay: 0.5,
+            ease: "power3.out",
             scrollTrigger: {
-                trigger: ".timeline-container",
-                start: "top 70%",
-                end: "bottom 70%",
-                scrub: 1
+                trigger: titleRef.current,
+                start: "top 85%",
             }
         });
+
+        // Timeline line grows
+        gsap.from('.timeline-beam', {
+            scaleY: 0,
+            transformOrigin: "top center",
+            duration: 2,
+            ease: "none",
+            scrollTrigger: {
+                trigger: '.timeline-track',
+                start: "top 70%",
+                end: "bottom 50%",
+                scrub: 1,
+            }
+        });
+
+        // Cards stagger in from alternating sides
+        const cards = cardsRef.current;
+        cards.forEach((card, index) => {
+            if (!card) return;
+
+            const isLeft = index % 2 === 0;
+
+            // Card entrance
+            gsap.from(card, {
+                x: isLeft ? -120 : 120,
+                opacity: 0,
+                rotateY: isLeft ? 25 : -25,
+                scale: 0.85,
+                duration: 1.2,
+                ease: "power4.out",
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 88%",
+                }
+            });
+
+            // Timeline node pulse
+            const node = card.closest('.timeline-item')?.querySelector('.timeline-node');
+            if (node) {
+                gsap.from(node, {
+                    scale: 0,
+                    opacity: 0,
+                    duration: 0.8,
+                    ease: "back.out(2)",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 85%",
+                    }
+                });
+            }
+
+            // Detail items stagger
+            const details = card.querySelectorAll('.detail-item');
+            if (details.length) {
+                gsap.from(details, {
+                    x: -30,
+                    opacity: 0,
+                    stagger: 0.1,
+                    duration: 0.6,
+                    ease: "power2.out",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 75%",
+                    }
+                });
+            }
+        });
+
     }, { scope: sectionRef });
+
+    // 3D tilt on hover
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, index: number) => {
+        const card = cardsRef.current[index];
+        if (!card) return;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const rotateX = ((y / rect.height) - 0.5) * -15;
+        const rotateY = ((x / rect.width) - 0.5) * 15;
+        gsap.to(card, { rotateX, rotateY, duration: 0.4, ease: "power2.out" });
+    };
+
+    const handleMouseLeave = (index: number) => {
+        const card = cardsRef.current[index];
+        if (!card) return;
+        gsap.to(card, { rotateX: 0, rotateY: 0, duration: 0.8, ease: "elastic.out(1, 0.4)" });
+    };
 
     return (
         <section
             id="education"
             ref={sectionRef}
-            className="py-32 px-6 bg-slate-800/30 backdrop-blur-sm relative overflow-hidden"
+            className="py-32 px-4 md:px-6 bg-[#050505] relative overflow-hidden min-h-screen"
         >
-            {/* Cyber Grid Background */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20" />
+            {/* Background Effects */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-[10%] left-[-15%] w-[600px] h-[600px] bg-purple-900/15 rounded-full blur-[150px]" />
+                <div className="absolute bottom-[10%] right-[-15%] w-[700px] h-[700px] bg-cyan-900/15 rounded-full blur-[150px]" />
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-15" />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:80px_80px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_20%,transparent_100%)]" />
+            </div>
 
-            {/* Ambient Light */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none" />
+            <div className="max-w-6xl mx-auto relative z-10">
+                {/* Header */}
+                <div className="text-center mb-32">
+                    <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl mb-8">
+                        <GraduationCap size={18} className="text-purple-400" />
+                        <span className="text-white text-sm font-bold tracking-widest uppercase">Knowledge Archive</span>
+                    </div>
 
-            <div className="max-w-4xl mx-auto relative z-10">
-                <div className="text-center mb-24">
                     <h2
                         ref={titleRef}
-                        className="text-5xl md:text-7xl font-black text-white tracking-tighter flex justify-center flex-wrap"
+                        className="text-6xl md:text-8xl lg:text-9xl font-black flex flex-wrap justify-center gap-4"
+                        style={{ perspective: '1000px' }}
                     >
-                        {"KNOWLEDGE ARCHIVE".split("").map((char, i) => (
-                            <span key={i} className="edu-title-char inline-block">
-                                {char === " " ? "\u00A0" : char}
-                            </span>
-                        ))}
+                        <span className="edu-title-word inline-block text-transparent bg-clip-text bg-gradient-to-br from-white to-white/30">EDUCATION</span>
+                        <span className="edu-title-word inline-block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-cyan-400 to-blue-400">&</span>
+                        <span className="edu-title-word inline-block text-transparent bg-clip-text bg-gradient-to-br from-white to-white/30">CERTS</span>
                     </h2>
-                    <p className="mt-6 text-slate-500 font-mono tracking-widest uppercase text-sm">
-                        Building the foundation of <span className="text-cyan-500 italic">excellence</span>
+
+                    <p className="edu-subtitle mt-8 text-slate-500 font-mono tracking-widest uppercase text-sm">
+                        Building the foundation of <span className="text-cyan-400 italic">excellence</span>
                     </p>
                 </div>
 
-                <div className="timeline-container relative">
-                    {/* Persistent Background Line */}
-                    <div className="bg-line absolute left-[23px] top-6 w-[2px] h-[90%] bg-gradient-to-b from-cyan-500 via-blue-500 to-transparent hidden md:block" />
+                {/* Timeline */}
+                <div className="timeline-track relative">
+                    {/* Central Beam */}
+                    <div className="hidden lg:block absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[2px]">
+                        <div className="timeline-beam w-full h-full bg-gradient-to-b from-purple-500 via-cyan-500 to-purple-500/0" />
+                    </div>
+                    {/* Mobile beam */}
+                    <div className="lg:hidden absolute left-8 top-0 bottom-0 w-[2px]">
+                        <div className="timeline-beam w-full h-full bg-gradient-to-b from-purple-500 via-cyan-500 to-purple-500/0" />
+                    </div>
 
-                    {educationData.map((item, index) => (
-                        <EducationCard
-                            key={index}
-                            item={item}
-                            index={index}
-                            isLast={index === educationData.length - 1}
-                        />
-                    ))}
+                    <div className="flex flex-col gap-16 md:gap-20">
+                        {educationData.map((item, index) => {
+                            const isLeft = index % 2 === 0;
+                            const Icon = item.icon;
+
+                            return (
+                                <div key={index} className="timeline-item relative">
+                                    {/* Timeline Node */}
+                                    <div className={`timeline-node absolute z-20 lg:left-1/2 lg:-translate-x-1/2 left-8 -translate-x-1/2 top-8`}>
+                                        <div className="w-14 h-14 rounded-2xl bg-[#0a0a0a] border-2 border-purple-500/50 flex items-center justify-center shadow-[0_0_30px_rgba(168,85,247,0.3)] rotate-45 group">
+                                            <Icon size={22} className="text-purple-400 -rotate-45" />
+                                        </div>
+                                        {/* Pulse ring */}
+                                        <div className="absolute inset-0 rounded-2xl border border-purple-500/30 animate-ping opacity-20 rotate-45" />
+                                    </div>
+
+                                    {/* Card - alternating sides on desktop */}
+                                    <div className={`lg:w-[45%] ml-16 lg:ml-0 ${isLeft ? 'lg:mr-auto lg:pr-16' : 'lg:ml-auto lg:pl-16'}`}>
+                                        <div
+                                            ref={(el) => { cardsRef.current[index] = el; }}
+                                            className="relative rounded-[2rem] bg-[#0a0a0a]/70 backdrop-blur-2xl border border-white/[0.08] p-8 md:p-10 overflow-hidden group cursor-default"
+                                            style={{ transformStyle: 'preserve-3d', perspective: '1000px' }}
+                                            onMouseMove={(e) => handleMouseMove(e, index)}
+                                            onMouseLeave={() => handleMouseLeave(index)}
+                                        >
+                                            {/* Hover glow */}
+                                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
+                                                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-cyan-500/5" />
+                                                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
+                                            </div>
+
+                                            {/* Large faded icon background */}
+                                            <div className="absolute top-4 right-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-500 pointer-events-none">
+                                                <Icon size={140} />
+                                            </div>
+
+                                            {/* Content */}
+                                            <div className="relative z-10">
+                                                {/* Top row */}
+                                                <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+                                                    <span className="px-4 py-1.5 rounded-full bg-purple-500/10 text-purple-300 text-xs font-bold tracking-widest uppercase border border-purple-500/20">
+                                                        {item.year}
+                                                    </span>
+                                                    <div className="flex items-center gap-2">
+                                                        <Zap size={14} className="text-yellow-500" />
+                                                        <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider">{item.type}</span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Title & Institution */}
+                                                <h3 className="text-2xl md:text-3xl font-black text-white mb-2 leading-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-cyan-400 transition-all duration-500">
+                                                    {item.title}
+                                                </h3>
+                                                <p className="text-slate-400 font-medium mb-8 text-lg">{item.institution}</p>
+
+                                                {/* Details */}
+                                                {item.details && (
+                                                    <div className="space-y-3">
+                                                        {item.details.map((detail: string, i: number) => (
+                                                            <div key={i} className="detail-item flex items-start gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] group-hover:bg-white/[0.04] group-hover:border-white/[0.08] transition-all duration-300">
+                                                                <CheckCircle2 size={16} className="text-cyan-500/70 mt-0.5 flex-shrink-0" />
+                                                                <span className="text-slate-400 text-sm leading-relaxed group-hover:text-slate-300 transition-colors">{detail}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Connector line to timeline (desktop) */}
+                                            <div className={`hidden lg:block absolute top-10 ${isLeft ? '-right-16' : '-left-16'} w-16 h-[2px]`}>
+                                                <div className={`w-full h-full bg-gradient-to-r ${isLeft ? 'from-white/10 to-purple-500/50' : 'from-purple-500/50 to-white/10'}`} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
 
-            {/* Bottom Accent */}
-            <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-800 to-transparent" />
+            {/* Bottom accent */}
+            <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
         </section>
     );
 };
