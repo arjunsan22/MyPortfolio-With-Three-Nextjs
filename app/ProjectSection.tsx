@@ -109,18 +109,21 @@ const ProjectsSection = () => {
         cards.forEach((card, index) => {
             if (!card) return;
 
-            // Entrance
-            gsap.from(card, {
-                y: 150,
-                opacity: 0,
-                rotateX: 15,
-                duration: 1.2,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: card,
-                    start: "top 85%",
-                }
-            });
+            // Entrance - target the inner card to avoid breaking position: sticky on the wrapper
+            const inner = card.querySelector('.card-inner');
+            if (inner) {
+                gsap.from(inner, {
+                    y: 150,
+                    opacity: 0,
+                    rotateX: 15,
+                    duration: 1.2,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: card,
+                        start: "top 85%",
+                    }
+                });
+            }
         });
 
         // 3D Icon floating animation
@@ -172,7 +175,7 @@ const ProjectsSection = () => {
     };
 
     return (
-        <section id="projects" ref={containerRef} className="py-32 px-4 bg-[#020617] relative overflow-clip min-h-screen">
+        <section id="projects" ref={containerRef} className="py-32 px-4 bg-[#020617] relative min-h-screen">
             {/* Cosmic Background Elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] mix-blend-screen" />
