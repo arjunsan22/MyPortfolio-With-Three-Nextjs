@@ -121,24 +121,6 @@ const ProjectsSection = () => {
                     start: "top 85%",
                 }
             });
-
-            // Scale down / Stack effect for previous cards
-            if (index < cards.length - 1) {
-                const nextCard = cards[index + 1];
-                
-                gsap.to(card, {
-                    scale: 0.9,
-                    opacity: 0.3,
-                    y: -30,
-                    filter: "blur(10px)",
-                    scrollTrigger: {
-                        trigger: nextCard,
-                        start: "top 90%", // When next card enters
-                        end: "top 15%",   // When next card is fully stacked
-                        scrub: true,
-                    }
-                });
-            }
         });
 
         // 3D Icon floating animation
