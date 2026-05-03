@@ -338,7 +338,15 @@ const ProjectsSection = () => {
                                 </div>
 
                                 {/* Right Visual Section - Project Screenshot */}
-                                <div className="lg:w-1/2 relative h-[350px] lg:h-full flex flex-col p-6 md:p-8 overflow-hidden items-center justify-center">
+                                <div 
+                                    className="lg:w-1/2 relative h-[350px] lg:h-full flex flex-col p-6 md:p-8 overflow-hidden items-center justify-center"
+                                    onWheel={(e) => {
+                                        const contentEl = cardsRef.current[index]?.querySelector('.project-content') as HTMLElement;
+                                        if (contentEl) {
+                                            contentEl.scrollTop += e.deltaY;
+                                        }
+                                    }}
+                                >
 
                                     {/* Huge background text watermark */}
                                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10rem] md:text-[20rem] font-black text-white/[0.03] whitespace-nowrap pointer-events-none select-none z-0 tracking-tighter mix-blend-overlay">
