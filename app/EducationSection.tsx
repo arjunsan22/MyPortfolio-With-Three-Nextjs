@@ -106,15 +106,16 @@ const EducationSection = () => {
 
             // Card entrance
             gsap.from(card, {
-                x: isLeft ? -120 : 120,
+                x: isLeft ? -80 : 80,
                 opacity: 0,
-                rotateY: isLeft ? 25 : -25,
-                scale: 0.85,
+                rotateY: isLeft ? 15 : -15,
+                scale: 0.9,
                 duration: 1.2,
                 ease: "power4.out",
                 scrollTrigger: {
                     trigger: card,
-                    start: "top 88%",
+                    start: "top 90%",
+                    toggleActions: "play none none none",
                 }
             });
 
@@ -128,23 +129,8 @@ const EducationSection = () => {
                     ease: "back.out(2)",
                     scrollTrigger: {
                         trigger: card,
-                        start: "top 85%",
-                    }
-                });
-            }
-
-            // Detail items stagger
-            const details = card.querySelectorAll('.detail-item');
-            if (details.length) {
-                gsap.from(details, {
-                    x: -30,
-                    opacity: 0,
-                    stagger: 0.1,
-                    duration: 0.6,
-                    ease: "power2.out",
-                    scrollTrigger: {
-                        trigger: card,
-                        start: "top 75%",
+                        start: "top 88%",
+                        toggleActions: "play none none none",
                     }
                 });
             }
