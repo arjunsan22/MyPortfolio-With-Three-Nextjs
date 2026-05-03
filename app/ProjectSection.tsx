@@ -12,7 +12,7 @@ interface Project {
     description: string;
     features: string[];
     link: string;
-    icon: string;
+    image: string;
 }
 
 const projects: Project[] = [
@@ -28,7 +28,7 @@ const projects: Project[] = [
             'MVC architecture'
         ],
         link: 'https://farmerslogin.vercel.app',
-        icon: '🌾'
+        image: '/farmerlogin.png'
     },
     {
         title: 'FoodConnects',
@@ -42,7 +42,7 @@ const projects: Project[] = [
             'Responsive design with Tailwind CSS'
         ],
         link: 'https://foodconnects.vercel.app/',
-        icon: '🍰'
+        image: '/foodconnect.png'
     },
     {
         title: 'WorkSPera',
@@ -61,7 +61,7 @@ const projects: Project[] = [
             'Frontend on Vercel, backend on Render'
         ],
         link: 'http://workspera.vercel.app',
-        icon: '🛠️'
+        image: '/workspera.png'
     },
     {
         title: 'FindMyWork',
@@ -76,7 +76,7 @@ const projects: Project[] = [
             'Enabled real-time application tracking (status updates)'
         ],
         link: 'https://findmywork-one.vercel.app/',
-        icon: '💼'
+        image: '/findmywork.png'
     }
 ];
 
@@ -108,7 +108,7 @@ const ProjectsSection = () => {
             if (!card) return;
             
             const inner = card.querySelector('.card-inner');
-            const icon = card.querySelector('.project-icon-3d');
+            const projectImage = card.querySelector('.project-image');
             const content = card.querySelector('.project-content');
             const features = card.querySelectorAll('.feature-item');
             const techBadges = card.querySelectorAll('.tech-badge');
@@ -162,30 +162,18 @@ const ProjectsSection = () => {
                 });
             }
 
-            if (techBadges.length) {
-                gsap.from(techBadges, {
+            // Image hover float animation
+            if (projectImage) {
+                gsap.from(projectImage, {
+                    y: 80,
                     opacity: 0,
-                    scale: 0,
-                    stagger: 0.05,
-                    duration: 0.8,
-                    ease: "back.out(2)",
+                    scale: 0.9,
+                    duration: 1.2,
+                    ease: "power3.out",
                     scrollTrigger: {
                         trigger: card,
-                        start: "top 50%",
+                        start: "top 65%",
                     }
-                });
-            }
-
-            // Floating icon continuous animation
-            if (icon) {
-                gsap.to(icon, {
-                    y: -30,
-                    rotationY: 20,
-                    rotationX: 10,
-                    duration: 3 + index, // slight variation per card
-                    repeat: -1,
-                    yoyo: true,
-                    ease: "sine.inOut"
                 });
             }
 
@@ -349,30 +337,27 @@ const ProjectsSection = () => {
                                     </div>
                                 </div>
 
-                                {/* Right Visual Section */}
-                                <div className="lg:w-1/2 relative h-[350px] lg:h-full flex flex-col p-8 overflow-hidden items-center justify-center">
+                                {/* Right Visual Section - Project Screenshot */}
+                                <div className="lg:w-1/2 relative h-[350px] lg:h-full flex flex-col p-6 md:p-8 overflow-hidden items-center justify-center">
                                     
                                     {/* Huge background text watermark */}
                                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10rem] md:text-[20rem] font-black text-white/[0.03] whitespace-nowrap pointer-events-none select-none z-0 tracking-tighter mix-blend-overlay">
                                         {project.title.substring(0, 4).toUpperCase()}
                                     </div>
 
-                                    {/* 3D Icon Area */}
-                                    <div className="flex-grow flex items-center justify-center relative z-10 w-full" style={{ transformStyle: 'preserve-3d' }}>
-                                        
-                                        {/* Glowing core behind icon */}
-                                        <div className="absolute w-48 h-48 md:w-64 md:h-64 bg-gradient-to-tr from-cyan-500/50 to-purple-500/50 rounded-full blur-[80px]" style={{ transform: 'translateZ(10px)' }} />
-                                        
-                                        {/* Abstract geometric rings */}
-                                        <div className="absolute w-[90%] aspect-square max-w-[400px] border border-white/5 rounded-full animate-[spin_40s_linear_infinite]" style={{ transform: 'translateZ(20px)' }} />
-                                        <div className="absolute w-[70%] aspect-square max-w-[320px] border border-cyan-500/20 rounded-full animate-[spin_20s_linear_infinite_reverse]" style={{ transform: 'translateZ(30px)' }} />
-                                        
-                                        {/* The Icon */}
-                                        <div 
-                                            className="project-icon-3d text-[6rem] md:text-[10rem] filter drop-shadow-[0_0_40px_rgba(255,255,255,0.3)] select-none"
-                                            style={{ transform: 'translateZ(100px)' }}
-                                        >
-                                            {project.icon}
+                                    {/* Glowing core behind image */}
+                                    <div className="absolute w-48 h-48 md:w-64 md:h-64 bg-gradient-to-tr from-cyan-500/40 to-purple-500/40 rounded-full blur-[80px] z-0" />
+
+                                    {/* Project Screenshot */}
+                                    <div className="project-image relative z-10 w-full h-full flex items-center justify-center">
+                                        <div className="relative w-full max-w-[500px] group/img">
+                                            {/* Glowing border effect */}
+                                            <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/30 via-purple-500/30 to-cyan-500/30 rounded-2xl blur-sm opacity-0 group-hover/img:opacity-100 transition-opacity duration-500" />
+                                            <img 
+                                                src={project.image} 
+                                                alt={project.title}
+                                                className="relative w-full h-auto rounded-2xl border border-white/10 shadow-2xl shadow-black/50 object-cover group-hover/img:scale-[1.02] group-hover/img:border-cyan-500/30 transition-all duration-500"
+                                            />
                                         </div>
                                     </div>
                                     
