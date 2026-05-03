@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Code2, ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -45,7 +45,6 @@ const projects: Project[] = [
         icon: '🍰'
     },
     {
-
         title: 'WorkSPera',
         tech: ['Next.js', 'React.js', 'Express.js', 'NextAuth.js', 'Socket.io', 'WebRTC', 'Node.js', 'MongoDB', 'Vercel', 'Render', 'Gemini API / Gen AI'],
         description: 'Real-time worker-connection platform combining chat, video calls, work posting, and hiring',
@@ -83,57 +82,77 @@ const projects: Project[] = [
 
 const ProjectsSection = () => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
     const titleRef = useRef<HTMLHeadingElement>(null);
+    const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
     useGSAP(() => {
-        // 1. TYPING REVEAL ANIMATION
-        // We target the spans inside the title
+        // Title Animation
         const chars = titleRef.current?.querySelectorAll('.typing-char');
         if (chars && chars.length > 0) {
             gsap.from(chars, {
                 opacity: 0,
-                y: 10,
-                filter: "blur(5px)",
+                y: 40,
+                rotateX: -90,
                 stagger: 0.05,
-                duration: 0.4,
-                ease: "power2.out",
+                duration: 1,
+                ease: "back.out(1.5)",
                 scrollTrigger: {
                     trigger: titleRef.current,
-                    start: "top 90%",
+                    start: "top 80%",
                 }
             });
         }
 
-        // Underline Reveal
-        gsap.from(".title-underline", {
-            width: 0,
-            duration: 1,
-            delay: 0.5,
-            ease: "expo.out",
-            scrollTrigger: {
-                trigger: titleRef.current,
-                start: "top 90%",
-            }
-        });
+        // Stacked Cards Animation
+        const cards = cardsRef.current;
+        
+        cards.forEach((card, index) => {
+            if (!card) return;
 
-        // 2. Cards Entrance
-        cardsRef.current.forEach((card, index) => {
-            if (card) {
-                gsap.from(card, {
-                    y: 50,
-                    opacity: 0,
+            // Entrance
+            gsap.from(card, {
+                y: 150,
+                opacity: 0,
+                rotateX: 15,
+                duration: 1.2,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 85%",
+                }
+            });
+
+            // Scale down / Stack effect for previous cards
+            if (index < cards.length - 1) {
+                const nextCard = cards[index + 1];
+                
+                gsap.to(card, {
                     scale: 0.9,
-                    duration: 1,
-                    delay: index * 0.1,
-                    ease: "power3.out",
+                    opacity: 0.3,
+                    y: -30,
+                    filter: "blur(10px)",
                     scrollTrigger: {
-                        trigger: card,
-                        start: "top 90%",
+                        trigger: nextCard,
+                        start: "top 90%", // When next card enters
+                        end: "top 15%",   // When next card is fully stacked
+                        scrub: true,
                     }
                 });
             }
         });
+
+        // 3D Icon floating animation
+        gsap.to('.project-icon-3d', {
+            y: -20,
+            rotationY: 15,
+            rotationX: 10,
+            duration: 4,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut",
+            stagger: 0.2
+        });
+
     }, { scope: containerRef });
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, index: number) => {
@@ -144,16 +163,16 @@ const ProjectsSection = () => {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        const rotateX = (y - rect.height / 2) / 20;
-        const rotateY = -(x - rect.width / 2) / 20;
+        const rotateX = (y - rect.height / 2) / 25;
+        const rotateY = -(x - rect.width / 2) / 25;
 
-        gsap.to(card, {
+        gsap.to(card.querySelector('.card-inner'), {
             rotateX: rotateX,
             rotateY: rotateY,
             duration: 0.5,
             ease: "power2.out",
         });
-
+        
         card.style.setProperty("--mouse-x", `${x}px`);
         card.style.setProperty("--mouse-y", `${y}px`);
     };
@@ -162,7 +181,7 @@ const ProjectsSection = () => {
         const card = cardsRef.current[index];
         if (!card) return;
 
-        gsap.to(card, {
+        gsap.to(card.querySelector('.card-inner'), {
             rotateX: 0,
             rotateY: 0,
             duration: 0.8,
@@ -170,114 +189,150 @@ const ProjectsSection = () => {
         });
     };
 
-
     return (
-        <section id="projects" ref={containerRef} className="py-32 px-4 bg-slate-800/30 backdrop-blur-sm relative overflow-hidden">
-            {/* Background Orbs */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-                <div className="absolute top-[-5%] left-[-5%] w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px]" />
-                <div className="absolute bottom-[-5%] right-[-5%] w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[100px]" />
+        <section id="projects" ref={containerRef} className="py-32 px-4 bg-[#020617] relative overflow-clip min-h-screen">
+            {/* Cosmic Background Elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] bg-indigo-600/20 rounded-full blur-[120px] mix-blend-screen" />
+                <div className="absolute bottom-[20%] right-[-10%] w-[600px] h-[600px] bg-cyan-600/20 rounded-full blur-[150px] mix-blend-screen" />
+                <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-600/10 rounded-full blur-[150px] mix-blend-screen" />
             </div>
 
-            <div className="max-w-7xl mx-auto relative z-10">
-                <div className="mb-20 text-center">
+            <div className="max-w-6xl mx-auto relative z-10">
+                <div className="mb-32 text-center">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-cyan-400 text-sm font-medium mb-6">
+                        <Sparkles size={16} />
+                        <span>Featured Projects</span>
+                    </div>
                     <h2
                         ref={titleRef}
-                        className="project-title text-5xl md:text-6xl lg:text-7xl font-black mb-6 flex flex-col sm:flex-row justify-center items-center sm:gap-4"
+                        className="text-5xl md:text-7xl lg:text-8xl font-black flex flex-col justify-center items-center gap-2"
+                        style={{ perspective: '1000px' }}
                     >
-                        <div className="flex">
-                            {"Selected".split("").map((char, i) => (
+                        <div className="flex overflow-hidden">
+                            {"SELECTED".split("").map((char, i) => (
                                 <span
                                     key={`sel-${i}`}
-                                    className="typing-char inline-block bg-gradient-to-b from-white to-slate-500 bg-clip-text text-transparent"
+                                    className="typing-char inline-block bg-gradient-to-br from-white via-white to-white/40 bg-clip-text text-transparent"
                                 >
                                     {char}
                                 </span>
                             ))}
                         </div>
-                        <div className="flex">
-                            {"Works".split("").map((char, i) => (
+                        <div className="flex overflow-hidden">
+                            {"WORKS".split("").map((char, i) => (
                                 <span
                                     key={`wrk-${i}`}
-                                    className="typing-char inline-block bg-gradient-to-b from-white to-slate-500 bg-clip-text text-transparent py-1 sm:py-0"
+                                    className="typing-char inline-block bg-gradient-to-r from-cyan-400 to-indigo-500 bg-clip-text text-transparent"
                                 >
                                     {char}
                                 </span>
                             ))}
                         </div>
                     </h2>
-                    <div className="title-underline h-1 w-24 bg-cyan-500 mx-auto rounded-full shadow-[0_0_20px_rgba(6,182,212,0.5)]" />
                 </div>
 
-                <div className="grid lg:grid-cols-2 gap-12" style={{ perspective: "1000px" }}>
+                <div className="projects-container flex flex-col gap-16 md:gap-24 pb-32">
                     {projects.map((project, index) => (
                         <div
                             key={index}
                             ref={(el) => { cardsRef.current[index] = el; }}
-                            onMouseMove={(e) => handleMouseMove(e, index)}
-                            onMouseLeave={() => handleMouseLeave(index)}
-                            style={{ transformStyle: "preserve-3d" }}
-                            className="group relative bg-slate-900/40 backdrop-blur-xl rounded-3xl p-1 border border-white/10 transition-colors duration-500 hover:border-cyan-500/50"
+                            className="project-card sticky top-[15vh] w-full"
+                            style={{ perspective: '1000px' }}
                         >
-                            {/* Spotlight */}
-                            <div
-                                className="pointer-events-none absolute inset-0 rounded-3xl z-30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                                style={{
-                                    background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(34, 211, 238, 0.15), transparent 40%)`
-                                } as React.CSSProperties}
-                            />
+                            <div 
+                                className="card-inner relative w-full rounded-[2.5rem] border border-white/10 bg-black/40 backdrop-blur-3xl overflow-hidden shadow-2xl shadow-black/50"
+                                style={{ transformStyle: 'preserve-3d' }}
+                                onMouseMove={(e) => handleMouseMove(e, index)}
+                                onMouseLeave={() => handleMouseLeave(index)}
+                            >
+                                {/* Glowing Mouse Effect */}
+                                <div
+                                    className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500 hover:opacity-100"
+                                    style={{
+                                        background: `radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(34, 211, 238, 0.08), transparent 40%)`
+                                    }}
+                                />
+                                
+                                {/* Top inner highlight */}
+                                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-                            <div className="relative z-10 p-6 sm:p-8 h-full flex flex-col">
-                                <div className="flex justify-between items-start mb-8 gap-4">
-                                    <div className="p-3 sm:p-4 bg-slate-800/50 rounded-2xl border border-white/5 group-hover:scale-110 group-hover:bg-cyan-500/10 transition-all duration-500 flex-shrink-0">
-                                        <span className="text-5xl block grayscale group-hover:grayscale-0 transition-all">
-                                            {project.icon}
-                                        </span>
-                                    </div>
-                                    <div className="flex flex-wrap justify-end gap-2">
-                                        {project.tech.slice(0, 3).map((t, i) => (
-                                            <span key={i} className="text-[10px] font-mono text-cyan-400/60 uppercase tracking-tighter border border-cyan-400/20 px-2 py-1 rounded-md">
-                                                {t}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <h3 className="text-3xl font-bold text-white mb-4 group-hover:text-cyan-400 transition-colors duration-300">
-                                    {project.title}
-                                </h3>
-
-                                <p className="text-slate-400 leading-relaxed mb-8 flex-grow">
-                                    {project.description}
-                                </p>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-8">
-                                    {project.features.map((feature, i) => (
-                                        <div key={i} className="flex items-start sm:items-center gap-2 text-xs text-slate-500">
-                                            <div className="w-1.5 h-1.5 mt-1 sm:mt-0 flex-shrink-0 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
-                                            <span className="leading-tight">{feature}</span>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-4 mt-auto pt-6 border-t border-white/5">
-                                    <div className="flex flex-wrap gap-2 sm:gap-0 sm:-space-x-2">
-                                        {project.tech.map((t, i) => (
-                                            <div key={i} title={t} className="w-8 h-8 rounded-full bg-slate-800 border-2 border-[#020617] flex items-center justify-center text-[10px] text-white font-bold hover:-translate-y-2 transition-transform cursor-default">
-                                                {t[0]}
+                                <div className="grid lg:grid-cols-12 gap-0 relative z-10 min-h-[500px]">
+                                    
+                                    {/* Left Content */}
+                                    <div className="lg:col-span-7 p-8 md:p-12 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-white/5">
+                                        <div className="flex items-center gap-4 mb-8" style={{ transform: 'translateZ(30px)' }}>
+                                            <div className="flex flex-wrap gap-2">
+                                                {project.tech.slice(0, 3).map((t, i) => (
+                                                    <span key={i} className="px-3 py-1 text-xs font-medium text-cyan-300 bg-cyan-950/50 border border-cyan-500/20 rounded-full backdrop-blur-md">
+                                                        {t}
+                                                    </span>
+                                                ))}
+                                                {project.tech.length > 3 && (
+                                                    <span className="px-3 py-1 text-xs font-medium text-slate-400 bg-white/5 border border-white/10 rounded-full backdrop-blur-md">
+                                                        +{project.tech.length - 3}
+                                                    </span>
+                                                )}
                                             </div>
-                                        ))}
+                                        </div>
+
+                                        <h3 className="text-4xl md:text-5xl font-bold text-white mb-6" style={{ transform: 'translateZ(50px)' }}>
+                                            {project.title}
+                                        </h3>
+                                        
+                                        <p className="text-lg text-slate-400 leading-relaxed mb-8" style={{ transform: 'translateZ(40px)' }}>
+                                            {project.description}
+                                        </p>
+
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 mb-10" style={{ transform: 'translateZ(30px)' }}>
+                                            {project.features.map((feature, i) => (
+                                                <div key={i} className="flex items-start gap-3 group/feature">
+                                                    <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-indigo-500 group-hover/feature:bg-cyan-400 group-hover/feature:shadow-[0_0_10px_rgba(34,211,238,0.8)] transition-all flex-shrink-0" />
+                                                    <span className="text-sm text-slate-500 group-hover/feature:text-slate-300 transition-colors">
+                                                        {feature}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <div className="mt-auto" style={{ transform: 'translateZ(60px)' }}>
+                                            <a
+                                                href={project.link}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="group/btn relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-black rounded-full font-bold text-sm md:text-base overflow-hidden transition-transform hover:scale-105 active:scale-95 w-full sm:w-auto"
+                                            >
+                                                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-cyan-400 to-indigo-400 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
+                                                <span className="relative z-10 flex items-center gap-2 group-hover/btn:text-white transition-colors">
+                                                    View Project
+                                                    <ArrowRight size={18} className="group-hover/btn:-rotate-45 transition-transform duration-300" />
+                                                </span>
+                                            </a>
+                                        </div>
                                     </div>
 
-                                    <a
-                                        href={project.link}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="flex items-center justify-center gap-2 px-6 py-3 bg-white text-black rounded-full font-bold hover:bg-cyan-400 hover:scale-105 transition-all duration-300 group/btn w-full sm:w-auto"
-                                    >
-                                        Explore
-                                        <ArrowRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
-                                    </a>
+                                    {/* Right Visual 3D Area */}
+                                    <div className="lg:col-span-5 relative min-h-[300px] lg:min-h-full flex items-center justify-center p-8 overflow-hidden group/visual" style={{ transformStyle: 'preserve-3d' }}>
+                                        {/* Animated Rings */}
+                                        <div className="absolute w-[150%] aspect-square border border-white/5 rounded-full animate-[spin_60s_linear_infinite]" style={{ transform: 'translateZ(10px)' }} />
+                                        <div className="absolute w-[100%] aspect-square border border-indigo-500/10 rounded-full animate-[spin_40s_linear_infinite_reverse]" style={{ transform: 'translateZ(20px)' }} />
+                                        <div className="absolute w-[50%] aspect-square border border-cyan-500/20 rounded-full animate-[spin_20s_linear_infinite]" style={{ transform: 'translateZ(30px)' }} />
+                                        
+                                        {/* Glowing Core */}
+                                        <div className="absolute w-48 h-48 bg-gradient-to-tr from-cyan-500/40 to-indigo-500/40 rounded-full blur-[60px] group-hover/visual:blur-[80px] group-hover/visual:scale-110 transition-all duration-700" style={{ transform: 'translateZ(5px)' }} />
+                                        
+                                        {/* The 3D Icon */}
+                                        <div 
+                                            className="project-icon-3d text-8xl md:text-9xl filter drop-shadow-[0_0_30px_rgba(255,255,255,0.2)] select-none group-hover/visual:scale-110 transition-transform duration-500"
+                                            style={{ transform: 'translateZ(100px)' }}
+                                        >
+                                            {project.icon}
+                                        </div>
+                                        
+                                        {/* Floating particles (CSS only) */}
+                                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20 pointer-events-none" style={{ transform: 'translateZ(0)' }} />
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
