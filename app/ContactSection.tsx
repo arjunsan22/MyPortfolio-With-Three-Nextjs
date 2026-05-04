@@ -24,47 +24,87 @@ const ContactSection = () => {
                 start: "top 85%",
             }
         });
-        gsap.fromTo(".contact-title-char",
-            {
-                opacity: 0,
-                y: 20,
-                filter: "blur(6px)"
-            },
-            {
-                opacity: 1,
-                y: 0,
-                filter: "blur(0px)",
-                stagger: 0.04,
-                duration: 0.6,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: containerRef.current,
-                    start: "top 80%",
-                }
-            }
-        );
+        // Neon Electric Flicker for Contact
+        const titleChars = document.querySelectorAll('.contact-title-char');
+        const textChars = document.querySelectorAll('.contact-text-char');
+        
+        gsap.set([...titleChars, ...textChars], { opacity: 0 });
 
-
-        gsap.fromTo(".contact-text-char",
-            {
-                opacity: 0,
-                y: 15,
-                filter: "blur(4px)"
-            },
-            {
-                opacity: 1,
-                y: 0,
-                filter: "blur(0px)",
-                stagger: 0.015,
-                duration: 0.5,
-                delay: 0.4,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: containerRef.current,
-                    start: "top 80%",
-                }
+        const neonTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: containerRef.current,
+                start: "top 80%",
             }
-        );
+        });
+
+        const colors = ["#a855f7", "#06b6d4", "#3b82f6", "#10b981"]; // Purple, Cyan, Blue, Emerald
+
+        // Animate Title
+        titleChars.forEach((char, i) => {
+            const glowColor = colors[i % colors.length];
+            const intenseGlow = `0 0 10px #fff, 0 0 20px ${glowColor}, 0 0 40px ${glowColor}, 0 0 80px ${glowColor}`;
+            const subtleGlow = `0 0 5px ${glowColor}, 0 0 15px ${glowColor}`;
+
+            neonTl.to(char, {
+                keyframes: [
+                    { opacity: 1, textShadow: intenseGlow, duration: 0.04 },
+                    { opacity: Math.random() * 0.3, textShadow: "none", duration: 0.04 + Math.random() * 0.04 },
+                    { opacity: 1, textShadow: intenseGlow, duration: 0.04 },
+                    { opacity: Math.random() * 0.2, textShadow: "none", duration: 0.04 + Math.random() * 0.04 },
+                    { opacity: 1, textShadow: intenseGlow, duration: 0.04 },
+                    { opacity: Math.random() * 0.4, textShadow: "none", duration: 0.04 },
+                    { opacity: 1, textShadow: subtleGlow, duration: 0.15 }
+                ],
+                ease: "none",
+            }, i * 0.08); 
+        });
+
+        // Animate Subtitle Text
+        textChars.forEach((char, i) => {
+            const glowColor = colors[(i + 2) % colors.length];
+            const intenseGlow = `0 0 5px #fff, 0 0 10px ${glowColor}, 0 0 20px ${glowColor}`;
+            const subtleGlow = `0 0 2px ${glowColor}, 0 0 5px ${glowColor}`;
+
+            neonTl.to(char, {
+                keyframes: [
+                    { opacity: 1, textShadow: intenseGlow, duration: 0.03 },
+                    { opacity: Math.random() * 0.3, textShadow: "none", duration: 0.03 + Math.random() * 0.03 },
+                    { opacity: 1, textShadow: intenseGlow, duration: 0.03 },
+                    { opacity: Math.random() * 0.2, textShadow: "none", duration: 0.03 },
+                    { opacity: 1, textShadow: subtleGlow, duration: 0.1 }
+                ],
+                ease: "none",
+            }, 0.5 + i * 0.02); 
+        });
+        
+        // Occasional Random Flickers
+        const triggerRandomFlicker = (charsList: NodeListOf<Element>, isTitle: boolean) => {
+            if (!charsList.length) return;
+            const randomChar = charsList[Math.floor(Math.random() * charsList.length)];
+            const glowColor = colors[Math.floor(Math.random() * colors.length)];
+            const intenseGlow = isTitle 
+                ? `0 0 10px #fff, 0 0 20px ${glowColor}, 0 0 40px ${glowColor}`
+                : `0 0 5px #fff, 0 0 10px ${glowColor}, 0 0 20px ${glowColor}`;
+            const subtleGlow = isTitle
+                ? `0 0 5px ${glowColor}, 0 0 15px ${glowColor}`
+                : `0 0 2px ${glowColor}, 0 0 5px ${glowColor}`;
+
+            gsap.to(randomChar, {
+                keyframes: [
+                    { opacity: 0.4, textShadow: "none", duration: 0.05 },
+                    { opacity: 1, textShadow: intenseGlow, duration: 0.05 },
+                    { opacity: 0.7, textShadow: "none", duration: 0.05 },
+                    { opacity: 1, textShadow: subtleGlow, duration: 0.1 }
+                ],
+                delay: 1 + Math.random() * 4,
+                onComplete: () => triggerRandomFlicker(charsList, isTitle)
+            });
+        };
+
+        neonTl.call(() => {
+            triggerRandomFlicker(titleChars, true);
+            triggerRandomFlicker(textChars, false);
+        }, [], "+=0.5");
 
         const cards = gsap.utils.toArray<HTMLElement>(".magnetic-button");
 
@@ -143,31 +183,54 @@ const ContactSection = () => {
         <section
             id="contact"
             ref={containerRef}
-            className="py-24 px-4 bg-slate-800/30 backdrop-blur-sm relative overflow-hidden"
+            className="py-32 px-4 bg-[#050505] relative overflow-hidden min-h-screen flex flex-col justify-center border-t border-white/5"
         >
-            {/* Background Decor (same vibe as CodingProfiles) */}
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 blur-[150px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 blur-[150px] rounded-full pointer-events-none" />
+            {/* Premium Background Effects */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-[20%] left-[10%] w-[500px] h-[500px] bg-cyan-900/20 rounded-full blur-[150px]" />
+                <div className="absolute bottom-[20%] right-[10%] w-[500px] h-[500px] bg-emerald-900/20 rounded-full blur-[150px]" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-purple-900/10 blur-[150px] rounded-full" />
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-15" />
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:80px_80px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_20%,transparent_100%)]" />
+            </div>
 
-            <div className="max-w-6xl mx-auto text-center relative z-10">
+            <div className="max-w-4xl mx-auto text-center relative z-10">
+                {/* Badge */}
+                <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-xl mb-12 contact-reveal">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-white text-sm font-bold tracking-widest uppercase">Available for Work</span>
+                </div>
+
                 <h2
-                    className="text-4xl md:text-5xl font-bold mb-8 bg-gradient-to-r from-white to-slate-500 bg-clip-text text-transparent"
+                    className="text-6xl md:text-8xl font-black mb-10 text-white flex justify-center gap-x-4 flex-wrap"
                 >
-                    Let's Connect
+                    {"Let's Connect".split(" ").map((word, wordIndex) => (
+                        <span key={wordIndex} className="inline-flex">
+                            {word.split("").map((char, i) => (
+                                <span key={i} className="contact-title-char inline-block opacity-0">
+                                    {char}
+                                </span>
+                            ))}
+                        </span>
+                    ))}
                 </h2>
 
-                <p className="text-xl text-slate-400 mb-12">
+                <p className="text-xl md:text-2xl text-slate-300 font-medium mb-16 flex flex-wrap justify-center leading-relaxed">
                     {"I'm always open to discussing new projects and opportunities"
-                        .split("")
-                        .map((char, i) => (
-                            <span key={i} className="contact-text-char inline-block">
-                                {char === " " ? "\u00A0" : char}
+                        .split(" ")
+                        .map((word, wordIndex) => (
+                            <span key={wordIndex} className="inline-flex mr-2 mb-1">
+                                {word.split("").map((char, i) => (
+                                    <span key={i} className="contact-text-char inline-block opacity-0">
+                                        {char}
+                                    </span>
+                                ))}
                             </span>
                         ))}
                 </p>
 
 
-                <div className="flex flex-wrap justify-center gap-6">
+                <div className="flex flex-wrap justify-center gap-6 contact-reveal">
                     {links.map((link) => (
                         <a
                             key={link.name}
