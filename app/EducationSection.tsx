@@ -55,20 +55,59 @@ const EducationSection = () => {
     ];
 
     useGSAP(() => {
-        // Title words entrance
-        gsap.from('.edu-title-word', {
-            y: 120,
-            opacity: 0,
-            rotationX: -90,
-            transformOrigin: "bottom center",
-            stagger: 0.15,
-            duration: 1.5,
-            ease: "expo.out",
+        // Neon Flicker Electric Entrance for Title
+        const chars = document.querySelectorAll('.neon-char');
+        gsap.set(chars, { opacity: 0 }); // Initial state
+
+        const neonTl = gsap.timeline({
             scrollTrigger: {
                 trigger: titleRef.current,
                 start: "top 85%",
             }
         });
+
+        const colors = ["#a855f7", "#06b6d4", "#3b82f6"]; // Purple, Cyan, Blue
+
+        chars.forEach((char, i) => {
+            const glowColor = colors[i % colors.length];
+            const intenseGlow = `0 0 10px #fff, 0 0 20px ${glowColor}, 0 0 40px ${glowColor}, 0 0 80px ${glowColor}`;
+            const subtleGlow = `0 0 5px ${glowColor}, 0 0 15px ${glowColor}`;
+
+            neonTl.to(char, {
+                keyframes: [
+                    { opacity: 1, textShadow: intenseGlow, duration: 0.05 },
+                    { opacity: Math.random() * 0.3, textShadow: "none", duration: 0.05 + Math.random() * 0.05 },
+                    { opacity: 1, textShadow: intenseGlow, duration: 0.05 },
+                    { opacity: Math.random() * 0.2, textShadow: "none", duration: 0.05 + Math.random() * 0.05 },
+                    { opacity: 1, textShadow: intenseGlow, duration: 0.05 },
+                    { opacity: Math.random() * 0.4, textShadow: "none", duration: 0.05 },
+                    { opacity: 1, textShadow: subtleGlow, duration: 0.2 }
+                ],
+                ease: "none",
+            }, i * 0.12); // Stagger by 0.12s for the "traveling current" effect
+        });
+
+        // Occasional Random Flickers after main sequence
+        const triggerRandomFlicker = () => {
+            if (!chars.length) return;
+            const randomChar = chars[Math.floor(Math.random() * chars.length)];
+            const glowColor = colors[Math.floor(Math.random() * colors.length)];
+            const intenseGlow = `0 0 10px #fff, 0 0 20px ${glowColor}, 0 0 40px ${glowColor}`;
+            const subtleGlow = `0 0 5px ${glowColor}, 0 0 15px ${glowColor}`;
+
+            gsap.to(randomChar, {
+                keyframes: [
+                    { opacity: 0.3, textShadow: "none", duration: 0.05 },
+                    { opacity: 1, textShadow: intenseGlow, duration: 0.05 },
+                    { opacity: 0.6, textShadow: "none", duration: 0.05 },
+                    { opacity: 1, textShadow: subtleGlow, duration: 0.1 }
+                ],
+                delay: 1.5 + Math.random() * 3,
+                onComplete: triggerRandomFlicker
+            });
+        };
+
+        neonTl.call(triggerRandomFlicker, [], "+=0.5");
 
         // Subtitle
         gsap.from('.edu-subtitle', {
@@ -180,12 +219,22 @@ const EducationSection = () => {
 
                     <h2
                         ref={titleRef}
-                        className="text-6xl md:text-8xl lg:text-9xl font-black flex flex-wrap justify-center gap-4"
+                        className="text-6xl md:text-8xl lg:text-9xl font-black flex flex-wrap justify-center gap-x-6 gap-y-2 text-white"
                         style={{ perspective: '1000px' }}
                     >
-                        <span className="edu-title-word inline-block text-transparent bg-clip-text bg-gradient-to-br from-white to-white/30">EDUCATION</span>
-                        <span className="edu-title-word inline-block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-cyan-400 to-blue-400">&</span>
-                        <span className="edu-title-word inline-block text-transparent bg-clip-text bg-gradient-to-br from-white to-white/30">CERTS</span>
+                        <span className="edu-title-word inline-flex">
+                            {"EDUCATION".split("").map((char, i) => (
+                                <span key={`edu-${i}`} className="neon-char inline-block">{char}</span>
+                            ))}
+                        </span>
+                        <span className="edu-title-word inline-flex">
+                            <span className="neon-char inline-block">&</span>
+                        </span>
+                        <span className="edu-title-word inline-flex">
+                            {"CERTS".split("").map((char, i) => (
+                                <span key={`cert-${i}`} className="neon-char inline-block">{char}</span>
+                            ))}
+                        </span>
                     </h2>
 
                     <p className="edu-subtitle mt-8 text-slate-500 font-mono tracking-widest uppercase text-sm">
