@@ -35,6 +35,31 @@ body {
   }
 }
 
+/* ── Split Text Animation Chars ── */
+.hero-title-char,
+.hero-sub-char {
+  will-change: transform, opacity, clip-path, filter;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.hero-title-char {
+  /* Inherit the gradient from the parent word span */
+  background: inherit;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent;
+}
+
+.hero-sub-char--accent-cyan {
+  /* Inherit color from parent */
+  color: inherit;
+}
+
+.hero-sub-char--accent-purple {
+  color: inherit;
+}
+
 @media (pointer: fine) {
 
   body,

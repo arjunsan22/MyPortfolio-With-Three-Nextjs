@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Github, Mail,
   Menu, X, Code, Rocket,
@@ -18,6 +18,25 @@ import CodingProfiles from './LeetandGit';
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, useGSAP);
+}
+
+/* ── SplitChars: renders each character as an individually animatable span ── */
+function SplitChars({ text, className, charClassName }: { text: string; className?: string; charClassName?: string }) {
+  const chars = useMemo(() => text.split(''), [text]);
+  return (
+    <span className={className} aria-label={text}>
+      {chars.map((ch, i) => (
+        <span
+          key={i}
+          className={charClassName}
+          style={{ display: 'inline-block', whiteSpace: ch === ' ' ? 'pre' : undefined }}
+          aria-hidden="true"
+        >
+          {ch === ' ' ? '\u00A0' : ch}
+        </span>
+      ))}
+    </span>
+  );
 }
 
 export default function Portfolio() {
@@ -206,30 +225,97 @@ export default function Portfolio() {
       ease: "power4.out"
     });
 
-    // Hero content animations
+    // Hero sparkle
     tl.from(".hero-sparkle", {
       scale: 0,
       rotation: 180,
       opacity: 0,
       duration: 1,
       ease: "back.out(1.7)"
-    }, "-=0.8")
-    .from(".hero-title-word", {
-      y: 100,
-      opacity: 0,
-      duration: 1.2,
-      stagger: 0.15,
-      ease: "expo.out",
-      rotationX: -90,
-      transformOrigin: "0% 50% -50"
-    }, "-=0.6")
-    .from(".hero-subtitle", {
-      y: 30,
-      opacity: 0,
-      duration: 1,
-      ease: "power3.out"
-    }, "-=0.8")
-    .from(".hero-btn", {
+    }, "-=0.8");
+
+    /* ──────────────────────────────────────────────
+     *  SPLIT TEXT — Heading
+     *  Each character starts clipped (invisible),
+     *  then the clip-path opens vertically from
+     *  center outward while the char slides up with
+     *  3D rotation — replicating the "Split Second" look.
+     * ────────────────────────────────────────────── */
+    const titleChars = containerRef.current?.querySelectorAll('.hero-title-char');
+    if (titleChars && titleChars.length) {
+      // Initial state
+      gsap.set(titleChars, {
+        opacity: 0,
+        y: 80,
+        rotationX: -90,
+        scaleY: 0,
+        transformOrigin: '50% 100%',
+        clipPath: 'inset(100% 0% 0% 0%)',
+      });
+
+      tl.to(titleChars, {
+        opacity: 1,
+        y: 0,
+        rotationX: 0,
+        scaleY: 1,
+        clipPath: 'inset(0% 0% 0% 0%)',
+        duration: 1.2,
+        stagger: {
+          each: 0.04,
+          from: 'center',
+        },
+        ease: 'expo.out',
+      }, '-=0.6');
+
+      // Secondary shimmer sweep — a subtle brightness pulse
+      tl.fromTo(titleChars, {
+        filter: 'brightness(1)',
+      }, {
+        filter: 'brightness(1.8)',
+        duration: 0.3,
+        stagger: { each: 0.025, from: 'start' },
+        yoyo: true,
+        repeat: 1,
+        ease: 'power1.inOut',
+      }, '-=0.5');
+    }
+
+    /* ──────────────────────────────────────────────
+     *  MOTION TYPOGRAPHY — Subtitle
+     *  Each character enters from a random offset,
+     *  rotation, and scale — the "MOTION" look.
+     * ────────────────────────────────────────────── */
+    const subtitleChars = containerRef.current?.querySelectorAll('.hero-sub-char');
+    if (subtitleChars && subtitleChars.length) {
+      // Randomised initial state for each char
+      subtitleChars.forEach((ch) => {
+        gsap.set(ch, {
+          opacity: 0,
+          y: gsap.utils.random(-120, 120),
+          x: gsap.utils.random(-40, 40),
+          rotation: gsap.utils.random(-90, 90),
+          scale: gsap.utils.random(0, 2.5),
+          transformOrigin: '50% 50%',
+        });
+      });
+
+      tl.to(subtitleChars, {
+        opacity: 1,
+        y: 0,
+        x: 0,
+        rotation: 0,
+        scale: 1,
+        duration: 1.4,
+        stagger: {
+          each: 0.02,
+          from: 'random',
+        },
+        ease: 'elastic.out(1, 0.5)',
+      }, '-=0.8');
+    }
+
+    // Buttons
+    tl.from(".hero-btn", {
       scale: 0.8,
       y: 20,
       opacity: 0,
@@ -338,19 +424,29 @@ export default function Portfolio() {
               </div>
               
               <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-8 flex flex-wrap justify-center gap-x-[0.3em] gap-y-2" style={{ perspective: "1000px" }}>
-                <span className="hero-title-word inline-block bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
-                  Full-Stack
-                </span>
-                <span className="hero-title-word inline-block bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-                  Web
-                </span>
-                <span className="hero-title-word inline-block bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
-                  Developer
-                </span>
+                <SplitChars
+                  text="Full-Stack"
+                  className="hero-title-word inline-block bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent"
+                  charClassName="hero-title-char"
+                />
+                <SplitChars
+                  text="Web"
+                  className="hero-title-word inline-block bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent"
+                  charClassName="hero-title-char"
+                />
+                <SplitChars
+                  text="Developer"
+                  className="hero-title-word inline-block bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent"
+                  charClassName="hero-title-char"
+                />
               </h1>
               
-              <p className="hero-subtitle text-xl md:text-2xl lg:text-3xl text-slate-400 font-light max-w-3xl mb-12 leading-relaxed">
-                Building <span className="text-cyan-400 font-medium">dynamic</span> and <span className="text-purple-400 font-medium">scalable</span> applications with modern web technologies
+              <p className="hero-subtitle text-xl md:text-2xl lg:text-3xl text-slate-400 font-light max-w-3xl mb-12 leading-relaxed" style={{ perspective: '800px' }}>
+                <SplitChars text="Building " charClassName="hero-sub-char" />
+                <SplitChars text="dynamic" className="text-cyan-400 font-medium" charClassName="hero-sub-char hero-sub-char--accent-cyan" />
+                <SplitChars text=" and " charClassName="hero-sub-char" />
+                <SplitChars text="scalable" className="text-purple-400 font-medium" charClassName="hero-sub-char hero-sub-char--accent-purple" />
+                <SplitChars text=" applications with modern web technologies" charClassName="hero-sub-char" />
               </p>
               
               <div className="flex flex-col sm:flex-row justify-center gap-6 mb-16 w-full sm:w-auto">
