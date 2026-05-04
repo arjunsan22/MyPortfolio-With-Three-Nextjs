@@ -20,19 +20,34 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, useGSAP);
 }
 
-/* ── SplitChars: renders each character as an individually animatable span ── */
+/* ── SplitChars: renders each character grouped into words to prevent line breaks ── */
 function SplitChars({ text, className, charClassName }: { text: string; className?: string; charClassName?: string }) {
-  const chars = useMemo(() => text.split(''), [text]);
+  const words = useMemo(() => text.split(' '), [text]);
+  
   return (
     <span className={className} aria-label={text}>
-      {chars.map((ch, i) => (
-        <span
-          key={i}
-          className={charClassName}
-          style={{ display: 'inline-block', whiteSpace: ch === ' ' ? 'pre' : undefined }}
-          aria-hidden="true"
+      {words.map((word, wordIdx) => (
+        <span 
+          key={wordIdx} 
+          style={{ display: 'inline-block', whiteSpace: 'nowrap' }}
+          className="word-wrapper"
         >
-          {ch === ' ' ? '\u00A0' : ch}
+          {word.split('').map((ch, charIdx) => (
+            <span
+              key={charIdx}
+              className={charClassName}
+              style={{ display: 'inline-block' }}
+              aria-hidden="true"
+            >
+              {ch}
+            </span>
+          ))}
+          {/* Add a space after the word if it's not the last one */}
+          {wordIdx < words.length - 1 && (
+            <span style={{ display: 'inline-block' }} aria-hidden="true">
+              &nbsp;
+            </span>
+          )}
         </span>
       ))}
     </span>
