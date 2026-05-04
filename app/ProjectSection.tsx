@@ -86,18 +86,34 @@ const ProjectsSection = () => {
     const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
     useGSAP(() => {
-        // Title Entrance
-        gsap.from('.title-word', {
-            y: 100,
+        // Title Entrance - Letter by Letter "Print" effect
+        gsap.from('.char', {
             opacity: 0,
-            rotationX: -80,
-            transformOrigin: "bottom center",
-            stagger: 0.1,
-            duration: 1.5,
-            ease: "expo.out",
+            y: 20,
+            scale: 1.5,
+            filter: 'blur(10px)',
+            stagger: {
+                amount: 1,
+                from: "random"
+            },
+            duration: 0.8,
+            ease: "power4.out",
             scrollTrigger: {
                 trigger: titleRef.current,
-                start: "top 80%",
+                start: "top 85%",
+            }
+        });
+
+        // Add a secondary "glitchy" flicker during entrance
+        gsap.to('.title-word', {
+            opacity: 1,
+            duration: 0.1,
+            repeat: 10,
+            repeatDelay: 0.05,
+            yoyo: true,
+            scrollTrigger: {
+                trigger: titleRef.current,
+                start: "top 85%",
             }
         });
 
@@ -245,8 +261,16 @@ const ProjectsSection = () => {
                     </div>
 
                     <h2 ref={titleRef} className="text-6xl md:text-8xl lg:text-9xl font-black flex flex-wrap justify-center gap-x-8 gap-y-4" style={{ perspective: '1000px' }}>
-                        <span className="title-word glitch inline-block text-transparent bg-clip-text bg-gradient-to-br from-white to-white/30" data-text="SELECTED">SELECTED</span>
-                        <span className="title-word glitch inline-block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400" data-text="WORKS">WORKS</span>
+                        <span className="title-word glitch inline-block text-transparent bg-clip-text bg-gradient-to-br from-white to-white/30" data-text="SELECTED">
+                            {"SELECTED".split("").map((char, i) => (
+                                <span key={i} className="char inline-block">{char}</span>
+                            ))}
+                        </span>
+                        <span className="title-word glitch inline-block text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-400 to-purple-400" data-text="WORKS">
+                            {"WORKS".split("").map((char, i) => (
+                                <span key={i} className="char inline-block">{char}</span>
+                            ))}
+                        </span>
                     </h2>
                 </div>
 
