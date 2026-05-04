@@ -24,11 +24,49 @@ const ContactSection = () => {
                 start: "top 85%",
             }
         });
-        // Neon Electric Flicker for Contact
-        const titleChars = document.querySelectorAll('.contact-title-char');
+        // Motion Split Text Animation for Title
+        const topHalves = document.querySelectorAll('.motion-top');
+        const bottomHalves = document.querySelectorAll('.motion-bottom');
+
+        gsap.set(topHalves, { yPercent: -100, opacity: 0, clipPath: 'polygon(0% 0%, 100% 0%, 100% 50%, 0% 50%)' });
+        gsap.set(bottomHalves, { yPercent: 100, opacity: 0, clipPath: 'polygon(0% 50%, 100% 50%, 100% 100%, 0% 100%)' });
+
+        const titleTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: containerRef.current,
+                start: "top 80%",
+            }
+        });
+
+        titleTl.to(topHalves, {
+            yPercent: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: "expo.out",
+            stagger: 0.05
+        }, 0)
+        .to(bottomHalves, {
+            yPercent: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: "expo.out",
+            stagger: 0.05
+        }, 0.1);
+
+        // Hover Glitch Effect for Title
+        const titleContainers = document.querySelectorAll('.contact-motion-char');
+        titleContainers.forEach(container => {
+            container.addEventListener('mouseenter', () => {
+                const top = container.querySelector('.motion-top');
+                const bottom = container.querySelector('.motion-bottom');
+                gsap.to(top, { x: -4, duration: 0.1, yoyo: true, repeat: 3 });
+                gsap.to(bottom, { x: 4, duration: 0.1, yoyo: true, repeat: 3 });
+            });
+        });
+
+        // Neon Electric Flicker for Contact Subtitle
         const textChars = document.querySelectorAll('.contact-text-char');
-        
-        gsap.set([...titleChars, ...textChars], { opacity: 0 });
+        gsap.set(textChars, { opacity: 0 });
 
         const neonTl = gsap.timeline({
             scrollTrigger: {
@@ -38,26 +76,6 @@ const ContactSection = () => {
         });
 
         const colors = ["#a855f7", "#06b6d4", "#3b82f6", "#10b981"]; // Purple, Cyan, Blue, Emerald
-
-        // Animate Title
-        titleChars.forEach((char, i) => {
-            const glowColor = colors[i % colors.length];
-            const intenseGlow = `0 0 10px #fff, 0 0 20px ${glowColor}, 0 0 40px ${glowColor}, 0 0 80px ${glowColor}`;
-            const subtleGlow = `0 0 5px ${glowColor}, 0 0 15px ${glowColor}`;
-
-            neonTl.to(char, {
-                keyframes: [
-                    { opacity: 1, textShadow: intenseGlow, duration: 0.04 },
-                    { opacity: Math.random() * 0.3, textShadow: "none", duration: 0.04 + Math.random() * 0.04 },
-                    { opacity: 1, textShadow: intenseGlow, duration: 0.04 },
-                    { opacity: Math.random() * 0.2, textShadow: "none", duration: 0.04 + Math.random() * 0.04 },
-                    { opacity: 1, textShadow: intenseGlow, duration: 0.04 },
-                    { opacity: Math.random() * 0.4, textShadow: "none", duration: 0.04 },
-                    { opacity: 1, textShadow: subtleGlow, duration: 0.15 }
-                ],
-                ease: "none",
-            }, i * 0.08); 
-        });
 
         // Animate Subtitle Text
         textChars.forEach((char, i) => {
@@ -78,16 +96,12 @@ const ContactSection = () => {
         });
         
         // Occasional Random Flickers
-        const triggerRandomFlicker = (charsList: NodeListOf<Element>, isTitle: boolean) => {
-            if (!charsList.length) return;
-            const randomChar = charsList[Math.floor(Math.random() * charsList.length)];
+        const triggerRandomFlicker = () => {
+            if (!textChars.length) return;
+            const randomChar = textChars[Math.floor(Math.random() * textChars.length)];
             const glowColor = colors[Math.floor(Math.random() * colors.length)];
-            const intenseGlow = isTitle 
-                ? `0 0 10px #fff, 0 0 20px ${glowColor}, 0 0 40px ${glowColor}`
-                : `0 0 5px #fff, 0 0 10px ${glowColor}, 0 0 20px ${glowColor}`;
-            const subtleGlow = isTitle
-                ? `0 0 5px ${glowColor}, 0 0 15px ${glowColor}`
-                : `0 0 2px ${glowColor}, 0 0 5px ${glowColor}`;
+            const intenseGlow = `0 0 5px #fff, 0 0 10px ${glowColor}, 0 0 20px ${glowColor}`;
+            const subtleGlow = `0 0 2px ${glowColor}, 0 0 5px ${glowColor}`;
 
             gsap.to(randomChar, {
                 keyframes: [
@@ -97,14 +111,11 @@ const ContactSection = () => {
                     { opacity: 1, textShadow: subtleGlow, duration: 0.1 }
                 ],
                 delay: 1 + Math.random() * 4,
-                onComplete: () => triggerRandomFlicker(charsList, isTitle)
+                onComplete: triggerRandomFlicker
             });
         };
 
-        neonTl.call(() => {
-            triggerRandomFlicker(titleChars, true);
-            triggerRandomFlicker(textChars, false);
-        }, [], "+=0.5");
+        neonTl.call(triggerRandomFlicker, [], "+=0.5");
 
         const cards = gsap.utils.toArray<HTMLElement>(".magnetic-button");
 
@@ -202,15 +213,28 @@ const ContactSection = () => {
                 </div>
 
                 <h2
-                    className="text-6xl md:text-8xl font-black mb-10 text-white flex justify-center gap-x-4 flex-wrap"
+                    className="text-6xl md:text-8xl lg:text-[8rem] font-black mb-10 text-white flex justify-center gap-x-6 flex-wrap uppercase tracking-tighter"
+                    style={{ lineHeight: 1.1 }}
                 >
-                    {"Let's Connect".split(" ").map((word, wordIndex) => (
+                    {"Let's Connect".toUpperCase().split(" ").map((word, wordIndex) => (
                         <span key={wordIndex} className="inline-flex">
-                            {word.split("").map((char, i) => (
-                                <span key={i} className="contact-title-char inline-block opacity-0">
-                                    {char}
-                                </span>
-                            ))}
+                            {word.split("").map((char, i) => {
+                                // Specific logic for colored letters like the image
+                                const isO = char === 'O'; 
+                                const isE = char === 'E';
+                                return (
+                                    <span key={i} className="relative inline-block contact-motion-char cursor-pointer">
+                                        <span className="absolute top-0 left-0 motion-top text-white">
+                                            {char}
+                                        </span>
+                                        <span className={`absolute top-0 left-0 motion-bottom ${isO ? 'text-red-500' : isE ? 'text-cyan-500' : 'text-white'}`}>
+                                            {char}
+                                        </span>
+                                        {/* Invisible placeholder to maintain width */}
+                                        <span className="opacity-0">{char}</span>
+                                    </span>
+                                );
+                            })}
                         </span>
                     ))}
                 </h2>
