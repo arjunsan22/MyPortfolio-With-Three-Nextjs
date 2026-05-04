@@ -120,7 +120,7 @@ const DevMetrics: React.FC = () => {
         <section
             ref={containerRef}
             onMouseMove={handleMouseMove}
-            className="relative min-h-screen bg-slate-800/30 backdrop-blur-sm py-24 px-6 overflow-hidden flex flex-col justify-center selection:bg-emerald-500/30"
+            className="relative min-h-screen bg-[#050505] py-24 px-6 overflow-hidden flex flex-col justify-center selection:bg-emerald-500/30"
         >
             {/* Background Layers */}
             <div className="ambient-glow absolute top-0 left-1/4 w-[500px] h-[500px] bg-cyan-500/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
