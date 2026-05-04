@@ -137,18 +137,23 @@ const DevMetrics: React.FC = () => {
                         <span className="text-emerald-500 font-mono text-sm tracking-[0.4em] uppercase font-bold stagger-text">Analytics Engine</span>
                     </div>
                     
-                    <h2 className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-8 stagger-text flex flex-wrap gap-x-4">
-                        <span>The Proof of</span>
-                        <span className="relative inline-block liquid-container pb-2">
-                            {/* Base Layer: Outline */}
-                            <span className="text-transparent italic outline-text block">Work.</span>
-                            
-                            {/* Liquid Layers */}
-                            <span className="absolute inset-0 liquid-layer liquid-layer-1 text-orange-500 italic drop-shadow-lg">Work.</span>
-                            <span className="absolute inset-0 liquid-layer liquid-layer-2 text-cyan-400 italic drop-shadow-lg">Work.</span>
-                            <span className="absolute inset-0 liquid-layer liquid-layer-3 text-white italic drop-shadow-[0_0_20px_rgba(255,255,255,0.6)]">Work.</span>
-                        </span>
-                    </h2>
+                    <div className="relative liquid-container pb-2 mb-8 stagger-text">
+                        {/* Base Layer: Outline */}
+                        <h2 className="text-6xl md:text-8xl font-black tracking-tighter text-transparent outline-text m-0">
+                            The Proof of <span className="italic">Work.</span>
+                        </h2>
+                        
+                        {/* Liquid Layers */}
+                        <h2 className="absolute top-0 left-0 w-full h-full text-6xl md:text-8xl font-black tracking-tighter text-orange-500 liquid-layer liquid-layer-1 drop-shadow-lg m-0 pointer-events-none">
+                            The Proof of <span className="italic">Work.</span>
+                        </h2>
+                        <h2 className="absolute top-0 left-0 w-full h-full text-6xl md:text-8xl font-black tracking-tighter text-cyan-400 liquid-layer liquid-layer-2 drop-shadow-lg m-0 pointer-events-none">
+                            The Proof of <span className="italic">Work.</span>
+                        </h2>
+                        <h2 className="absolute top-0 left-0 w-full h-full text-6xl md:text-8xl font-black tracking-tighter text-white liquid-layer liquid-layer-3 drop-shadow-[0_0_20px_rgba(255,255,255,0.6)] m-0 pointer-events-none">
+                            The Proof of <span className="italic">Work.</span>
+                        </h2>
+                    </div>
                     
                     <p className="text-zinc-400 max-w-md font-medium text-lg stagger-text leading-relaxed">
                         Tracking algorithmic performance and architectural contributions across platforms.
