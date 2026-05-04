@@ -43,16 +43,22 @@ body {
   -webkit-backface-visibility: hidden;
 }
 
+.word-wrapper {
+  /* Ensure the background gradient from the parent is passed down */
+  background: inherit;
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
 .hero-title-char {
-  /* Inherit the gradient from the parent word span */
   background: inherit;
   -webkit-background-clip: text !important;
   background-clip: text !important;
   color: transparent;
+  display: inline-block;
 }
 
 .hero-sub-char--accent-cyan {
-  /* Inherit color from parent */
   color: inherit;
 }
 
