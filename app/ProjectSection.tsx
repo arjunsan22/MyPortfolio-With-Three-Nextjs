@@ -86,36 +86,29 @@ const ProjectsSection = () => {
     const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
     useGSAP(() => {
-        // Title Entrance - Letter by Letter "Print" effect
-        gsap.from('.char', {
-            opacity: 0,
-            y: 20,
-            scale: 1.5,
-            filter: 'blur(10px)',
-            stagger: {
-                amount: 1,
-                from: "random"
-            },
-            duration: 0.8,
-            ease: "power4.out",
+        // Title Entrance - Sequential "Print" effect with a glitchy pop
+        const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: titleRef.current,
                 start: "top 85%",
             }
         });
 
-        // Add a secondary "glitchy" flicker during entrance
-        gsap.to('.title-word', {
-            opacity: 1,
-            duration: 0.1,
-            repeat: 10,
-            repeatDelay: 0.05,
-            yoyo: true,
-            scrollTrigger: {
-                trigger: titleRef.current,
-                start: "top 85%",
-            }
-        });
+        tl.from('.char', {
+            opacity: 0,
+            x: () => (Math.random() - 0.5) * 30,
+            y: () => (Math.random() - 0.5) * 30,
+            scale: 2,
+            filter: 'blur(10px)',
+            stagger: 0.08,
+            duration: 0.4,
+            ease: "back.out(2)",
+        })
+        .to(titleRef.current, {
+            '--glitch-opacity': 0.5,
+            duration: 0.5,
+            ease: "power2.inOut"
+        }, "-=0.2"); // Start fading in glitch slightly before typing ends
 
         // The Cards
         const cards = cardsRef.current;
@@ -419,6 +412,7 @@ const ProjectsSection = () => {
                     height: 100%;
                     background: black;
                     clip-path: inset(0 0 0 0);
+                    opacity: var(--glitch-opacity, 0);
                 }
 
                 .glitch::before {
