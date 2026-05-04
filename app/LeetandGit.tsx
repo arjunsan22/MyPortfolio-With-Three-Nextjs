@@ -16,8 +16,10 @@ const DevMetrics: React.FC = () => {
     useEffect(() => {
         const ctx = gsap.context(() => {
             // 1. Initial State for entrance
-            gsap.set(".metric-card", { y: 60, opacity: 0, scale: 0.95 });
-            gsap.set(".stagger-text", { opacity: 0, y: 20 });
+            gsap.set(".metric-card", { y: 100, opacity: 0, scale: 0.9, rotationX: 15, transformPerspective: 1000 });
+            gsap.set(".stagger-text", { opacity: 0, y: 30 });
+            // The liquid layers start fully transparent (mask at 0%)
+            gsap.set(".liquid-layer", { "--mask-y": "0%" });
 
             // 2. Main Entrance Timeline
             const tl = gsap.timeline({
@@ -34,14 +36,20 @@ const DevMetrics: React.FC = () => {
                 duration: 1,
                 ease: "expo.out"
             })
+                // Liquid Reveal Effects
+                .to(".liquid-layer-1", { "--mask-y": "100%", duration: 1.5, ease: "power2.out" }, "-=0.6")
+                .to(".liquid-layer-2", { "--mask-y": "100%", duration: 1.5, ease: "power2.out" }, "-=1.2")
+                .to(".liquid-layer-3", { "--mask-y": "100%", duration: 1.5, ease: "power2.out" }, "-=1.2")
+                // Cards Reveal
                 .to(".metric-card", {
                     y: 0,
                     opacity: 1,
                     scale: 1,
-                    stagger: 0.1,
-                    duration: 1.2,
-                    ease: "expo.out"
-                }, "-=0.6")
+                    rotationX: 0,
+                    stagger: 0.15,
+                    duration: 1.5,
+                    ease: "power4.out"
+                }, "-=1.0")
                 .to(".username-scramble", {
                     duration: 1.2,
                     text: "NpXLrsDWZR",
@@ -69,12 +77,13 @@ const DevMetrics: React.FC = () => {
 
             // 4. Subtle Ambient Float
             gsap.to(".ambient-glow", {
-                opacity: 0.4,
+                opacity: 0.6,
                 scale: 1.2,
-                duration: 5,
+                duration: 4,
                 repeat: -1,
                 yoyo: true,
-                ease: "sine.inOut"
+                ease: "sine.inOut",
+                stagger: 0.5
             });
 
         }, containerRef);
@@ -114,21 +123,33 @@ const DevMetrics: React.FC = () => {
             className="relative min-h-screen bg-slate-800/30 backdrop-blur-sm py-24 px-6 overflow-hidden flex flex-col justify-center selection:bg-emerald-500/30"
         >
             {/* Background Layers */}
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 blur-[150px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 blur-[150px] rounded-full pointer-events-none" />
+            <div className="ambient-glow absolute top-0 left-1/4 w-[500px] h-[500px] bg-cyan-500/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
+            <div className="ambient-glow absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-orange-500/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
+            <div className="ambient-glow absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-emerald-500/10 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay" />
 
             <div className="max-w-6xl mx-auto w-full relative z-10">
 
                 {/* Heading Area */}
-                <div className="mb-20">
-                    <div className="flex items-center gap-3 mb-6">
+                <div className="mb-24">
+                    <div className="flex items-center gap-3 mb-8">
                         <div className="h-[1px] w-12 bg-emerald-500/50 stagger-text" />
-                        <span className="text-emerald-500 font-mono text-xs tracking-[0.4em] uppercase font-bold stagger-text">Analytics Engine</span>
+                        <span className="text-emerald-500 font-mono text-sm tracking-[0.4em] uppercase font-bold stagger-text">Analytics Engine</span>
                     </div>
-                    <h2 className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-6 stagger-text">
-                        The Proof of <span className="text-zinc-700 italic outline-text">Work.</span>
+                    
+                    <h2 className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-8 stagger-text flex flex-wrap gap-x-4">
+                        <span>The Proof of</span>
+                        <span className="relative inline-block liquid-container pb-2">
+                            {/* Base Layer: Outline */}
+                            <span className="text-transparent italic outline-text block">Work.</span>
+                            
+                            {/* Liquid Layers */}
+                            <span className="absolute inset-0 liquid-layer liquid-layer-1 text-orange-500 italic drop-shadow-lg">Work.</span>
+                            <span className="absolute inset-0 liquid-layer liquid-layer-2 text-cyan-400 italic drop-shadow-lg">Work.</span>
+                            <span className="absolute inset-0 liquid-layer liquid-layer-3 text-white italic drop-shadow-[0_0_20px_rgba(255,255,255,0.6)]">Work.</span>
+                        </span>
                     </h2>
+                    
                     <p className="text-zinc-400 max-w-md font-medium text-lg stagger-text leading-relaxed">
                         Tracking algorithmic performance and architectural contributions across platforms.
                     </p>
@@ -139,8 +160,9 @@ const DevMetrics: React.FC = () => {
 
                     {/* LeetCode Card */}
                     <div className="metric-card relative md:col-span-4 bg-zinc-900/40 border border-white/5 rounded-[2.5rem] p-10 overflow-hidden group">
-                        {/* Spotlight background */}
-                        <div className="pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[radial-gradient(600px_circle_at_var(--mouse-x)_var(--mouse-y),rgba(16,185,129,0.1),transparent_40%)]" />
+                        {/* Spotlight background & Border */}
+                        <div className="pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[radial-gradient(600px_circle_at_var(--mouse-x)_var(--mouse-y),rgba(16,185,129,0.15),transparent_40%)] z-0" />
+                        <div className="pointer-events-none absolute inset-0 rounded-[2.5rem] border border-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 [background:radial-gradient(600px_circle_at_var(--mouse-x)_var(--mouse-y),rgba(16,185,129,0.5),transparent_40%)_border-box] [-webkit-mask-composite:exclude] [mask-composite:exclude] [-webkit-mask:linear-gradient(#fff_0_0)_padding-box,linear-gradient(#fff_0_0)] z-10" />
 
                         <div className="flex justify-between items-start mb-16 relative z-10">
                             <div className="flex items-center gap-5">
@@ -168,7 +190,9 @@ const DevMetrics: React.FC = () => {
 
                     {/* GitHub Card */}
                     <div className="metric-card relative md:col-span-2 bg-zinc-900/40 border border-white/5 rounded-[2.5rem] p-10 overflow-hidden group flex flex-col justify-between">
-                        <div className="pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[radial-gradient(400px_circle_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.05),transparent_40%)]" />
+                        {/* Spotlight background & Border */}
+                        <div className="pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[radial-gradient(500px_circle_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.08),transparent_40%)] z-0" />
+                        <div className="pointer-events-none absolute inset-0 rounded-[2.5rem] border border-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 [background:radial-gradient(500px_circle_at_var(--mouse-x)_var(--mouse-y),rgba(255,255,255,0.4),transparent_40%)_border-box] [-webkit-mask-composite:exclude] [mask-composite:exclude] [-webkit-mask:linear-gradient(#fff_0_0)_padding-box,linear-gradient(#fff_0_0)] z-10" />
 
                         <Github className="text-zinc-600 group-hover:text-white transition-colors duration-500" size={48} />
 
@@ -200,8 +224,39 @@ const DevMetrics: React.FC = () => {
 
             <style jsx>{`
                 .outline-text {
-                    -webkit-text-stroke: 1px rgba(255,255,255,0.1);
+                    -webkit-text-stroke: 2px rgba(255,255,255,0.15);
                     color: transparent;
+                }
+                
+                .liquid-container {
+                    position: relative;
+                }
+                
+                .liquid-layer {
+                    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200' preserveAspectRatio='none'%3E%3Cpath d='M0,100 Q25,85 50,100 T100,100 L100,200 L0,200 Z' fill='black'/%3E%3C/svg%3E");
+                    -webkit-mask-size: 200% 200%;
+                    -webkit-mask-repeat: repeat-x;
+                    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200' preserveAspectRatio='none'%3E%3Cpath d='M0,100 Q25,85 50,100 T100,100 L100,200 L0,200 Z' fill='black'/%3E%3C/svg%3E");
+                    mask-size: 200% 200%;
+                    mask-repeat: repeat-x;
+                    --mask-y: 0%;
+                }
+
+                .liquid-layer-1 { animation: wave-1 3s infinite linear; }
+                .liquid-layer-2 { animation: wave-2 4s infinite linear; }
+                .liquid-layer-3 { animation: wave-3 5s infinite linear; }
+
+                @keyframes wave-1 {
+                    0% { -webkit-mask-position: 0% var(--mask-y); mask-position: 0% var(--mask-y); }
+                    100% { -webkit-mask-position: 200% var(--mask-y); mask-position: 200% var(--mask-y); }
+                }
+                @keyframes wave-2 {
+                    0% { -webkit-mask-position: 50% var(--mask-y); mask-position: 50% var(--mask-y); }
+                    100% { -webkit-mask-position: 250% var(--mask-y); mask-position: 250% var(--mask-y); }
+                }
+                @keyframes wave-3 {
+                    0% { -webkit-mask-position: 100% var(--mask-y); mask-position: 100% var(--mask-y); }
+                    100% { -webkit-mask-position: 300% var(--mask-y); mask-position: 300% var(--mask-y); }
                 }
             `}</style>
         </section>

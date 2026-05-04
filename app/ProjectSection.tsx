@@ -87,14 +87,14 @@ const ProjectsSection = () => {
 
     useGSAP(() => {
         // Title Entrance - Sequential "Print" effect with a glitchy pop
-        const tl = gsap.timeline({
+        const titleTl = gsap.timeline({
             scrollTrigger: {
                 trigger: titleRef.current,
                 start: "top 85%",
             }
         });
 
-        tl.from('.char', {
+        titleTl.from('.char', {
             opacity: 0,
             x: () => (Math.random() - 0.5) * 30,
             y: () => (Math.random() - 0.5) * 30,
@@ -120,7 +120,6 @@ const ProjectsSection = () => {
             const projectImage = card.querySelector('.project-image');
             const content = card.querySelector('.project-content');
             const features = card.querySelectorAll('.feature-item');
-            const techBadges = card.querySelectorAll('.tech-badge');
 
             // Set initial state for sticky to work perfectly
             gsap.set(card, { clearProps: "all" });
@@ -185,8 +184,6 @@ const ProjectsSection = () => {
                     }
                 });
             }
-
-            // The Overlapping Stacking Effect is handled natively by CSS sticky to prevent GSAP reversing bugs on scroll up!
         });
 
     }, { scope: containerRef });
