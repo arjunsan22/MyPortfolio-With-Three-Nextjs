@@ -2,6 +2,7 @@
 import React, { useRef } from 'react';
 import { MapPin, Phone, Mail, Network, Database } from 'lucide-react';
 import Image from 'next/image';
+import CircuitBackground from './components/CircuitBackground';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -337,6 +338,7 @@ const AboutSection: React.FC = () => {
             ref={sectionRef}
             className="py-24 px-4 bg-transparent overflow-hidden relative z-10"
         >
+            <CircuitBackground id="about" />
             <style>{`
                 @keyframes scan {
                     0% { top: 0%; opacity: 0; }

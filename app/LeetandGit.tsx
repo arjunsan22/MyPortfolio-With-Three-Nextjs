@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useRef } from 'react';
 import { Github, ExternalLink, Code2, Globe } from 'lucide-react';
+import CircuitBackground from './components/CircuitBackground';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { TextPlugin } from 'gsap/dist/TextPlugin';
@@ -122,6 +123,7 @@ const DevMetrics: React.FC = () => {
             onMouseMove={handleMouseMove}
             className="relative min-h-screen bg-[#050505] py-24 px-6 overflow-hidden flex flex-col justify-center selection:bg-emerald-500/30"
         >
+            <CircuitBackground id="devmetrics" />
             {/* Background Layers */}
             <div className="ambient-glow absolute top-0 left-1/4 w-[500px] h-[500px] bg-cyan-500/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />
             <div className="ambient-glow absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-orange-500/20 blur-[150px] rounded-full pointer-events-none mix-blend-screen" />

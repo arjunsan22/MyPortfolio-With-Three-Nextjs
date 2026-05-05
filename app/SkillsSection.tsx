@@ -1,5 +1,6 @@
 'use client';
 import React, { useRef } from 'react';
+import CircuitBackground from './components/CircuitBackground';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -311,6 +312,7 @@ const SkillsSection = () => {
 
     return (
         <section id="skills" ref={sectionRef} className="py-24 px-4 bg-transparent overflow-hidden relative z-10 perspective-[2000px]">
+            <CircuitBackground id="skills" />
             <div className="max-w-7xl mx-auto">
                 {/* Title Stack Animation */}
                 <div className="relative text-center mb-32 h-32 flex items-center justify-center">

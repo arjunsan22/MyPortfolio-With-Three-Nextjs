@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { ArrowUpRight, Sparkles, Terminal } from 'lucide-react';
+import CircuitBackground from './components/CircuitBackground';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -233,6 +234,7 @@ const ProjectsSection = () => {
     return (
         <section id="projects" ref={containerRef} className="py-32 px-4 bg-[#050505] relative min-h-screen">
             {/* NO OVERFLOW CLIP HERE, allows sticky to work perfectly */}
+            <CircuitBackground id="projects" />
 
             {/* Background elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">

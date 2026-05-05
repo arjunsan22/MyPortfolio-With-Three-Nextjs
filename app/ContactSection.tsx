@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Mail, Linkedin, Github } from 'lucide-react';
+import CircuitBackground from './components/CircuitBackground';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -196,6 +197,7 @@ const ContactSection = () => {
             ref={containerRef}
             className="py-32 px-4 bg-[#050505] relative overflow-hidden min-h-screen flex flex-col justify-center border-t border-white/5"
         >
+            <CircuitBackground id="contact" />
             {/* Premium Background Effects */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 <div className="absolute top-[20%] left-[10%] w-[500px] h-[500px] bg-cyan-900/20 rounded-full blur-[150px]" />

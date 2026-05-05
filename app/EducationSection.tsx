@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { GraduationCap, Award, BookOpen, Binary, CheckCircle2, Zap } from 'lucide-react';
+import CircuitBackground from './components/CircuitBackground';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -159,6 +160,7 @@ const EducationSection = () => {
             ref={sectionRef}
             className="py-32 px-4 md:px-6 bg-[#050505] relative overflow-hidden min-h-screen"
         >
+            <CircuitBackground id="education" />
             {/* Background Effects */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 <div className="absolute top-[10%] left-[-15%] w-[600px] h-[600px] bg-purple-900/15 rounded-full blur-[150px]" />

@@ -15,6 +15,7 @@ import SkillsSection from './SkillsSection';
 import AboutSection from './About';
 import ContactSection from './ContactSection';
 import CodingProfiles from './LeetandGit';
+import CircuitBackground from './components/CircuitBackground';
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -432,6 +433,7 @@ export default function Portfolio() {
 
         {/* Hero Section */}
         <section className="hero-section min-h-[100svh] pt-32 pb-20 px-4 relative flex items-center justify-center">
+          <CircuitBackground id="hero" />
           <div className="hero-wrapper max-w-6xl mx-auto w-full relative z-10">
             <div className="text-center flex flex-col items-center">
               <div className="hero-sparkle mb-8 inline-flex items-center justify-center p-4 rounded-3xl bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-white/10 backdrop-blur-md shadow-2xl shadow-cyan-500/20">
