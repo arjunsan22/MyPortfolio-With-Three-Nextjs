@@ -200,31 +200,18 @@ const AboutSection: React.FC = () => {
     const cardRef = useRef<HTMLDivElement>(null);
     
     useGSAP(() => {
-        // Heading Animation
-        gsap.from(".about-title-char", {
-            y: 100,
-            opacity: 0,
-            rotationX: -90,
-            stagger: 0.05,
-            duration: 1,
-            ease: "back.out(1.5)",
+        // Stroke to Fill Text Animation
+        const tl = gsap.timeline({
             scrollTrigger: {
                 trigger: sectionRef.current,
                 start: "top 80%",
             }
         });
 
-        gsap.from(".about-line", {
-            scaleX: 0,
-            opacity: 0,
-            duration: 1,
-            delay: 0.5,
-            ease: "expo.out",
-            scrollTrigger: {
-                trigger: sectionRef.current,
-                start: "top 80%",
-            }
-        });
+        tl.to(".stroke-scanner", { opacity: 1, duration: 0.2 })
+          .to(".stroke-fill-text", { clipPath: "inset(0 0% 0 0)", duration: 1.5, ease: "power2.inOut" }, "fill")
+          .to(".stroke-scanner", { left: "100%", duration: 1.5, ease: "power2.inOut" }, "fill")
+          .to(".stroke-scanner", { opacity: 0, duration: 0.3 });
 
         // Card Entry Animation
         gsap.from(cardRef.current, {
@@ -361,20 +348,26 @@ const AboutSection: React.FC = () => {
 
             <div className="max-w-6xl mx-auto relative z-10">
 
-                {/* Heading */}
-                <div className="text-center mb-24 perspective-[1000px]">
-                    <h2 className="text-6xl md:text-7xl lg:text-8xl font-black flex justify-center gap-[2px] tracking-tighter">
-                        {titleText.split('').map((char, i) => (
-                            <span
-                                key={i}
-                                className="about-title-char inline-block bg-gradient-to-br from-cyan-300 via-blue-500 to-purple-600 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(34,211,238,0.3)]"
-                            >
-                                {char === ' ' ? '\u00A0' : char}
-                            </span>
-                        ))}
-                    </h2>
-
-                    <div className="about-line h-[2px] w-48 bg-gradient-to-r from-transparent via-cyan-400 to-transparent mx-auto mt-6 shadow-[0_0_10px_#22d3ee]" />
+                {/* Heading - Stroke to Fill */}
+                <div className="flex justify-center mb-24">
+                    <div className="relative inline-block">
+                        {/* Outline Text */}
+                        <h2 className="text-6xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter text-transparent"
+                            style={{ WebkitTextStroke: '2px rgba(255,255,255,0.15)' }}
+                        >
+                            ABOUT ME
+                        </h2>
+                        
+                        {/* Fill Text (Clipped) */}
+                        <h2 className="stroke-fill-text absolute top-0 left-0 text-6xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.6)] whitespace-nowrap"
+                            style={{ clipPath: 'inset(0 100% 0 0)' }}
+                        >
+                            ABOUT ME
+                        </h2>
+                        
+                        {/* Scanner Line */}
+                        <div className="stroke-scanner absolute top-[-5%] bottom-[-5%] left-0 w-[4px] bg-cyan-300 shadow-[0_0_15px_#67e8f9] opacity-0 rounded-full" />
+                    </div>
                 </div>
 
                 {/* 3D Card */}
