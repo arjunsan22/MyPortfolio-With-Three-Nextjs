@@ -189,13 +189,16 @@ const EducationSection = () => {
                             background-repeat: repeat-x;
                             background-size: 400px 100%;
                             animation: liquidFlow 3s linear infinite;
+                            display: inline-block;
                         }
                     `}</style>
                     <h2
                         ref={titleRef}
-                        className="liquid-text text-6xl md:text-8xl lg:text-9xl font-black flex flex-wrap justify-center gap-x-6 gap-y-2 uppercase tracking-tighter"
+                        className="text-6xl md:text-8xl lg:text-9xl font-black flex flex-wrap justify-center gap-x-6 gap-y-2 uppercase tracking-tighter"
                     >
-                        EDUCATION & CERTS
+                        <span className="liquid-text">EDUCATION</span>
+                        <span className="liquid-text">&</span>
+                        <span className="liquid-text">CERTS</span>
                     </h2>
 
                     <p className="edu-subtitle mt-8 text-slate-500 font-mono tracking-widest uppercase text-sm">
