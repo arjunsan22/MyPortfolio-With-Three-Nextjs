@@ -16,6 +16,7 @@ import AboutSection from './About';
 import ContactSection from './ContactSection';
 import CodingProfiles from './LeetandGit';
 import CircuitBackground from './components/CircuitBackground';
+import { AnglerFish } from './components/AnglerFish';
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -233,33 +234,34 @@ export default function Portfolio() {
   useGSAP(() => {
     const tl = gsap.timeline();
 
-    // Nav animation
-    tl.from("nav", {
-      y: -100,
-      opacity: 0,
-      duration: 1.2,
-      ease: "power4.out"
-    });
+    const fish = document.querySelector('.angler-fish-container');
+    const bulb = document.querySelector('.angler-bulb');
+    const circuitBg = document.querySelector('.hero-section .absolute.inset-0.pointer-events-none.z-0'); // The CircuitBackground div
+    const pageBg = containerRef.current;
 
-    // Hero sparkle
-    tl.from(".hero-sparkle", {
-      scale: 0,
-      rotation: 180,
-      opacity: 0,
-      duration: 1,
-      ease: "back.out(1.7)"
-    }, "-=0.8");
+    // 1. Setup Initial States
+    gsap.set(fish, { x: '100vw', y: 0, rotation: -10 });
+    gsap.set(bulb, { opacity: 0.1, filter: 'brightness(0.3)' });
+    
+    // Make background very dark initially
+    gsap.set(pageBg, { backgroundColor: '#010103' });
+    
+    // Hide circuit background
+    if (circuitBg) gsap.set(circuitBg, { opacity: 0 });
 
-    /* ──────────────────────────────────────────────
-     *  SPLIT TEXT — Heading
-     *  Each character starts clipped (invisible),
-     *  then the clip-path opens vertically from
-     *  center outward while the char slides up with
-     *  3D rotation — replicating the "Split Second" look.
-     * ────────────────────────────────────────────── */
+    // Hide all elements that should appear later
+    const elementsToReveal = [
+      "nav",
+      ".hero-sparkle",
+      ".hero-subtitle",
+      ".hero-btn",
+      ".hero-icon",
+      ".hero-title-char" // Text characters
+    ];
+    
+    // Set text characters initial state for the SplitChars effect
     const titleChars = containerRef.current?.querySelectorAll('.hero-title-char');
     if (titleChars && titleChars.length) {
-      // Initial state
       gsap.set(titleChars, {
         opacity: 0,
         y: 80,
@@ -268,7 +270,57 @@ export default function Portfolio() {
         transformOrigin: '50% 100%',
         clipPath: 'inset(100% 0% 0% 0%)',
       });
+    }
 
+    // 2. Fish swims in
+    tl.to(fish, {
+      x: '0vw',
+      y: 20,
+      rotation: 0,
+      duration: 3,
+      ease: "power3.out"
+    });
+
+    // 3. Fish floats briefly
+    tl.to(fish, {
+      y: "-=30",
+      duration: 1.5,
+      yoyo: true,
+      repeat: 1,
+      ease: "sine.inOut"
+    });
+
+    // 4. Bulb Blinks and shines brightly!
+    tl.to(bulb, { opacity: 1, filter: 'brightness(2)', duration: 0.1, repeat: 3, yoyo: true }, "-=1.5");
+    tl.to(bulb, { opacity: 1, filter: 'brightness(4)', scale: 1.4, duration: 0.2, transformOrigin: 'center' });
+    tl.to(bulb, { scale: 1, filter: 'brightness(3)', duration: 0.5 });
+
+    // 5. REVEAL HERO CONTENT
+    tl.addLabel("reveal", "-=0.2");
+
+    // Show Circuit Background
+    if (circuitBg) {
+      tl.to(circuitBg, { opacity: 1, duration: 2, ease: "power2.inOut" }, "reveal");
+    }
+
+    // Nav animation
+    tl.from("nav", {
+      y: -100,
+      opacity: 0,
+      duration: 1.2,
+      ease: "power4.out"
+    }, "reveal");
+
+    // Hero sparkle
+    tl.from(".hero-sparkle", {
+      scale: 0,
+      rotation: 180,
+      opacity: 0,
+      duration: 1,
+      ease: "back.out(1.7)"
+    }, "reveal+=0.2");
+
+    if (titleChars && titleChars.length) {
       tl.to(titleChars, {
         opacity: 1,
         y: 0,
@@ -281,9 +333,8 @@ export default function Portfolio() {
           from: 'center',
         },
         ease: 'expo.out',
-      }, '-=0.6');
+      }, "reveal+=0.1");
 
-      // Secondary shimmer sweep — a subtle brightness pulse
       tl.fromTo(titleChars, {
         filter: 'brightness(1)',
       }, {
@@ -293,74 +344,45 @@ export default function Portfolio() {
         yoyo: true,
         repeat: 1,
         ease: 'power1.inOut',
-      }, '-=0.5');
+      }, "reveal+=0.8");
     }
 
-    /* ──────────────────────────────────────────────
-     *  MOTION TYPOGRAPHY — Subtitle
-     *  Each character enters from a random offset,
-     *  rotation, and scale — the "MOTION" look.
-     * ────────────────────────────────────────────── */
-    const subtitleChars = containerRef.current?.querySelectorAll('.hero-sub-char');
-    if (subtitleChars && subtitleChars.length) {
-      // Randomised initial state for each char
-      subtitleChars.forEach((ch) => {
-        gsap.set(ch, {
-          opacity: 0,
-          y: gsap.utils.random(-120, 120),
-          x: gsap.utils.random(-40, 40),
-          rotation: gsap.utils.random(-90, 90),
-          scale: gsap.utils.random(0, 2.5),
-          transformOrigin: '50% 50%',
-        });
-      });
-
-      tl.to(subtitleChars, {
-        opacity: 1,
-        y: 0,
-        x: 0,
-        rotation: 0,
-        scale: 1,
-        duration: 1.4,
-        stagger: {
-          each: 0.02,
-          from: 'random',
-        },
-        ease: 'elastic.out(1, 0.5)',
-      }, '-=0.8');
-    }
-
-    // Buttons
-    tl.from(".hero-btn", {
-      scale: 0.8,
+    // Subtitle
+    tl.from(".hero-sub-char", {
+      opacity: 0,
       y: 20,
+      rotationX: -90,
+      duration: 0.8,
+      stagger: { each: 0.015, from: "start" },
+      ease: "back.out(1.5)"
+    }, "reveal+=0.6");
+
+    // Buttons & Icons
+    tl.from(".hero-btn", {
+      y: 30,
       opacity: 0,
       duration: 0.8,
-      stagger: 0.2,
-      ease: "back.out(1.5)"
-    }, "-=0.6")
-    .from(".hero-icon", {
+      stagger: 0.15,
+      ease: "back.out(1.2)"
+    }, "reveal+=0.8");
+
+    tl.from(".hero-icon", {
       scale: 0,
       opacity: 0,
       duration: 0.6,
-      stagger: 0.15,
-      ease: "back.out(2)"
-    }, "-=0.4");
+      stagger: 0.1,
+      ease: "back.out(1.5)"
+    }, "reveal+=1.0");
 
-    // Scroll Animations
-    gsap.to(".hero-wrapper", {
-      yPercent: 40,
-      opacity: 0,
-      filter: "blur(15px)",
-      scale: 0.95,
-      scrollTrigger: {
-        trigger: ".hero-section",
-        start: "top top",
-        end: "bottom top",
-        scrub: 1.5
-      }
-    });
-    
+    // 6. Fish swims away
+    tl.to(fish, {
+      x: '-100vw',
+      y: -50,
+      rotation: 15,
+      duration: 3.5,
+      ease: "power2.in",
+    }, "reveal+=1.5");
+
   }, { scope: containerRef });
 
   return (
@@ -434,6 +456,10 @@ export default function Portfolio() {
         {/* Hero Section */}
         <section className="hero-section min-h-[100svh] pt-32 pb-20 px-4 relative flex items-center justify-center">
           <CircuitBackground id="hero" />
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden z-20">
+            <AnglerFish className="angler-fish-container scale-150 md:scale-100" />
+          </div>
+          
           <div className="hero-wrapper max-w-6xl mx-auto w-full relative z-10">
             <div className="text-center flex flex-col items-center">
               <div className="hero-sparkle mb-8 inline-flex items-center justify-center p-4 rounded-3xl bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-white/10 backdrop-blur-md shadow-2xl shadow-cyan-500/20">
