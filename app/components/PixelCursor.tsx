@@ -3,52 +3,52 @@ import React, { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 
-const ModernSimpleCursor = () => {
+const NeonCursor = () => {
     const cursorRef = useRef<HTMLDivElement>(null);
-    const dotRef = useRef<HTMLDivElement>(null);
-    const ringRef = useRef<HTMLDivElement>(null);
+    const svgRef = useRef<SVGSVGElement>(null);
 
     useGSAP(() => {
         // Hide default cursor
         document.body.style.cursor = 'none';
 
-        // Optimized movement setters
-        const xToDot = gsap.quickTo(dotRef.current, "x", { duration: 0.1, ease: "power3" });
-        const yToDot = gsap.quickTo(dotRef.current, "y", { duration: 0.1, ease: "power3" });
-
-        const xToRing = gsap.quickTo(ringRef.current, "x", { duration: 0.4, ease: "power2.out" });
-        const yToRing = gsap.quickTo(ringRef.current, "y", { duration: 0.4, ease: "power2.out" });
+        // Direct follow without delay for the main pointer to feel native
+        const xTo = gsap.quickTo(cursorRef.current, "x", { duration: 0.05, ease: "none" });
+        const yTo = gsap.quickTo(cursorRef.current, "y", { duration: 0.05, ease: "none" });
 
         const onMouseMove = (e: MouseEvent) => {
-            xToDot(e.clientX);
-            yToDot(e.clientY);
-            xToRing(e.clientX);
-            yToRing(e.clientY);
+            xTo(e.clientX);
+            yTo(e.clientY);
         };
 
         const onMouseEnter = (e: MouseEvent) => {
             const isClickable = (e.target as HTMLElement).closest('a, button, .clickable');
             if (isClickable) {
-                // Expand ring and hide dot on hover
-                gsap.to(ringRef.current, { scale: 2.5, backgroundColor: "rgba(255,255,255,0.1)", duration: 0.3 });
-                gsap.to(dotRef.current, { scale: 0, duration: 0.2 });
+                // Subtle scale up and glow increase on hover
+                gsap.to(svgRef.current, { 
+                    scale: 1.1, 
+                    filter: "drop-shadow(0 0 12px rgba(34, 211, 238, 1)) drop-shadow(0 0 24px rgba(34, 211, 238, 0.8))", 
+                    duration: 0.2 
+                });
             }
         };
 
         const onMouseLeave = (e: MouseEvent) => {
             const isClickable = (e.target as HTMLElement).closest('a, button, .clickable');
             if (isClickable) {
-                gsap.to(ringRef.current, { scale: 1, backgroundColor: "transparent", duration: 0.3 });
-                gsap.to(dotRef.current, { scale: 1, duration: 0.2 });
+                gsap.to(svgRef.current, { 
+                    scale: 1, 
+                    filter: "drop-shadow(0 0 8px rgba(34, 211, 238, 0.6)) drop-shadow(0 0 16px rgba(34, 211, 238, 0.3))", 
+                    duration: 0.2 
+                });
             }
         };
 
         const onMouseDown = () => {
-            gsap.to(ringRef.current, { scale: 0.8, duration: 0.1 });
+            gsap.to(svgRef.current, { scale: 0.9, duration: 0.1 });
         };
 
         const onMouseUp = () => {
-            gsap.to(ringRef.current, { scale: 1, duration: 0.3, ease: "elastic.out(1, 0.3)" });
+            gsap.to(svgRef.current, { scale: 1, duration: 0.2, ease: "back.out(2)" });
         };
 
         window.addEventListener('mousemove', onMouseMove);
@@ -68,20 +68,26 @@ const ModernSimpleCursor = () => {
     }, []);
 
     return (
-        <div ref={cursorRef} className="fixed inset-0 pointer-events-none z-[999999] mix-blend-difference">
-            {/* The Precision Dot */}
-            <div
-                ref={dotRef}
-                className="fixed top-0 left-0 w-1.5 h-1.5 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"
-            />
-
-            {/* The Fluid Ring */}
-            <div
-                ref={ringRef}
-                className="fixed top-0 left-0 w-10 h-10 border border-white rounded-full -translate-x-1/2 -translate-y-1/2 will-change-transform"
-            />
+        <div ref={cursorRef} className="fixed top-0 left-0 pointer-events-none z-[999999]">
+            <svg
+                ref={svgRef}
+                className="w-[28px] h-[32px] -ml-[2px] -mt-[2px]"
+                viewBox="0 0 28 32"
+                style={{
+                    filter: "drop-shadow(0 0 8px rgba(34, 211, 238, 0.6)) drop-shadow(0 0 16px rgba(34, 211, 238, 0.3))",
+                    transformOrigin: "top left"
+                }}
+            >
+                <path
+                    d="M2 2 L2 26 L9 19 L15 28 L19 26 L13 16 L22 16 Z"
+                    fill="rgba(2, 6, 23, 0.9)"
+                    stroke="#22d3ee"
+                    strokeWidth="2.5"
+                    strokeLinejoin="round"
+                />
+            </svg>
         </div>
     );
 };
 
-export default ModernSimpleCursor;
+export default NeonCursor;

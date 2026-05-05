@@ -1,5 +1,6 @@
 'use client';
 import React, { useRef } from 'react';
+import CircuitBackground from './components/CircuitBackground';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -227,19 +228,26 @@ const SkillsSection = () => {
     const containerRef = useRef<HTMLDivElement>(null);
 
     useGSAP(() => {
-        // Main Title
-        gsap.from(".skills-title-char", {
-            y: 100,
-            opacity: 0,
-            rotationX: -90,
-            stagger: 0.05,
-            duration: 1,
-            ease: "back.out(1.5)",
-            scrollTrigger: {
-                trigger: sectionRef.current,
-                start: "top 80%",
+        // Main Title Stack Animation
+        gsap.fromTo(".skills-title-stack",
+            {
+                y: (i) => (i - 2) * 60,
+                opacity: 0,
+                scale: (i) => 1 - Math.abs(i - 2) * 0.05
+            },
+            {
+                y: 0,
+                opacity: 1,
+                scale: 1,
+                duration: 1.2,
+                stagger: 0.1,
+                ease: "power4.inOut",
+                scrollTrigger: {
+                    trigger: sectionRef.current,
+                    start: "top 75%",
+                }
             }
-        });
+        );
 
         // Category Containers
         gsap.from(".skill-category", {
@@ -302,25 +310,27 @@ const SkillsSection = () => {
         gsap.to(containerRef.current, { rotateX: 0, rotateY: 0, ease: "power3.out", duration: 1.5 });
     };
 
-    const titleText = "Skills";
-
     return (
         <section id="skills" ref={sectionRef} className="py-24 px-4 bg-transparent overflow-hidden relative z-10 perspective-[2000px]">
+            <CircuitBackground id="skills" />
             <div className="max-w-7xl mx-auto">
-                {/* Title */}
-                <div className="text-center mb-20 perspective-[1000px]">
-                    <h2 className="text-5xl md:text-7xl lg:text-8xl font-black flex justify-center gap-[2px] tracking-tighter">
-                        {titleText.split('').map((char, i) => (
-                            <span
-                                key={i}
-                                className="skills-title-char inline-block bg-gradient-to-br from-cyan-300 via-blue-500 to-purple-600 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(34,211,238,0.3)]"
-                            >
-                                {char === ' ' ? '\u00A0' : char}
-                            </span>
-                        ))}
-                    </h2>
-                    <div className="h-[2px] w-32 bg-gradient-to-r from-transparent via-cyan-400 to-transparent mx-auto mt-6 shadow-[0_0_10px_#22d3ee]" />
+                {/* Title Stack Animation */}
+                <div className="relative text-center mb-32 h-32 flex items-center justify-center">
+                    {[...Array(5)].map((_, i) => (
+                        <h2
+                            key={i}
+                            className="skills-title-stack absolute text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter uppercase"
+                            style={{
+                                color: i === 4 ? '#ffffff' : 'transparent',
+                                WebkitTextStroke: i === 4 ? '0px' : '2px rgba(255,255,255,0.2)',
+                                zIndex: i
+                            }}
+                        >
+                            SKILLS
+                        </h2>
+                    ))}
                 </div>
+                <div className="h-[2px] w-32 bg-gradient-to-r from-transparent via-cyan-400 to-transparent mx-auto mt-6 mb-20 shadow-[0_0_10px_#22d3ee]" />
 
                 {/* Main 3D Container */}
                 <div

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Github, Mail,
   Menu, X, Code, Rocket,
@@ -15,9 +15,45 @@ import SkillsSection from './SkillsSection';
 import AboutSection from './About';
 import ContactSection from './ContactSection';
 import CodingProfiles from './LeetandGit';
+import CircuitBackground from './components/CircuitBackground';
+import { AnglerFish } from './components/AnglerFish';
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, useGSAP);
+}
+
+/* ── SplitChars: renders each character grouped into words to prevent line breaks ── */
+function SplitChars({ text, className, charClassName }: { text: string; className?: string; charClassName?: string }) {
+  const words = useMemo(() => text.split(' '), [text]);
+  
+  return (
+    <span className={className} aria-label={text}>
+      {words.map((word, wordIdx) => (
+        <span 
+          key={wordIdx} 
+          style={{ display: 'inline-block', whiteSpace: 'nowrap' }}
+          className="word-wrapper"
+        >
+          {word.split('').map((ch, charIdx) => (
+            <span
+              key={charIdx}
+              className={charClassName}
+              style={{ display: 'inline-block' }}
+              aria-hidden="true"
+            >
+              {ch}
+            </span>
+          ))}
+          {/* Add a space after the word if it's not the last one */}
+          {wordIdx < words.length - 1 && (
+            <span style={{ display: 'inline-block' }} aria-hidden="true">
+              &nbsp;
+            </span>
+          )}
+        </span>
+      ))}
+    </span>
+  );
 }
 
 export default function Portfolio() {
@@ -198,67 +234,155 @@ export default function Portfolio() {
   useGSAP(() => {
     const tl = gsap.timeline();
 
+    const fish = document.querySelector('.angler-fish-container');
+    const bulb = document.querySelector('.angler-bulb');
+    const circuitBg = document.querySelector('.hero-section .absolute.inset-0.pointer-events-none.z-0'); // The CircuitBackground div
+    const pageBg = containerRef.current;
+
+    // 1. Setup Initial States
+    gsap.set(fish, { x: '100vw', y: 0, rotation: -10 });
+    gsap.set(bulb, { opacity: 0.1, filter: 'brightness(0.3)' });
+    
+    // Make background very dark initially
+    gsap.set(pageBg, { backgroundColor: '#010103' });
+    
+    // Hide circuit background
+    if (circuitBg) gsap.set(circuitBg, { opacity: 0 });
+
+    // Hide all elements that should appear later
+    const elementsToReveal = [
+      "nav",
+      ".hero-sparkle",
+      ".hero-subtitle",
+      ".hero-btn",
+      ".hero-icon",
+      ".hero-title-char" // Text characters
+    ];
+    
+    // Set text characters initial state for the SplitChars effect
+    const titleChars = containerRef.current?.querySelectorAll('.hero-title-char');
+    if (titleChars && titleChars.length) {
+      gsap.set(titleChars, {
+        opacity: 0,
+        y: 80,
+        rotationX: -90,
+        scaleY: 0,
+        transformOrigin: '50% 100%',
+        clipPath: 'inset(100% 0% 0% 0%)',
+      });
+    }
+
+    // 2. Fish swims in
+    tl.to(fish, {
+      x: '0vw',
+      y: 20,
+      rotation: 0,
+      duration: 3,
+      ease: "power3.out"
+    });
+
+    // 3. Fish floats briefly
+    tl.to(fish, {
+      y: "-=30",
+      duration: 1.5,
+      yoyo: true,
+      repeat: 1,
+      ease: "sine.inOut"
+    });
+
+    // 4. Bulb Blinks and shines brightly!
+    tl.to(bulb, { opacity: 1, filter: 'brightness(2)', duration: 0.1, repeat: 3, yoyo: true }, "-=1.5");
+    tl.to(bulb, { opacity: 1, filter: 'brightness(4)', scale: 1.4, duration: 0.2, transformOrigin: 'center' });
+    tl.to(bulb, { scale: 1, filter: 'brightness(3)', duration: 0.5 });
+
+    // 5. REVEAL HERO CONTENT
+    tl.addLabel("reveal", "-=0.2");
+
+    // Show Circuit Background
+    if (circuitBg) {
+      tl.to(circuitBg, { opacity: 1, duration: 2, ease: "power2.inOut" }, "reveal");
+    }
+
     // Nav animation
     tl.from("nav", {
       y: -100,
       opacity: 0,
       duration: 1.2,
       ease: "power4.out"
-    });
+    }, "reveal");
 
-    // Hero content animations
+    // Hero sparkle
     tl.from(".hero-sparkle", {
       scale: 0,
       rotation: 180,
       opacity: 0,
       duration: 1,
       ease: "back.out(1.7)"
-    }, "-=0.8")
-    .from(".hero-title-word", {
-      y: 100,
+    }, "reveal+=0.2");
+
+    if (titleChars && titleChars.length) {
+      tl.to(titleChars, {
+        opacity: 1,
+        y: 0,
+        rotationX: 0,
+        scaleY: 1,
+        clipPath: 'inset(0% 0% 0% 0%)',
+        duration: 1.2,
+        stagger: {
+          each: 0.04,
+          from: 'center',
+        },
+        ease: 'expo.out',
+      }, "reveal+=0.1");
+
+      tl.fromTo(titleChars, {
+        filter: 'brightness(1)',
+      }, {
+        filter: 'brightness(1.8)',
+        duration: 0.3,
+        stagger: { each: 0.025, from: 'start' },
+        yoyo: true,
+        repeat: 1,
+        ease: 'power1.inOut',
+      }, "reveal+=0.8");
+    }
+
+    // Subtitle
+    tl.from(".hero-sub-char", {
       opacity: 0,
-      duration: 1.2,
-      stagger: 0.15,
-      ease: "expo.out",
+      y: 20,
       rotationX: -90,
-      transformOrigin: "0% 50% -50"
-    }, "-=0.6")
-    .from(".hero-subtitle", {
+      duration: 0.8,
+      stagger: { each: 0.015, from: "start" },
+      ease: "back.out(1.5)"
+    }, "reveal+=0.6");
+
+    // Buttons & Icons
+    tl.from(".hero-btn", {
       y: 30,
       opacity: 0,
-      duration: 1,
-      ease: "power3.out"
-    }, "-=0.8")
-    .from(".hero-btn", {
-      scale: 0.8,
-      y: 20,
-      opacity: 0,
       duration: 0.8,
-      stagger: 0.2,
-      ease: "back.out(1.5)"
-    }, "-=0.6")
-    .from(".hero-icon", {
+      stagger: 0.15,
+      ease: "back.out(1.2)"
+    }, "reveal+=0.8");
+
+    tl.from(".hero-icon", {
       scale: 0,
       opacity: 0,
       duration: 0.6,
-      stagger: 0.15,
-      ease: "back.out(2)"
-    }, "-=0.4");
+      stagger: 0.1,
+      ease: "back.out(1.5)"
+    }, "reveal+=1.0");
 
-    // Scroll Animations
-    gsap.to(".hero-wrapper", {
-      yPercent: 40,
-      opacity: 0,
-      filter: "blur(15px)",
-      scale: 0.95,
-      scrollTrigger: {
-        trigger: ".hero-section",
-        start: "top top",
-        end: "bottom top",
-        scrub: 1.5
-      }
-    });
-    
+    // 6. Fish swims away
+    tl.to(fish, {
+      x: '-100vw',
+      y: -50,
+      rotation: 15,
+      duration: 3.5,
+      ease: "power2.in",
+    }, "reveal+=1.5");
+
   }, { scope: containerRef });
 
   return (
@@ -331,6 +455,11 @@ export default function Portfolio() {
 
         {/* Hero Section */}
         <section className="hero-section min-h-[100svh] pt-32 pb-20 px-4 relative flex items-center justify-center">
+          <CircuitBackground id="hero" />
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden z-20">
+            <AnglerFish className="angler-fish-container scale-150 md:scale-100" />
+          </div>
+          
           <div className="hero-wrapper max-w-6xl mx-auto w-full relative z-10">
             <div className="text-center flex flex-col items-center">
               <div className="hero-sparkle mb-8 inline-flex items-center justify-center p-4 rounded-3xl bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-white/10 backdrop-blur-md shadow-2xl shadow-cyan-500/20">
@@ -338,19 +467,29 @@ export default function Portfolio() {
               </div>
               
               <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-8 flex flex-wrap justify-center gap-x-[0.3em] gap-y-2" style={{ perspective: "1000px" }}>
-                <span className="hero-title-word inline-block bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
-                  Full-Stack
-                </span>
-                <span className="hero-title-word inline-block bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-                  Web
-                </span>
-                <span className="hero-title-word inline-block bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
-                  Developer
-                </span>
+                <SplitChars
+                  text="Full-Stack"
+                  className="hero-title-word inline-block bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent"
+                  charClassName="hero-title-char"
+                />
+                <SplitChars
+                  text="Web"
+                  className="hero-title-word inline-block bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent"
+                  charClassName="hero-title-char"
+                />
+                <SplitChars
+                  text="Developer"
+                  className="hero-title-word inline-block bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent"
+                  charClassName="hero-title-char"
+                />
               </h1>
               
-              <p className="hero-subtitle text-xl md:text-2xl lg:text-3xl text-slate-400 font-light max-w-3xl mb-12 leading-relaxed">
-                Building <span className="text-cyan-400 font-medium">dynamic</span> and <span className="text-purple-400 font-medium">scalable</span> applications with modern web technologies
+              <p className="hero-subtitle text-xl md:text-2xl lg:text-3xl text-slate-400 font-light max-w-3xl mb-12 leading-relaxed" style={{ perspective: '800px' }}>
+                <SplitChars text="Building " charClassName="hero-sub-char" />
+                <SplitChars text="dynamic" className="text-cyan-400 font-medium" charClassName="hero-sub-char hero-sub-char--accent-cyan" />
+                <SplitChars text=" and " charClassName="hero-sub-char" />
+                <SplitChars text="scalable" className="text-purple-400 font-medium" charClassName="hero-sub-char hero-sub-char--accent-purple" />
+                <SplitChars text=" applications with modern web technologies" charClassName="hero-sub-char" />
               </p>
               
               <div className="flex flex-col sm:flex-row justify-center gap-6 mb-16 w-full sm:w-auto">

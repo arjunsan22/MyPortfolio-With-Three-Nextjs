@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { GraduationCap, Award, BookOpen, Binary, CheckCircle2, Zap } from 'lucide-react';
+import CircuitBackground from './components/CircuitBackground';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -55,13 +56,10 @@ const EducationSection = () => {
     ];
 
     useGSAP(() => {
-        // Title words entrance
-        gsap.from('.edu-title-word', {
-            y: 120,
+        // Liquid Text Entrance Animation
+        gsap.from(".liquid-text", {
+            y: 50,
             opacity: 0,
-            rotationX: -90,
-            transformOrigin: "bottom center",
-            stagger: 0.15,
             duration: 1.5,
             ease: "expo.out",
             scrollTrigger: {
@@ -72,7 +70,7 @@ const EducationSection = () => {
 
         // Subtitle
         gsap.from('.edu-subtitle', {
-            y: 30,
+            y: 30, 
             opacity: 0,
             duration: 1,
             delay: 0.5,
@@ -162,6 +160,7 @@ const EducationSection = () => {
             ref={sectionRef}
             className="py-32 px-4 md:px-6 bg-[#050505] relative overflow-hidden min-h-screen"
         >
+            <CircuitBackground id="education" />
             {/* Background Effects */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 <div className="absolute top-[10%] left-[-15%] w-[600px] h-[600px] bg-purple-900/15 rounded-full blur-[150px]" />
@@ -178,14 +177,30 @@ const EducationSection = () => {
                         <span className="text-white text-sm font-bold tracking-widest uppercase">Knowledge Archive</span>
                     </div>
 
+                    <style>{`
+                        @keyframes liquidFlow {
+                            0% { background-position: 0 0; }
+                            100% { background-position: 400px 0; }
+                        }
+                        .liquid-text {
+                            color: transparent;
+                            -webkit-text-stroke: 2px rgba(255,255,255,0.2);
+                            background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 0 200 Q 100 150 200 200 T 400 200 L 400 400 L 0 400 Z' fill='%2306b6d4' opacity='0.6'/%3E%3Cpath d='M 0 220 Q 100 270 200 220 T 400 220 L 400 400 L 0 400 Z' fill='%2322d3ee' opacity='0.6'/%3E%3C/svg%3E");
+                            -webkit-background-clip: text;
+                            background-clip: text;
+                            background-repeat: repeat-x;
+                            background-size: 400px 100%;
+                            animation: liquidFlow 3s linear infinite;
+                            display: inline-block;
+                        }
+                    `}</style>
                     <h2
                         ref={titleRef}
-                        className="text-6xl md:text-8xl lg:text-9xl font-black flex flex-wrap justify-center gap-4"
-                        style={{ perspective: '1000px' }}
+                        className="text-6xl md:text-8xl lg:text-9xl font-black flex flex-wrap justify-center gap-x-6 gap-y-2 uppercase tracking-tighter"
                     >
-                        <span className="edu-title-word inline-block text-transparent bg-clip-text bg-gradient-to-br from-white to-white/30">EDUCATION</span>
-                        <span className="edu-title-word inline-block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-cyan-400 to-blue-400">&</span>
-                        <span className="edu-title-word inline-block text-transparent bg-clip-text bg-gradient-to-br from-white to-white/30">CERTS</span>
+                        <span className="liquid-text">EDUCATION</span>
+                        <span className="liquid-text">&</span>
+                        <span className="liquid-text">CERTS</span>
                     </h2>
 
                     <p className="edu-subtitle mt-8 text-slate-500 font-mono tracking-widest uppercase text-sm">
