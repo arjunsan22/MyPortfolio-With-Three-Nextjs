@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import Image from 'next/image';
+import { CoderSVG } from './components/CoderSVG';
 import {
   Github, Mail,
   Menu, X, Code, Rocket,
@@ -292,14 +292,50 @@ export default function Portfolio() {
     tl.fromTo('.coder-intro-image', {
       opacity: 0,
       scale: 0.7,
-      filter: 'brightness(0.2) blur(10px)',
+      filter: 'brightness(0.2)',
     }, {
       opacity: 1,
       scale: 1,
-      filter: 'brightness(1) blur(0px)',
+      filter: 'brightness(1)',
       duration: 1.5,
       ease: 'power3.out',
     });
+
+    // ── SVG Specific Animations (Typing & Blinking) ──
+    
+    // Typing animation (hands moving slightly)
+    gsap.to('.coder-hand-right', {
+      y: -5,
+      x: -3,
+      duration: 0.1,
+      yoyo: true,
+      repeat: -1,
+      ease: 'power1.inOut',
+      delay: 0.1
+    });
+
+    gsap.to('.coder-hand-left', {
+      y: -4,
+      x: 2,
+      duration: 0.15,
+      yoyo: true,
+      repeat: -1,
+      ease: 'power1.inOut'
+    });
+
+    // Code lines flashing/shifting slightly
+    gsap.to('.coder-code-lines', {
+      opacity: 0.4,
+      duration: 0.3,
+      yoyo: true,
+      repeat: -1,
+      ease: 'steps(2)'
+    });
+
+    // Eye blinking
+    const blinkTl = gsap.timeline({ repeat: -1, repeatDelay: 2 });
+    blinkTl.to('.coder-eye', { scaleY: 0.1, duration: 0.05, transformOrigin: "center" })
+           .to('.coder-eye', { scaleY: 1, duration: 0.05 });
 
     // Ambient glow pulses
     tl.fromTo('.coder-intro-glow', {
@@ -546,17 +582,9 @@ export default function Portfolio() {
             {/* Scanline effect */}
             <div className="coder-scanline absolute left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent pointer-events-none z-10" style={{ top: '-5%' }} />
 
-            {/* The coding image */}
-            <div className="coder-intro-image relative w-[280px] h-[220px] sm:w-[400px] sm:h-[320px] md:w-[500px] md:h-[400px] rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(34,211,238,0.15),0_0_120px_rgba(112,0,255,0.1)]">
-              <Image
-                src="/codingimage.webp"
-                alt="Developer coding"
-                fill
-                className="object-cover"
-                priority
-              />
-              {/* Subtle overlay gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#030305]/60 via-transparent to-[#030305]/30" />
+            {/* The coding SVG illustration */}
+            <div className="coder-intro-image relative w-[320px] h-[240px] sm:w-[500px] sm:h-[380px] md:w-[700px] md:h-[500px] z-20">
+              <CoderSVG />
             </div>
           </div>
 
