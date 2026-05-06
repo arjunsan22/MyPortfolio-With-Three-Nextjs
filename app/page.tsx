@@ -16,7 +16,7 @@ import AboutSection from './About';
 import ContactSection from './ContactSection';
 import CodingProfiles from './LeetandGit';
 import CircuitBackground from './components/CircuitBackground';
-import { AnglerFish } from './components/AnglerFish';
+
 import { Loader } from './components/Loader';
 
 if (typeof window !== "undefined") {
@@ -263,31 +263,6 @@ export default function Portfolio() {
     if (isLoading) return;
     const tl = gsap.timeline();
 
-    const fish = document.querySelector('.angler-fish-container');
-    const bulb = document.querySelector('.angler-bulb');
-    const circuitBg = document.querySelector('.hero-section .absolute.inset-0.pointer-events-none.z-0'); // The CircuitBackground div
-    const pageBg = containerRef.current;
-
-    // 1. Setup Initial States
-    gsap.set(fish, { x: '100vw', y: 0, rotation: -10 });
-    gsap.set(bulb, { opacity: 0.1, filter: 'brightness(0.3)' });
-
-    // Make background very dark initially
-    gsap.set(pageBg, { backgroundColor: '#010103' });
-
-    // Hide circuit background
-    if (circuitBg) gsap.set(circuitBg, { opacity: 0 });
-
-    // Hide all elements that should appear later
-    const elementsToReveal = [
-      "nav",
-      ".hero-sparkle",
-      ".hero-subtitle",
-      ".hero-btn",
-      ".hero-icon",
-      ".hero-title-char" // Text characters
-    ];
-
     // Set text characters initial state for the SplitChars effect
     const titleChars = containerRef.current?.querySelectorAll('.hero-title-char');
     if (titleChars && titleChars.length) {
@@ -301,36 +276,8 @@ export default function Portfolio() {
       });
     }
 
-    // 2. Fish swims in
-    tl.to(fish, {
-      x: '0vw',
-      y: 20,
-      rotation: 0,
-      duration: 3,
-      ease: "power3.out"
-    });
-
-    // 3. Fish floats briefly
-    tl.to(fish, {
-      y: "-=30",
-      duration: 1.5,
-      yoyo: true,
-      repeat: 1,
-      ease: "sine.inOut"
-    });
-
-    // 4. Bulb Blinks and shines brightly!
-    tl.to(bulb, { opacity: 1, filter: 'brightness(2)', duration: 0.1, repeat: 3, yoyo: true }, "-=1.5");
-    tl.to(bulb, { opacity: 1, filter: 'brightness(4)', scale: 1.4, duration: 0.2, transformOrigin: 'center' });
-    tl.to(bulb, { scale: 1, filter: 'brightness(3)', duration: 0.5 });
-
-    // 5. REVEAL HERO CONTENT
-    tl.addLabel("reveal", "-=0.2");
-
-    // Show Circuit Background
-    if (circuitBg) {
-      tl.to(circuitBg, { opacity: 1, duration: 2, ease: "power2.inOut" }, "reveal");
-    }
+    // REVEAL HERO CONTENT
+    tl.addLabel("reveal");
 
     // Nav animation
     tl.from("nav", {
@@ -402,15 +349,6 @@ export default function Portfolio() {
       stagger: 0.1,
       ease: "back.out(1.5)"
     }, "reveal+=1.0");
-
-    // 6. Fish swims away
-    tl.to(fish, {
-      x: '-100vw',
-      y: -50,
-      rotation: 15,
-      duration: 3.5,
-      ease: "power2.in",
-    }, "reveal+=1.5");
 
   }, { scope: containerRef, dependencies: [isLoading] });
 
@@ -485,9 +423,7 @@ export default function Portfolio() {
         {/* Hero Section */}
         <section className="hero-section min-h-[100svh] pt-32 pb-20 px-4 relative flex items-center justify-center">
           <CircuitBackground id="hero" />
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden z-20">
-            <AnglerFish className="angler-fish-container scale-150 md:scale-100" />
-          </div>
+
 
           <div className="hero-wrapper max-w-6xl mx-auto w-full relative z-10">
             <div className="text-center flex flex-col items-center">
