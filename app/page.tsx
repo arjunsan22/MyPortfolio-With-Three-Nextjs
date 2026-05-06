@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import Image from 'next/image';
 import {
   Github, Mail,
   Menu, X, Code, Rocket,
@@ -263,6 +264,9 @@ export default function Portfolio() {
     if (isLoading) return;
     const tl = gsap.timeline();
 
+    const heroContent = containerRef.current?.querySelector('.hero-wrapper');
+    const circuitBg = containerRef.current?.querySelector('.hero-section .absolute.inset-0.pointer-events-none.z-0');
+
     // Set text characters initial state for the SplitChars effect
     const titleChars = containerRef.current?.querySelectorAll('.hero-title-char');
     if (titleChars && titleChars.length) {
@@ -276,25 +280,135 @@ export default function Portfolio() {
       });
     }
 
-    // REVEAL HERO CONTENT
-    tl.addLabel("reveal");
+    // Hide hero content & circuit background initially
+    gsap.set('.hero-wrapper', { opacity: 0 });
+    gsap.set('.hero-section .absolute.inset-0.pointer-events-none.z-0', { opacity: 0 });
+
+    // ═══════════════════════════════════════════════
+    // PHASE 1: Coder Image Entrance (~0s → 3s)
+    // ═══════════════════════════════════════════════
+
+    // Image fades in with scale
+    tl.fromTo('.coder-intro-image', {
+      opacity: 0,
+      scale: 0.7,
+      filter: 'brightness(0.2) blur(10px)',
+    }, {
+      opacity: 1,
+      scale: 1,
+      filter: 'brightness(1) blur(0px)',
+      duration: 1.5,
+      ease: 'power3.out',
+    });
+
+    // Ambient glow pulses
+    tl.fromTo('.coder-intro-glow', {
+      opacity: 0,
+      scale: 0.8,
+    }, {
+      opacity: 1,
+      scale: 1.1,
+      duration: 1,
+      ease: 'sine.inOut',
+    }, '-=1');
+
+    // Glow breathes
+    tl.to('.coder-intro-glow', {
+      scale: 1.3,
+      opacity: 0.7,
+      duration: 1,
+      yoyo: true,
+      repeat: 1,
+      ease: 'sine.inOut',
+    });
+
+    // Scanline sweeps across the image
+    tl.fromTo('.coder-scanline', {
+      top: '-5%',
+      opacity: 0.8,
+    }, {
+      top: '105%',
+      opacity: 0,
+      duration: 1.2,
+      ease: 'power2.inOut',
+    }, '-=1.5');
+
+    // ═══════════════════════════════════════════════
+    // PHASE 2: Dramatic Glitch Exit (~3s → 4.5s)
+    // ═══════════════════════════════════════════════
+    tl.addLabel('glitch');
+
+    // Quick glitch flickers
+    tl.to('.coder-intro-image', {
+      x: 8, filter: 'brightness(2) hue-rotate(90deg)', duration: 0.05, ease: 'steps(1)',
+    }, 'glitch');
+    tl.to('.coder-intro-image', {
+      x: -12, filter: 'brightness(0.5) hue-rotate(-60deg)', duration: 0.05, ease: 'steps(1)',
+    }, 'glitch+=0.05');
+    tl.to('.coder-intro-image', {
+      x: 5, filter: 'brightness(3) hue-rotate(180deg)', duration: 0.05, ease: 'steps(1)',
+    }, 'glitch+=0.1');
+    tl.to('.coder-intro-image', {
+      x: -8, filter: 'brightness(1) hue-rotate(0deg)', duration: 0.05, ease: 'steps(1)',
+    }, 'glitch+=0.15');
+    tl.to('.coder-intro-image', {
+      x: 15, filter: 'brightness(4) hue-rotate(120deg)', duration: 0.05, ease: 'steps(1)',
+    }, 'glitch+=0.2');
+    tl.to('.coder-intro-image', {
+      x: 0, filter: 'brightness(1) hue-rotate(0deg)', duration: 0.05,
+    }, 'glitch+=0.25');
+
+    // Final dramatic exit — zoom + dissolve + blur
+    tl.to('.coder-intro-image', {
+      scale: 1.8,
+      opacity: 0,
+      filter: 'brightness(5) blur(30px)',
+      duration: 0.8,
+      ease: 'power4.in',
+    }, 'glitch+=0.35');
+
+    // Glow explodes outward
+    tl.to('.coder-intro-glow', {
+      scale: 3,
+      opacity: 0,
+      duration: 0.8,
+      ease: 'power3.in',
+    }, 'glitch+=0.35');
+
+    // Hide the entire overlay
+    tl.set('.coder-intro-overlay', { display: 'none' });
+
+    // ═══════════════════════════════════════════════
+    // PHASE 3: Hero Content Reveal
+    // ═══════════════════════════════════════════════
+    tl.addLabel('reveal');
+
+    // Show hero content
+    if (heroContent) {
+      tl.to(heroContent as Element, { opacity: 1, duration: 0.3 }, 'reveal');
+    }
+
+    // Show Circuit Background
+    if (circuitBg) {
+      tl.to(circuitBg as Element, { opacity: 1, duration: 2, ease: 'power2.inOut' }, 'reveal');
+    }
 
     // Nav animation
-    tl.from("nav", {
+    tl.from('nav', {
       y: -100,
       opacity: 0,
       duration: 1.2,
-      ease: "power4.out"
-    }, "reveal");
+      ease: 'power4.out',
+    }, 'reveal');
 
     // Hero sparkle
-    tl.from(".hero-sparkle", {
+    tl.from('.hero-sparkle', {
       scale: 0,
       rotation: 180,
       opacity: 0,
       duration: 1,
-      ease: "back.out(1.7)"
-    }, "reveal+=0.2");
+      ease: 'back.out(1.7)',
+    }, 'reveal+=0.2');
 
     if (titleChars && titleChars.length) {
       tl.to(titleChars, {
@@ -309,7 +423,7 @@ export default function Portfolio() {
           from: 'center',
         },
         ease: 'expo.out',
-      }, "reveal+=0.1");
+      }, 'reveal+=0.1');
 
       tl.fromTo(titleChars, {
         filter: 'brightness(1)',
@@ -320,35 +434,35 @@ export default function Portfolio() {
         yoyo: true,
         repeat: 1,
         ease: 'power1.inOut',
-      }, "reveal+=0.8");
+      }, 'reveal+=0.8');
     }
 
     // Subtitle
-    tl.from(".hero-sub-char", {
+    tl.from('.hero-sub-char', {
       opacity: 0,
       y: 20,
       rotationX: -90,
       duration: 0.8,
-      stagger: { each: 0.015, from: "start" },
-      ease: "back.out(1.5)"
-    }, "reveal+=0.6");
+      stagger: { each: 0.015, from: 'start' },
+      ease: 'back.out(1.5)',
+    }, 'reveal+=0.6');
 
     // Buttons & Icons
-    tl.from(".hero-btn", {
+    tl.from('.hero-btn', {
       y: 30,
       opacity: 0,
       duration: 0.8,
       stagger: 0.15,
-      ease: "back.out(1.2)"
-    }, "reveal+=0.8");
+      ease: 'back.out(1.2)',
+    }, 'reveal+=0.8');
 
-    tl.from(".hero-icon", {
+    tl.from('.hero-icon', {
       scale: 0,
       opacity: 0,
       duration: 0.6,
       stagger: 0.1,
-      ease: "back.out(1.5)"
-    }, "reveal+=1.0");
+      ease: 'back.out(1.5)',
+    }, 'reveal+=1.0');
 
   }, { scope: containerRef, dependencies: [isLoading] });
 
@@ -423,6 +537,28 @@ export default function Portfolio() {
         {/* Hero Section */}
         <section className="hero-section min-h-[100svh] pt-32 pb-20 px-4 relative flex items-center justify-center">
           <CircuitBackground id="hero" />
+
+          {/* ── Coder Intro Overlay ── */}
+          <div className="coder-intro-overlay absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
+            {/* Ambient glow behind image */}
+            <div className="coder-intro-glow absolute w-[500px] h-[500px] md:w-[700px] md:h-[700px] rounded-full bg-gradient-radial from-cyan-500/20 via-purple-600/10 to-transparent blur-[80px] pointer-events-none" />
+
+            {/* Scanline effect */}
+            <div className="coder-scanline absolute left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent pointer-events-none z-10" style={{ top: '-5%' }} />
+
+            {/* The coding image */}
+            <div className="coder-intro-image relative w-[280px] h-[220px] sm:w-[400px] sm:h-[320px] md:w-[500px] md:h-[400px] rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(34,211,238,0.15),0_0_120px_rgba(112,0,255,0.1)]">
+              <Image
+                src="/codingimage.webp"
+                alt="Developer coding"
+                fill
+                className="object-cover"
+                priority
+              />
+              {/* Subtle overlay gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#030305]/60 via-transparent to-[#030305]/30" />
+            </div>
+          </div>
 
 
           <div className="hero-wrapper max-w-6xl mx-auto w-full relative z-10">
