@@ -370,46 +370,48 @@ export default function Portfolio() {
     }, '-=1.5');
 
     // ═══════════════════════════════════════════════
-    // PHASE 2: Dramatic Glitch Exit (~3s → 4.5s)
+    // PHASE 2: HIGH-INTENSITY GLITCH EXIT (~3s → 4s)
     // ═══════════════════════════════════════════════
     tl.addLabel('glitch');
 
-    // Quick glitch flickers
+    // Harsh Black & White / Invert Flashes (Frames)
     tl.to('.coder-intro-image', {
-      x: 8, filter: 'brightness(2) hue-rotate(90deg)', duration: 0.05, ease: 'steps(1)',
+      x: 15, skewX: 20, scale: 1.05, filter: 'grayscale(1) brightness(2) contrast(3)', duration: 0.05, ease: 'steps(1)',
     }, 'glitch');
     tl.to('.coder-intro-image', {
-      x: -12, filter: 'brightness(0.5) hue-rotate(-60deg)', duration: 0.05, ease: 'steps(1)',
+      x: -20, skewX: -15, scale: 0.95, filter: 'invert(1) brightness(1.5)', duration: 0.05, ease: 'steps(1)',
     }, 'glitch+=0.05');
     tl.to('.coder-intro-image', {
-      x: 5, filter: 'brightness(3) hue-rotate(180deg)', duration: 0.05, ease: 'steps(1)',
+      x: 10, skewX: 30, scale: 1.1, filter: 'grayscale(1) brightness(0.2) contrast(4)', duration: 0.05, ease: 'steps(1)',
     }, 'glitch+=0.1');
     tl.to('.coder-intro-image', {
-      x: -8, filter: 'brightness(1) hue-rotate(0deg)', duration: 0.05, ease: 'steps(1)',
+      x: -25, skewX: -25, scale: 1.15, filter: 'invert(1) hue-rotate(180deg)', duration: 0.05, ease: 'steps(1)',
     }, 'glitch+=0.15');
     tl.to('.coder-intro-image', {
-      x: 15, filter: 'brightness(4) hue-rotate(120deg)', duration: 0.05, ease: 'steps(1)',
+      x: 5, skewX: 10, scale: 0.9, filter: 'grayscale(1) brightness(3)', duration: 0.05, ease: 'steps(1)',
     }, 'glitch+=0.2');
     tl.to('.coder-intro-image', {
-      x: 0, filter: 'brightness(1) hue-rotate(0deg)', duration: 0.05,
+      x: -10, skewX: 0, scale: 1.2, filter: 'invert(1)', duration: 0.05, ease: 'steps(1)',
     }, 'glitch+=0.25');
 
-    // Final dramatic exit — zoom + dissolve + blur
+    // Final chaotic shatter — extreme zoom + dissolve + blur
     tl.to('.coder-intro-image', {
-      scale: 1.8,
+      scale: 2.5,
+      rotation: 10,
       opacity: 0,
-      filter: 'brightness(5) blur(30px)',
-      duration: 0.8,
+      filter: 'grayscale(1) brightness(5) blur(40px)',
+      duration: 0.6,
       ease: 'power4.in',
-    }, 'glitch+=0.35');
+    }, 'glitch+=0.3');
 
-    // Glow explodes outward
+    // Glow explodes outward intensely
     tl.to('.coder-intro-glow', {
-      scale: 3,
+      scale: 5,
       opacity: 0,
-      duration: 0.8,
+      filter: 'brightness(3)',
+      duration: 0.6,
       ease: 'power3.in',
-    }, 'glitch+=0.35');
+    }, 'glitch+=0.3');
 
     // Hide the entire overlay
     tl.set('.coder-intro-overlay', { display: 'none' });
