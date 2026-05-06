@@ -417,9 +417,44 @@ export default function Portfolio() {
     tl.set('.coder-intro-overlay', { display: 'none' });
 
     // ═══════════════════════════════════════════════
+    // PHASE 2.5: Hacker Glitch Screen
+    // ═══════════════════════════════════════════════
+    tl.addLabel('hacker-glitch');
+    
+    tl.set('.hacker-glitch-overlay', { display: 'flex', opacity: 1 }, 'hacker-glitch');
+    
+    tl.fromTo('.hacker-glitch-overlay', {
+      filter: 'hue-rotate(0deg) contrast(1)',
+      scale: 1,
+      skewX: 0
+    }, {
+      filter: 'hue-rotate(90deg) contrast(2) invert(1)',
+      scale: 1.05,
+      skewX: 10,
+      duration: 0.1,
+      ease: 'steps(1)',
+      yoyo: true,
+      repeat: 3
+    }, 'hacker-glitch');
+    
+    tl.to('.hacker-glitch-overlay', {
+      x: -20, scale: 1.1, filter: 'grayscale(1) brightness(2)', duration: 0.05, ease: 'steps(1)'
+    }, 'hacker-glitch+=0.2');
+
+    tl.to('.hacker-glitch-overlay', {
+      x: 15, scale: 0.9, filter: 'invert(1) brightness(1.5)', duration: 0.05, ease: 'steps(1)'
+    }, 'hacker-glitch+=0.25');
+
+    tl.to('.hacker-glitch-overlay', {
+      x: 0, scale: 2, opacity: 0, filter: 'blur(20px) brightness(3)', duration: 0.4, ease: 'power4.in'
+    }, 'hacker-glitch+=0.4');
+
+    tl.set('.hacker-glitch-overlay', { display: 'none' }, 'hacker-glitch+=0.8');
+
+    // ═══════════════════════════════════════════════
     // PHASE 3: Hero Content Reveal
     // ═══════════════════════════════════════════════
-    tl.addLabel('reveal');
+    tl.addLabel('reveal', 'hacker-glitch+=0.8');
 
     // Show hero content
     if (heroContent) {
@@ -590,6 +625,15 @@ export default function Portfolio() {
             </div>
           </div>
 
+          {/* Simple Hacker Glitch Overlay */}
+          <div className="hacker-glitch-overlay fixed inset-0 z-[60] bg-black hidden flex-col items-center justify-center font-mono text-[#00ff00] pointer-events-none opacity-0">
+            <div className="text-4xl md:text-6xl font-bold tracking-[0.2em] animate-pulse">SYSTEM BREACH</div>
+            <div className="mt-4 text-xs md:text-sm max-w-2xl text-center opacity-80 break-words">
+              01001000 01100001 01100011 01101011 01101001 01101110 01100111 00100000 01001001 01101110 00100000 01010000 01110010 01101111 01100111 01110010 01100101 01110011 01110011
+            </div>
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,0,0.2)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none"></div>
+          </div>
 
           <div className="hero-wrapper max-w-6xl mx-auto w-full relative z-10">
             <div className="text-center flex flex-col items-center">

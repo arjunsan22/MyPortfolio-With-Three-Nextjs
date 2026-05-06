@@ -30,8 +30,7 @@ export const CoderSVG = forwardRef<HTMLDivElement, { className?: string }>(({ cl
           </filter>
         </defs>
 
-        {/* Ambient background light from monitor */}
-        <circle cx="400" cy="300" r="250" fill="url(#monitor-glow)" opacity="0.3" className="coder-ambient-light" />
+        {/* Background light removed as requested */}
 
         {/* Chair Back */}
         <path d="M 220 250 L 220 450 Q 220 480 260 480 L 320 480" fill="none" stroke="#ff4757" strokeWidth="15" strokeLinecap="round" />
