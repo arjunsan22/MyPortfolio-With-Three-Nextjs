@@ -562,6 +562,72 @@ export default function Portfolio() {
       transformOrigin: "center center"
     }, 'mern-flip+=0.2');
 
+    // ═══════════════════════════════════════════════
+    // PHASE 5: Design. Develop. Deploy. (Sliced Kinetic)
+    // ═══════════════════════════════════════════════
+    tl.addLabel('sliced-text-phase', 'mern-flip+=4'); // Wait 4 seconds after MERN letters
+
+    // Flip MERN letters out
+    tl.to('.mern-letter', {
+      rotationX: 90,
+      opacity: 0,
+      duration: 0.6,
+      stagger: 0.05,
+      ease: 'back.in(1.5)',
+      transformOrigin: "center center"
+    }, 'sliced-text-phase');
+
+    // Show Layer 4 container
+    tl.set('.hero-title-layer-4', { opacity: 1 }, 'sliced-text-phase');
+
+    // Setup initial state for slices
+    gsap.set('.sliced-top', { x: -80, y: -40, opacity: 0, skewX: 30 });
+    gsap.set('.sliced-bottom', { x: 80, y: 40, opacity: 0, skewX: -30 });
+
+    // Animate words one by one
+    [0, 1, 2].forEach((i) => {
+      // Start slightly after the MERN letters have flipped out (0.6s)
+      const delay = `sliced-text-phase+=${0.6 + i * 1.5}`;
+      
+      // Smash together
+      tl.to(`.sliced-top-${i}`, { x: 0, y: 0, opacity: 1, skewX: 0, duration: 0.6, ease: 'expo.out' }, delay);
+      tl.to(`.sliced-bottom-${i}`, { x: 0, y: 0, opacity: 1, skewX: 0, duration: 0.6, ease: 'expo.out' }, delay);
+
+      // Glitch sliding effect
+      tl.to(`.sliced-top-${i}`, { x: 15, duration: 0.1, yoyo: true, repeat: 1, ease: 'steps(1)' }, delay + "+=0.8");
+      tl.to(`.sliced-bottom-${i}`, { x: -15, duration: 0.1, yoyo: true, repeat: 1, ease: 'steps(1)' }, delay + "+=0.8");
+
+      // Hide word to make room for the next
+      if (i < 2) {
+        tl.to([`.sliced-top-${i}`, `.sliced-bottom-${i}`], {
+          opacity: 0,
+          scale: 1.2,
+          filter: 'blur(10px)',
+          duration: 0.3,
+          ease: 'power2.in'
+        }, `sliced-text-phase+=${0.6 + (i + 1) * 1.5 - 0.3}`);
+      }
+    });
+
+    // ═══════════════════════════════════════════════
+    // PHASE 6: Final Return to Full-Stack Web Developer
+    // ═══════════════════════════════════════════════
+    tl.addLabel('final-return', `sliced-text-phase+=${0.6 + 3 * 1.5}`);
+    
+    // Hide the last word "Deploy."
+    tl.to([`.sliced-top-2`, `.sliced-bottom-2`], {
+       opacity: 0, scale: 1.2, filter: 'blur(10px)', duration: 0.4, ease: 'power2.in'
+    }, 'final-return');
+    
+    // Bring back original Full-Stack Web Developer
+    tl.to('.hero-title-layer-1', {
+      rotationX: 0,
+      opacity: 1,
+      duration: 0.8,
+      ease: 'back.out(1.5)',
+      transformOrigin: "center center"
+    }, 'final-return+=0.2');
+
     // Subtitle
     tl.from('.hero-sub-char', {
       opacity: 0,
@@ -695,22 +761,26 @@ export default function Portfolio() {
 
               <h1 className="relative grid text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-8" style={{ perspective: "1000px" }}>
                 {/* Phase 1: Full-Stack Web Developer */}
-                <div className="hero-title-layer-1 flex flex-wrap justify-center gap-x-[0.3em] gap-y-2 [grid-area:1/1]">
-                  <SplitChars
-                    text="Full-Stack"
-                    className="hero-title-word inline-block bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent"
-                    charClassName="hero-title-char"
-                  />
-                  <SplitChars
-                    text="Web"
-                    className="hero-title-word inline-block bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent"
-                    charClassName="hero-title-char"
-                  />
-                  <SplitChars
-                    text="Developer"
-                    className="hero-title-word inline-block bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent"
-                    charClassName="hero-title-char"
-                  />
+                <div className="hero-title-layer-1 flex flex-col items-center justify-center gap-y-2 lg:gap-y-4 [grid-area:1/1] w-full">
+                  <div className="flex flex-wrap justify-center gap-x-[0.3em]">
+                    <SplitChars
+                      text="Full-Stack"
+                      className="hero-title-word inline-block bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent"
+                      charClassName="hero-title-char"
+                    />
+                    <SplitChars
+                      text="Web"
+                      className="hero-title-word inline-block bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent"
+                      charClassName="hero-title-char"
+                    />
+                  </div>
+                  <div className="flex justify-center gap-x-[0.3em]">
+                    <SplitChars
+                      text="Developer"
+                      className="hero-title-word inline-block bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent"
+                      charClassName="hero-title-char"
+                    />
+                  </div>
                 </div>
 
                 {/* Phase 2: MERN Icons */}
@@ -731,6 +801,29 @@ export default function Portfolio() {
                   <span className="mern-letter bg-gradient-to-br from-slate-200 to-slate-400 bg-clip-text text-transparent">E</span>
                   <span className="mern-letter bg-gradient-to-br from-cyan-400 to-blue-500 bg-clip-text text-transparent">R</span>
                   <span className="mern-letter bg-gradient-to-br from-green-400 to-green-600 bg-clip-text text-transparent">N</span>
+                </div>
+
+                {/* Phase 4: Sliced Kinetic Typography (Design. Develop. Deploy.) */}
+                <div className="hero-title-layer-4 flex flex-col items-center justify-center [grid-area:1/1] w-full opacity-0 pointer-events-none" style={{ perspective: "1000px" }}>
+                  {['Design.', 'Develop.', 'Deploy.'].map((word, i) => {
+                    const colorClasses = [
+                      "from-cyan-400 to-blue-500",
+                      "from-purple-400 to-pink-500",
+                      "from-emerald-400 to-teal-500"
+                    ];
+                    return (
+                      <div key={word} className="sliced-word-container relative inline-block text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black italic tracking-tighter uppercase leading-none [grid-area:1/1]">
+                        {/* Bottom Slice (Base) */}
+                        <div className={`sliced-bottom sliced-bottom-${i} bg-gradient-to-br from-white to-slate-400 bg-clip-text text-transparent`} style={{ clipPath: 'polygon(0 45%, 100% 35%, 100% 100%, 0% 100%)' }}>
+                          {word}
+                        </div>
+                        {/* Top Slice (Overlapping) */}
+                        <div className={`sliced-top sliced-top-${i} absolute top-0 left-0 bg-gradient-to-br ${colorClasses[i]} bg-clip-text text-transparent drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]`} style={{ clipPath: 'polygon(0 0, 100% 0, 100% 35.5%, 0 45.5%)' }}>
+                          {word}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </h1>
 
