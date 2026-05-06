@@ -17,6 +17,7 @@ import ContactSection from './ContactSection';
 import CodingProfiles from './LeetandGit';
 import CircuitBackground from './components/CircuitBackground';
 import { AnglerFish } from './components/AnglerFish';
+import { Loader } from './components/Loader';
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -25,12 +26,12 @@ if (typeof window !== "undefined") {
 /* ── SplitChars: renders each character grouped into words to prevent line breaks ── */
 function SplitChars({ text, className, charClassName }: { text: string; className?: string; charClassName?: string }) {
   const words = useMemo(() => text.split(' '), [text]);
-  
+
   return (
     <span className={className} aria-label={text}>
       {words.map((word, wordIdx) => (
-        <span 
-          key={wordIdx} 
+        <span
+          key={wordIdx}
           style={{ display: 'inline-block', whiteSpace: 'nowrap' }}
           className="word-wrapper"
         >
@@ -58,8 +59,35 @@ function SplitChars({ text, className, charClassName }: { text: string; classNam
 
 export default function Portfolio() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // If the page has already fully loaded before this effect runs
+    if (document.readyState === 'complete') {
+      setIsLoading(false);
+      return;
+    }
+
+    // Wait for all assets (images, fonts, stylesheets) to finish loading
+    const handleLoad = () => {
+      // Add a tiny delay just to ensure smooth transition
+      setTimeout(() => setIsLoading(false), 500);
+    };
+
+    window.addEventListener('load', handleLoad);
+
+    // Fallback just in case the load event fails or takes ridiculously long
+    const fallbackTimer = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000);
+
+    return () => {
+      window.removeEventListener('load', handleLoad);
+      clearTimeout(fallbackTimer);
+    };
+  }, []);
 
   useEffect(() => {
     // We keep empty dependency array if we just want it on mount.
@@ -96,21 +124,21 @@ export default function Portfolio() {
     const particlesCount = 2000;
     const posArray = new Float32Array(particlesCount * 3);
     const colorsArray = new Float32Array(particlesCount * 3);
-    
+
     const color1 = new THREE.Color(0x00f0ff);
     const color2 = new THREE.Color(0x7000ff);
 
-    for (let i = 0; i < particlesCount * 3; i+=3) {
+    for (let i = 0; i < particlesCount * 3; i += 3) {
       posArray[i] = (Math.random() - 0.5) * 20;
-      posArray[i+1] = (Math.random() - 0.5) * 20;
-      posArray[i+2] = (Math.random() - 0.5) * 15;
+      posArray[i + 1] = (Math.random() - 0.5) * 20;
+      posArray[i + 2] = (Math.random() - 0.5) * 15;
 
       const mixedColor = color1.clone().lerp(color2, Math.random());
       colorsArray[i] = mixedColor.r;
-      colorsArray[i+1] = mixedColor.g;
-      colorsArray[i+2] = mixedColor.b;
+      colorsArray[i + 1] = mixedColor.g;
+      colorsArray[i + 2] = mixedColor.b;
     }
-    
+
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
     particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorsArray, 3));
 
@@ -161,7 +189,7 @@ export default function Portfolio() {
     // Add lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
-    
+
     const pointLight = new THREE.PointLight(0x00f0ff, 2, 20);
     pointLight.position.set(2, 2, 2);
     scene.add(pointLight);
@@ -189,7 +217,7 @@ export default function Portfolio() {
 
       particlesMesh.rotation.y += 0.0005;
       particlesMesh.rotation.x += 0.0002;
-      
+
       // Smooth camera movement
       camera.position.x += (targetX - camera.position.x) * 0.05;
       camera.position.y += (-targetY - camera.position.y) * 0.05;
@@ -225,13 +253,14 @@ export default function Portfolio() {
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
-    if(element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
     }
     setMobileMenuOpen(false);
   };
 
   useGSAP(() => {
+    if (isLoading) return;
     const tl = gsap.timeline();
 
     const fish = document.querySelector('.angler-fish-container');
@@ -242,10 +271,10 @@ export default function Portfolio() {
     // 1. Setup Initial States
     gsap.set(fish, { x: '100vw', y: 0, rotation: -10 });
     gsap.set(bulb, { opacity: 0.1, filter: 'brightness(0.3)' });
-    
+
     // Make background very dark initially
     gsap.set(pageBg, { backgroundColor: '#010103' });
-    
+
     // Hide circuit background
     if (circuitBg) gsap.set(circuitBg, { opacity: 0 });
 
@@ -258,7 +287,7 @@ export default function Portfolio() {
       ".hero-icon",
       ".hero-title-char" // Text characters
     ];
-    
+
     // Set text characters initial state for the SplitChars effect
     const titleChars = containerRef.current?.querySelectorAll('.hero-title-char');
     if (titleChars && titleChars.length) {
@@ -383,17 +412,17 @@ export default function Portfolio() {
       ease: "power2.in",
     }, "reveal+=1.5");
 
-  }, { scope: containerRef });
+  }, { scope: containerRef, dependencies: [isLoading] });
 
   return (
     <div ref={containerRef} className="min-h-screen bg-[#030305] text-slate-200 relative overflow-hidden font-sans selection:bg-cyan-500/30 selection:text-white">
       {/* Three.js Canvas */}
       <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-80 mix-blend-screen" />
-      
+
       {/* Decorative ambient gradients */}
       <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-cyan-900/10 blur-[150px] pointer-events-none z-0"></div>
       <div className="fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-900/10 blur-[150px] pointer-events-none z-0"></div>
-      
+
       <div className="fixed inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none z-0 mix-blend-overlay"></div>
 
       {/* Content */}
@@ -407,7 +436,7 @@ export default function Portfolio() {
                   <Terminal className="text-white" size={24} />
                 </div>
                 <span className="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent group-hover:text-cyan-400 transition-colors duration-300">
-                  Arjun Anil
+                  Arjun
                 </span>
               </div>
 
@@ -459,13 +488,13 @@ export default function Portfolio() {
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden z-20">
             <AnglerFish className="angler-fish-container scale-150 md:scale-100" />
           </div>
-          
+
           <div className="hero-wrapper max-w-6xl mx-auto w-full relative z-10">
             <div className="text-center flex flex-col items-center">
               <div className="hero-sparkle mb-8 inline-flex items-center justify-center p-4 rounded-3xl bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-white/10 backdrop-blur-md shadow-2xl shadow-cyan-500/20">
                 <Sparkles className="text-cyan-400" size={32} />
               </div>
-              
+
               <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-8 flex flex-wrap justify-center gap-x-[0.3em] gap-y-2" style={{ perspective: "1000px" }}>
                 <SplitChars
                   text="Full-Stack"
@@ -483,7 +512,7 @@ export default function Portfolio() {
                   charClassName="hero-title-char"
                 />
               </h1>
-              
+
               <p className="hero-subtitle text-xl md:text-2xl lg:text-3xl text-slate-400 font-light max-w-3xl mb-12 leading-relaxed" style={{ perspective: '800px' }}>
                 <SplitChars text="Building " charClassName="hero-sub-char" />
                 <SplitChars text="dynamic" className="text-cyan-400 font-medium" charClassName="hero-sub-char hero-sub-char--accent-cyan" />
@@ -491,7 +520,7 @@ export default function Portfolio() {
                 <SplitChars text="scalable" className="text-purple-400 font-medium" charClassName="hero-sub-char hero-sub-char--accent-purple" />
                 <SplitChars text=" applications with modern web technologies" charClassName="hero-sub-char" />
               </p>
-              
+
               <div className="flex flex-col sm:flex-row justify-center gap-6 mb-16 w-full sm:w-auto">
                 <a
                   href="https://mail.google.com/mail/?view=cm&fs=1&to=arjunanil2114@gmail.com"
@@ -502,10 +531,10 @@ export default function Portfolio() {
                   <span className="relative z-10 group-hover:text-white transition-colors">Get in Touch</span>
                 </a>
 
-                <a 
-                  href="https://github.com/arjunsan22" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href="https://github.com/arjunsan22"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="hero-btn relative group overflow-hidden flex items-center justify-center gap-3 px-8 py-4 bg-[#111111] text-white font-bold rounded-full border border-white/10 transition-all duration-300 hover:scale-105 hover:bg-white/5"
                 >
                   <Github size={22} className="group-hover:rotate-12 transition-transform text-slate-300 group-hover:text-white" />
@@ -513,7 +542,7 @@ export default function Portfolio() {
                   <div className="absolute inset-0 rounded-full border border-cyan-500/0 group-hover:border-cyan-500/50 transition-colors duration-500 blur-sm"></div>
                 </a>
               </div>
-              
+
               <div className="flex justify-center gap-6 sm:gap-8 items-center bg-white/5 p-4 sm:p-6 rounded-3xl backdrop-blur-md border border-white/10 shadow-2xl">
                 <div className="hero-icon p-4 bg-cyan-500/10 rounded-2xl shadow-[0_0_30px_rgba(34,211,238,0.2)] border border-cyan-500/20 group hover:bg-cyan-500/20 transition-colors">
                   <Cpu className="text-cyan-400 group-hover:scale-110 transition-transform" size={32} />
@@ -527,7 +556,7 @@ export default function Portfolio() {
               </div>
             </div>
           </div>
-          
+
           {/* Scroll indicator */}
           <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 opacity-50 hover:opacity-100 transition-opacity animate-bounce">
             <span className="text-[10px] uppercase tracking-[0.4em] text-cyan-400 font-bold">Scroll</span>
@@ -541,7 +570,7 @@ export default function Portfolio() {
           <SkillsSection />
           <ProjectsSection />
           <EducationSection />
-          <CodingProfiles/>
+          <CodingProfiles />
           <ContactSection />
         </div>
 
@@ -550,7 +579,7 @@ export default function Portfolio() {
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent"></div>
           <div className="max-w-6xl mx-auto text-center text-slate-500 relative z-10 flex flex-col items-center gap-6">
             <div className="p-3 bg-white/5 rounded-2xl border border-white/5 inline-block group hover:bg-white/10 transition-colors cursor-pointer">
-               <Terminal className="text-cyan-500/50 group-hover:text-cyan-400 transition-colors" size={24} />
+              <Terminal className="text-cyan-500/50 group-hover:text-cyan-400 transition-colors" size={24} />
             </div>
             <p className="text-sm font-medium tracking-wide">
               © {new Date().getFullYear()} <span className="text-white hover:text-cyan-400 transition-colors px-1 cursor-pointer">Arjun Sandhya</span>
