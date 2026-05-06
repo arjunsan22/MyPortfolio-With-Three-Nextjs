@@ -17,6 +17,7 @@ import ContactSection from './ContactSection';
 import CodingProfiles from './LeetandGit';
 import CircuitBackground from './components/CircuitBackground';
 import { AnglerFish } from './components/AnglerFish';
+import { Loader } from './components/Loader';
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -58,8 +59,35 @@ function SplitChars({ text, className, charClassName }: { text: string; classNam
 
 export default function Portfolio() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // If the page has already fully loaded before this effect runs
+    if (document.readyState === 'complete') {
+      setIsLoading(false);
+      return;
+    }
+
+    // Wait for all assets (images, fonts, stylesheets) to finish loading
+    const handleLoad = () => {
+      // Add a tiny delay just to ensure smooth transition
+      setTimeout(() => setIsLoading(false), 500); 
+    };
+
+    window.addEventListener('load', handleLoad);
+
+    // Fallback just in case the load event fails or takes ridiculously long
+    const fallbackTimer = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000);
+
+    return () => {
+      window.removeEventListener('load', handleLoad);
+      clearTimeout(fallbackTimer);
+    };
+  }, []);
 
   useEffect(() => {
     // We keep empty dependency array if we just want it on mount.
@@ -232,6 +260,7 @@ export default function Portfolio() {
   };
 
   useGSAP(() => {
+    if (isLoading) return;
     const tl = gsap.timeline();
 
     const fish = document.querySelector('.angler-fish-container');
@@ -383,7 +412,7 @@ export default function Portfolio() {
       ease: "power2.in",
     }, "reveal+=1.5");
 
-  }, { scope: containerRef });
+  }, { scope: containerRef, dependencies: [isLoading] });
 
   return (
     <div ref={containerRef} className="min-h-screen bg-[#030305] text-slate-200 relative overflow-hidden font-sans selection:bg-cyan-500/30 selection:text-white">

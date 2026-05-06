@@ -262,10 +262,67 @@ const SkillsSection = () => {
             }
         });
 
-        // Skill Cards Stagger
+        // Skill Cards Stagger & Category Titles
         const categories = gsap.utils.toArray<HTMLElement>('.skill-category');
-        categories.forEach((cat) => {
-            gsap.fromTo(cat.querySelectorAll('.skill-card'),
+        categories.forEach((cat, index) => {
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: cat,
+                    start: "top 85%",
+                }
+            });
+
+            const textOverlay = cat.querySelector('.category-text-overlay');
+            const titleText = cat.querySelector('.category-title-text');
+            const skillsGrid = cat.querySelector('.skills-grid');
+            const skillCards = cat.querySelectorAll('.skill-card');
+
+            const animType = index % 5;
+
+            // 1. Reveal animated text
+            if (animType === 0) {
+                tl.fromTo(titleText, 
+                    { scale: 0, opacity: 0, rotationX: 90 }, 
+                    { scale: 1, opacity: 1, rotationX: 0, duration: 1, ease: "elastic.out(1, 0.5)" }
+                );
+            } else if (animType === 1) {
+                tl.fromTo(titleText, 
+                    { x: -100, opacity: 0, filter: "blur(20px)" }, 
+                    { x: 0, opacity: 1, filter: "blur(0px)", duration: 1, ease: "power3.out" }
+                );
+            } else if (animType === 2) {
+                tl.fromTo(titleText, 
+                    { y: -100, opacity: 0, scale: 1.5 }, 
+                    { y: 0, opacity: 1, scale: 1, duration: 1, ease: "bounce.out" }
+                );
+            } else if (animType === 3) {
+                tl.fromTo(titleText, 
+                    { opacity: 0, rotationY: 90, z: -200 }, 
+                    { opacity: 1, rotationY: 0, z: 0, duration: 1, ease: "back.out(1.5)" }
+                );
+            } else {
+                tl.fromTo(titleText, 
+                    { opacity: 0, scale: 0.1, rotationZ: -45 }, 
+                    { opacity: 1, scale: 1, rotationZ: 0, duration: 1, ease: "power2.out" }
+                );
+            }
+
+            // 2. Text gone
+            tl.to(titleText, { 
+                opacity: 0, 
+                scale: 1.5, 
+                filter: "blur(15px)", 
+                duration: 0.6, 
+                ease: "power2.in", 
+                delay: 0.8 
+            });
+
+            // 3. Hide text container & show grid
+            tl.set(textOverlay, { display: "none" });
+            tl.set(skillsGrid, { opacity: 1 });
+
+            // 4. Reveal icons
+            tl.fromTo(skillCards,
                 { scale: 0.8, opacity: 0, y: 30, rotationX: -15 },
                 {
                     scale: 1,
@@ -275,10 +332,6 @@ const SkillsSection = () => {
                     stagger: 0.05,
                     duration: 0.8,
                     ease: "back.out(1.2)",
-                    scrollTrigger: {
-                        trigger: cat,
-                        start: "top 85%",
-                    }
                 }
             );
         });
@@ -341,21 +394,36 @@ const SkillsSection = () => {
                 >
                     <CyberGridBackground />
 
-                    <div className="relative z-10 space-y-20 [transform-style:preserve-3d]" style={{ transform: 'translateZ(50px)' }}>
-                        {Object.entries(skillData).map(([category, skills]) => (
-                            <div key={category} className="skill-category">
-                                <h3 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-8 uppercase tracking-widest flex items-center gap-4">
-                                    {category}
-                                    <div className="h-[1px] flex-1 bg-gradient-to-r from-cyan-500/50 to-transparent" />
-                                </h3>
+                    <div className="relative z-10 space-y-32 [transform-style:preserve-3d]" style={{ transform: 'translateZ(50px)' }}>
+                        {Object.entries(skillData).map(([category, skills], index) => {
+                            const textGradients = [
+                                "from-cyan-400 to-blue-600 drop-shadow-[0_0_15px_rgba(34,211,238,0.6)]",
+                                "from-purple-400 to-pink-600 drop-shadow-[0_0_15px_rgba(192,132,252,0.6)]",
+                                "from-emerald-400 to-teal-600 drop-shadow-[0_0_15px_rgba(52,211,153,0.6)]",
+                                "from-amber-400 to-orange-600 drop-shadow-[0_0_15px_rgba(251,191,36,0.6)]",
+                                "from-rose-400 to-red-600 drop-shadow-[0_0_15px_rgba(244,63,94,0.6)]",
+                                "from-indigo-400 to-violet-600 drop-shadow-[0_0_15px_rgba(129,140,248,0.6)]",
+                                "from-fuchsia-400 to-purple-600 drop-shadow-[0_0_15px_rgba(232,121,249,0.6)]",
+                                "from-blue-400 to-indigo-600 drop-shadow-[0_0_15px_rgba(96,165,250,0.6)]"
+                            ];
+                            const gradientClass = textGradients[index % textGradients.length];
 
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                                    {skills.map((skill) => (
-                                        <SkillIcon key={skill.name} {...skill} />
-                                    ))}
+                            return (
+                                <div key={category} className="skill-category relative min-h-[200px] flex flex-col justify-center">
+                                    <div className="category-text-overlay absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+                                        <h3 className={`category-title-text text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r ${gradientClass} [transform-style:preserve-3d] text-center`}>
+                                            {category}
+                                        </h3>
+                                    </div>
+
+                                    <div className="skills-grid opacity-0 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                                        {skills.map((skill) => (
+                                            <SkillIcon key={skill.name} {...skill} />
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </div>
