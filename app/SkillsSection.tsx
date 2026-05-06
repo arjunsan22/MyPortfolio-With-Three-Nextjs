@@ -274,45 +274,82 @@ const SkillsSection = () => {
 
             const textOverlay = cat.querySelector('.category-text-overlay');
             const titleText = cat.querySelector('.category-title-text');
+            const splitChars = cat.querySelectorAll('.split-char');
             const skillsGrid = cat.querySelector('.skills-grid');
             const skillCards = cat.querySelectorAll('.skill-card');
 
-            const animType = index % 5;
-
             // 1. Reveal animated text
-            if (animType === 0) {
-                tl.fromTo(titleText, 
-                    { scale: 0, opacity: 0, rotationX: 90 }, 
-                    { scale: 1, opacity: 1, rotationX: 0, duration: 1, ease: "elastic.out(1, 0.5)" }
+            if (index === 0) { // Glitch Reveal
+                tl.set(titleText, { opacity: 1 });
+                tl.fromTo(splitChars, 
+                    { opacity: 0, x: () => gsap.utils.random(-20, 20), skewX: () => gsap.utils.random(-20, 20) },
+                    { opacity: 1, x: 0, skewX: 0, duration: 0.6, stagger: 0.05, ease: "elastic.out(1, 0.3)" }
                 );
-            } else if (animType === 1) {
-                tl.fromTo(titleText, 
-                    { x: -100, opacity: 0, filter: "blur(20px)" }, 
-                    { x: 0, opacity: 1, filter: "blur(0px)", duration: 1, ease: "power3.out" }
+                tl.to(titleText, { opacity: 0.3, duration: 0.05, repeat: 3, yoyo: true }, "-=0.4");
+                tl.set(titleText, { opacity: 1 });
+            } 
+            else if (index === 1) { // Liquid Wave (Safe alternative to clipPath)
+                tl.set(titleText, { opacity: 1 });
+                tl.fromTo(splitChars, 
+                    { opacity: 0, y: 40, scale: 0.8 }, 
+                    { opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.08, ease: "back.out(1.5)" }
                 );
-            } else if (animType === 2) {
-                tl.fromTo(titleText, 
-                    { y: -100, opacity: 0, scale: 1.5 }, 
-                    { y: 0, opacity: 1, scale: 1, duration: 1, ease: "bounce.out" }
+            } 
+            else if (index === 2) { // Gradient Sweep (Fixed initial opacity & order)
+                tl.set(titleText, { opacity: 1 });
+                tl.set(splitChars, { backgroundSize: "200% auto" });
+                tl.fromTo(splitChars,
+                    { opacity: 0, x: -20 },
+                    { opacity: 1, x: 0, duration: 0.4, stagger: 0.05, ease: "power2.out" }
                 );
-            } else if (animType === 3) {
-                tl.fromTo(titleText, 
-                    { opacity: 0, rotationY: 90, z: -200 }, 
-                    { opacity: 1, rotationY: 0, z: 0, duration: 1, ease: "back.out(1.5)" }
+                tl.fromTo(splitChars, 
+                    { backgroundPosition: "200% center" }, 
+                    { backgroundPosition: "0% center", duration: 1.5, ease: "power2.out" }, "-=0.5"
                 );
-            } else {
+            } 
+            else if (index === 3) { // Typewriter
+                tl.set(titleText, { opacity: 1 });
+                tl.fromTo(splitChars, 
+                    { opacity: 0, scale: 1.5 }, 
+                    { opacity: 1, scale: 1, duration: 0.01, stagger: 0.1, ease: "none" }
+                );
+            } 
+            else if (index === 4) { // Neon Flicker (Fixed yoyo leaving opacity 0)
                 tl.fromTo(titleText, 
-                    { opacity: 0, scale: 0.1, rotationZ: -45 }, 
-                    { opacity: 1, scale: 1, rotationZ: 0, duration: 1, ease: "power2.out" }
+                    { opacity: 0 }, 
+                    { opacity: 1, duration: 0.05, repeat: 5, yoyo: true, ease: "power1.inOut" }
+                );
+                tl.set(titleText, { opacity: 1 }); // Ensure it stays on
+            } 
+            else if (index === 5) { // Morphing / 3D Flip (Fixed z index bug)
+                tl.set(titleText, { opacity: 1 });
+                tl.fromTo(splitChars, 
+                    { rotationX: 90, opacity: 0, y: 20 }, 
+                    { rotationX: 0, opacity: 1, y: 0, duration: 0.8, stagger: 0.05, ease: "back.out(1.7)" }
+                );
+            } 
+            else if (index === 6) { // Focus Reveal (Safe alternative to blur)
+                tl.set(titleText, { opacity: 1 });
+                tl.fromTo(splitChars, 
+                    { opacity: 0, scale: 2 }, 
+                    { opacity: 1, scale: 1, duration: 0.8, stagger: 0.05, ease: "power3.out" }
+                );
+            } 
+            else { // Explosion / Convergence (Safe scaling)
+                tl.set(titleText, { opacity: 1 });
+                tl.fromTo(splitChars, 
+                    { x: () => gsap.utils.random(-150, 150), y: () => gsap.utils.random(-150, 150), rotation: () => gsap.utils.random(-180, 180), opacity: 0, scale: 0 }, 
+                    { x: 0, y: 0, rotation: 0, opacity: 1, scale: 1, duration: 1, stagger: 0.03, ease: "power4.out" }
                 );
             }
+
 
             // 2. Text gone
             tl.to(titleText, { 
                 opacity: 0, 
                 scale: 1.5, 
                 filter: "blur(15px)", 
-                duration: 0.6, 
+                duration: 0.5, 
                 ease: "power2.in", 
                 delay: 0.8 
             });
@@ -411,8 +448,12 @@ const SkillsSection = () => {
                             return (
                                 <div key={category} className="skill-category relative min-h-[200px] flex flex-col justify-center">
                                     <div className="category-text-overlay absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-                                        <h3 className={`category-title-text text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r ${gradientClass} [transform-style:preserve-3d] text-center`}>
-                                            {category}
+                                        <h3 className="category-title-text text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-[0.2em] [transform-style:preserve-3d] text-center">
+                                            {category.split('').map((char, i) => (
+                                                <span key={i} className={`inline-block split-char text-transparent bg-clip-text bg-gradient-to-r ${gradientClass}`} style={{ whiteSpace: char === ' ' ? 'pre' : 'normal', paddingBottom: '0.1em' }}>
+                                                    {char}
+                                                </span>
+                                            ))}
                                         </h3>
                                     </div>
 
