@@ -302,7 +302,7 @@ export default function Portfolio() {
     });
 
     // ── SVG Specific Animations (Typing & Blinking) ──
-    
+
     // Typing animation (hands moving slightly)
     gsap.to('.coder-hand-right', {
       y: -5,
@@ -335,7 +335,7 @@ export default function Portfolio() {
     // Eye blinking
     const blinkTl = gsap.timeline({ repeat: -1, repeatDelay: 2 });
     blinkTl.to('.coder-eye', { scaleY: 0.1, duration: 0.05, transformOrigin: "center" })
-           .to('.coder-eye', { scaleY: 1, duration: 0.05 });
+      .to('.coder-eye', { scaleY: 1, duration: 0.05 });
 
     // Ambient glow pulses
     tl.fromTo('.coder-intro-glow', {
@@ -420,9 +420,9 @@ export default function Portfolio() {
     // PHASE 2.5: Hacker Glitch Screen
     // ═══════════════════════════════════════════════
     tl.addLabel('hacker-glitch');
-    
+
     tl.set('.hacker-glitch-overlay', { display: 'flex', opacity: 1 }, 'hacker-glitch');
-    
+
     tl.fromTo('.hacker-glitch-overlay', {
       filter: 'hue-rotate(0deg) contrast(1)',
       scale: 1,
@@ -436,7 +436,7 @@ export default function Portfolio() {
       yoyo: true,
       repeat: 3
     }, 'hacker-glitch');
-    
+
     tl.to('.hacker-glitch-overlay', {
       x: -20, scale: 1.1, filter: 'grayscale(1) brightness(2)', duration: 0.05, ease: 'steps(1)'
     }, 'hacker-glitch+=0.2');
@@ -509,6 +509,58 @@ export default function Portfolio() {
         ease: 'power1.inOut',
       }, 'reveal+=0.8');
     }
+
+    // ═══════════════════════════════════════════════
+    // PHASE 4: MERN Title Transition
+    // ═══════════════════════════════════════════════
+    tl.addLabel('mern-transition', 'reveal+=3.5');
+
+    // Flip out "Full-Stack Web Developer"
+    tl.to('.hero-title-layer-1', {
+      rotationX: 90,
+      opacity: 0,
+      duration: 0.8,
+      ease: 'back.in(1.5)',
+      transformOrigin: "center center"
+    }, 'mern-transition');
+
+    // Flip in MERN Icons
+    tl.to('.hero-title-layer-2', {
+      rotationX: 0,
+      opacity: 1,
+      duration: 0.8,
+      ease: 'back.out(1.5)',
+      transformOrigin: "center center"
+    }, 'mern-transition+=0.2');
+
+    // Wait 1 second before flipping icons to letters
+    tl.addLabel('mern-flip', 'mern-transition+=1.8');
+
+    // Make the parent container visible so children can be seen when they animate
+    tl.set('.hero-title-layer-3', { opacity: 1, rotationX: 0 }, 'mern-flip');
+
+    // Flip Icons out
+    tl.to('.mern-icon', {
+      rotationY: 90,
+      opacity: 0,
+      duration: 0.4,
+      stagger: 0.1,
+      ease: 'power2.in',
+      transformOrigin: "center center"
+    }, 'mern-flip');
+
+    // Initial state for MERN letters
+    gsap.set('.mern-letter', { rotationY: -90, opacity: 0 });
+
+    // Flip Letters in
+    tl.to('.mern-letter', {
+      rotationY: 0,
+      opacity: 1,
+      duration: 0.6,
+      stagger: 0.1,
+      ease: 'back.out(1.5)',
+      transformOrigin: "center center"
+    }, 'mern-flip+=0.2');
 
     // Subtitle
     tl.from('.hero-sub-char', {
@@ -641,22 +693,45 @@ export default function Portfolio() {
                 <Sparkles className="text-cyan-400" size={32} />
               </div>
 
-              <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-8 flex flex-wrap justify-center gap-x-[0.3em] gap-y-2" style={{ perspective: "1000px" }}>
-                <SplitChars
-                  text="Full-Stack"
-                  className="hero-title-word inline-block bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent"
-                  charClassName="hero-title-char"
-                />
-                <SplitChars
-                  text="Web"
-                  className="hero-title-word inline-block bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent"
-                  charClassName="hero-title-char"
-                />
-                <SplitChars
-                  text="Developer"
-                  className="hero-title-word inline-block bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent"
-                  charClassName="hero-title-char"
-                />
+              <h1 className="relative grid text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-8" style={{ perspective: "1000px" }}>
+                {/* Phase 1: Full-Stack Web Developer */}
+                <div className="hero-title-layer-1 flex flex-wrap justify-center gap-x-[0.3em] gap-y-2 [grid-area:1/1]">
+                  <SplitChars
+                    text="Full-Stack"
+                    className="hero-title-word inline-block bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent"
+                    charClassName="hero-title-char"
+                  />
+                  <SplitChars
+                    text="Web"
+                    className="hero-title-word inline-block bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent"
+                    charClassName="hero-title-char"
+                  />
+                  <SplitChars
+                    text="Developer"
+                    className="hero-title-word inline-block bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-transparent"
+                    charClassName="hero-title-char"
+                  />
+                </div>
+
+                {/* Phase 2: MERN Icons */}
+                <div className="hero-title-layer-2 flex flex-wrap justify-center items-center gap-6 sm:gap-8 md:gap-12 [grid-area:1/1] opacity-0" style={{ transform: "rotateX(-90deg)", transformOrigin: "center center" }}>
+                  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mongodb/mongodb-original.svg" className="h-[1em] w-auto mern-icon" alt="MongoDB" />
+                  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg" className="h-[1em] w-auto mern-icon invert" alt="Express" />
+                  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" className="h-[1em] w-auto mern-icon" alt="React" />
+                  <img
+                    src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg"
+                    className="h-[1em] w-auto mern-icon"
+                    alt="Node"
+                  />
+                </div>
+
+                {/* Phase 3: MERN Text */}
+                <div className="hero-title-layer-3 flex flex-wrap justify-center gap-[0.2em] [grid-area:1/1] opacity-0" style={{ transform: "rotateX(-90deg)", transformOrigin: "center center" }}>
+                  <span className="mern-letter bg-gradient-to-br from-green-500 to-green-700 bg-clip-text text-transparent">M</span>
+                  <span className="mern-letter bg-gradient-to-br from-slate-200 to-slate-400 bg-clip-text text-transparent">E</span>
+                  <span className="mern-letter bg-gradient-to-br from-cyan-400 to-blue-500 bg-clip-text text-transparent">R</span>
+                  <span className="mern-letter bg-gradient-to-br from-green-400 to-green-600 bg-clip-text text-transparent">N</span>
+                </div>
               </h1>
 
               <p className="hero-subtitle text-xl md:text-2xl lg:text-3xl text-slate-400 font-light max-w-3xl mb-12 leading-relaxed" style={{ perspective: '800px' }}>
