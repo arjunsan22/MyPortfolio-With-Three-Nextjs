@@ -272,75 +272,172 @@ const SkillsSection = () => {
                 }
             });
 
-            const textOverlay = cat.querySelector('.category-text-overlay');
-            const titleText = cat.querySelector('.category-title-text');
-            const splitChars = cat.querySelectorAll('.split-char');
-            const skillsGrid = cat.querySelector('.skills-grid');
-            const skillCards = cat.querySelectorAll('.skill-card');
+            const textOverlay = cat.querySelector('.category-text-overlay') as HTMLElement | null;
+            const titleText = cat.querySelector('.category-title-text') as HTMLElement | null;
+            const splitChars = Array.from(cat.querySelectorAll('.split-char')) as HTMLElement[];
+            const skillsGrid = cat.querySelector('.skills-grid') as HTMLElement | null;
+            const skillCards = Array.from(cat.querySelectorAll('.skill-card')) as HTMLElement[];
+
+            if (!titleText || !textOverlay || !skillsGrid) return;
 
             // 1. Reveal animated text
-            if (index === 0) { // Glitch Reveal
-                tl.set(titleText, { opacity: 1 });
-                tl.fromTo(splitChars, 
-                    { opacity: 0, x: () => gsap.utils.random(-20, 20), skewX: () => gsap.utils.random(-20, 20) },
-                    { opacity: 1, x: 0, skewX: 0, duration: 0.6, stagger: 0.05, ease: "elastic.out(1, 0.3)" }
-                );
-                tl.to(titleText, { opacity: 0.3, duration: 0.05, repeat: 3, yoyo: true }, "-=0.4");
-                tl.set(titleText, { opacity: 1 });
+            if (index === 0) { // Languages - Liquid Fill
+                const fillText = cat.querySelector('.liquid-fill-text') as HTMLElement | null;
+                const outlineText = cat.querySelector('.category-title-text-outline') as HTMLElement | null;
+                
+                if (fillText && outlineText) {
+                    tl.fromTo(outlineText, { opacity: 0 }, { opacity: 0.2, duration: 0.5 });
+                    tl.to(fillText, { 
+                        clipPath: "inset(0% 0 0 0)", 
+                        duration: 1.5, 
+                        ease: "power2.inOut" 
+                    }, "-=0.2");
+                    
+                    tl.to(fillText, {
+                        y: -5,
+                        repeat: 3,
+                        yoyo: true,
+                        duration: 0.4,
+                        ease: "sine.inOut"
+                    }, "-=1");
+                }
             } 
-            else if (index === 1) { // Liquid Wave (Safe alternative to clipPath)
+            else if (index === 1) { // Frameworks - Hologram Flicker
+                const scanLine = cat.querySelector('.hologram-scan-line') as HTMLElement | null;
                 tl.set(titleText, { opacity: 1 });
+                
+                // Digital Flicker Entrance
                 tl.fromTo(splitChars, 
-                    { opacity: 0, y: 40, scale: 0.8 }, 
-                    { opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.08, ease: "back.out(1.5)" }
+                    { opacity: 0, filter: "brightness(5) blur(5px)" },
+                    { 
+                        opacity: 1, 
+                        filter: "brightness(1) blur(0px)",
+                        duration: 0.1, 
+                        stagger: {
+                            each: 0.04,
+                            repeat: 2,
+                            yoyo: true
+                        },
+                        ease: "power2.inOut"
+                    }
+                );
+
+                // Add Hologram Glow
+                tl.to(titleText, {
+                    textShadow: "0 0 10px #00f2ff, 0 0 20px #00f2ff, 0 0 30px #ff00ff",
+                    color: "rgba(0, 242, 255, 0.8)",
+                    duration: 0.5,
+                    ease: "power2.out"
+                }, "-=0.2");
+
+                // Scan Line Animation
+                if (scanLine) {
+                    tl.fromTo(scanLine, 
+                        { top: "0%", opacity: 0 }, 
+                        { top: "100%", opacity: 0.8, duration: 1.5, repeat: -1, ease: "none" },
+                        0
+                    );
+                }
+
+                // Constant subtle flicker
+                tl.to(titleText, {
+                    opacity: 0.8,
+                    duration: 0.1,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "rough({ strength: 2, points: 10, template: none, taper: 'none', randomize: true, clamp: false })"
+                }, 0);
+            } 
+            else if (index === 2) { // Databases - Data Stream Glitch
+                tl.set(titleText, { opacity: 1 });
+                const originalText = Object.keys(skillData)[index];
+                
+                splitChars.forEach((char, i) => {
+                    tl.to(char, {
+                        duration: 0.1,
+                        onStart: () => {
+                            const glitchInterval = setInterval(() => {
+                                char.innerText = Math.floor(Math.random() * 10).toString();
+                            }, 50);
+                            setTimeout(() => {
+                                clearInterval(glitchInterval);
+                                char.innerText = originalText[i];
+                                char.style.opacity = "1";
+                            }, 400 + (i * 50));
+                        }
+                    }, i * 0.05);
+                });
+            } 
+            else if (index === 3) { // DevOps - Pipeline Flow
+                const line = cat.querySelector('.pipeline-line') as HTMLElement | null;
+                tl.set(titleText, { opacity: 1 });
+                if (line) {
+                    tl.fromTo(line, { scaleX: 0 }, { scaleX: 1, duration: 1, ease: "power2.inOut" });
+                }
+                tl.fromTo(splitChars, 
+                    { opacity: 0, x: -20 }, 
+                    { opacity: 1, x: 0, duration: 0.5, stagger: 0.05, ease: "power2.out" },
+                    "-=0.5"
                 );
             } 
-            else if (index === 2) { // Gradient Sweep (Fixed initial opacity & order)
+            else if (index === 4) { // Frontend - Gradient Sweep Shine
                 tl.set(titleText, { opacity: 1 });
-                tl.set(splitChars, { backgroundSize: "200% auto" });
-                tl.fromTo(splitChars,
-                    { opacity: 0, x: -20 },
-                    { opacity: 1, x: 0, duration: 0.4, stagger: 0.05, ease: "power2.out" }
-                );
+                tl.fromTo(splitChars, { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.5, stagger: 0.03 });
                 tl.fromTo(splitChars, 
                     { backgroundPosition: "200% center" }, 
-                    { backgroundPosition: "0% center", duration: 1.5, ease: "power2.out" }, "-=0.5"
+                    { backgroundPosition: "0% center", duration: 1, stagger: 0.02 },
+                    "-=0.3"
                 );
+                tl.to(titleText, { 
+                    textShadow: "0 0 20px rgba(34,211,238,0.8)", 
+                    duration: 0.5, 
+                    repeat: 1, 
+                    yoyo: true 
+                });
             } 
-            else if (index === 3) { // Typewriter
+            else if (index === 5) { // Tools - Pop + Elastic Bounce
                 tl.set(titleText, { opacity: 1 });
                 tl.fromTo(splitChars, 
-                    { opacity: 0, scale: 1.5 }, 
-                    { opacity: 1, scale: 1, duration: 0.01, stagger: 0.1, ease: "none" }
+                    { scale: 0, opacity: 0 }, 
+                    { scale: 1, opacity: 1, duration: 0.8, stagger: 0.05, ease: "elastic.out(1, 0.3)" }
                 );
             } 
-            else if (index === 4) { // Neon Flicker (Fixed yoyo leaving opacity 0)
-                tl.fromTo(titleText, 
-                    { opacity: 0 }, 
-                    { opacity: 1, duration: 0.05, repeat: 5, yoyo: true, ease: "power1.inOut" }
-                );
-                tl.set(titleText, { opacity: 1 }); // Ensure it stays on
-            } 
-            else if (index === 5) { // Morphing / 3D Flip (Fixed z index bug)
+            else if (index === 6) { // Specializations - Typewriter + Cursor
                 tl.set(titleText, { opacity: 1 });
+                const cursor = cat.querySelector('.typewriter-cursor') as HTMLElement | null;
                 tl.fromTo(splitChars, 
-                    { rotationX: 90, opacity: 0, y: 20 }, 
-                    { rotationX: 0, opacity: 1, y: 0, duration: 0.8, stagger: 0.05, ease: "back.out(1.7)" }
+                    { display: 'none' }, 
+                    { display: 'inline-block', stagger: 0.1, duration: 0 }
                 );
+                if (cursor) {
+                    tl.fromTo(cursor, { opacity: 0 }, { opacity: 1, repeat: -1, yoyo: true, duration: 0.4 }, 0);
+                    tl.to(cursor, { display: 'none' }, ">");
+                }
             } 
-            else if (index === 6) { // Focus Reveal (Safe alternative to blur)
+            else { // Generative AI - Morphing Pulse
                 tl.set(titleText, { opacity: 1 });
-                tl.fromTo(splitChars, 
-                    { opacity: 0, scale: 2 }, 
-                    { opacity: 1, scale: 1, duration: 0.8, stagger: 0.05, ease: "power3.out" }
-                );
-            } 
-            else { // Explosion / Convergence (Safe scaling)
-                tl.set(titleText, { opacity: 1 });
-                tl.fromTo(splitChars, 
-                    { x: () => gsap.utils.random(-150, 150), y: () => gsap.utils.random(-150, 150), rotation: () => gsap.utils.random(-180, 180), opacity: 0, scale: 0 }, 
-                    { x: 0, y: 0, rotation: 0, opacity: 1, scale: 1, duration: 1, stagger: 0.03, ease: "power4.out" }
-                );
+                const chars = "!@#$%^&*()_+-=[]{}|;:,.<>?/".split("");
+                const genAiText = "generative ai";
+                
+                splitChars.forEach((char, i) => {
+                    tl.fromTo(char, 
+                        { opacity: 0, scale: 2 },
+                        { 
+                            opacity: 1, 
+                            scale: 1, 
+                            duration: 0.5,
+                            onUpdate: function(this: gsap.core.Tween) {
+                                if (this.progress() < 0.8) {
+                                    char.innerText = chars[Math.floor(Math.random() * chars.length)];
+                                } else {
+                                    char.innerText = genAiText[i] || "";
+                                }
+                            }
+                        }, 
+                        i * 0.05
+                    );
+                });
+                tl.to(titleText, { scale: 1.05, filter: "brightness(1.5)", repeat: 3, yoyo: true, duration: 0.3 });
             }
 
 
@@ -448,13 +545,47 @@ const SkillsSection = () => {
                             return (
                                 <div key={category} className="skill-category relative min-h-[200px] flex flex-col justify-center">
                                     <div className="category-text-overlay absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-                                        <h3 className="category-title-text text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-[0.2em] [transform-style:preserve-3d] text-center">
-                                            {category.split('').map((char, i) => (
-                                                <span key={i} className={`inline-block split-char text-transparent bg-clip-text bg-gradient-to-r ${gradientClass}`} style={{ whiteSpace: char === ' ' ? 'pre' : 'normal', paddingBottom: '0.1em' }}>
-                                                    {char}
-                                                </span>
-                                            ))}
-                                        </h3>
+                                        {index === 0 ? (
+                                            <div className="relative">
+                                                <h3 className="category-title-text-outline text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-[0.2em] text-center absolute inset-0 select-none" style={{ WebkitTextStroke: '1px rgba(255,255,255,0.2)', color: 'transparent' }}>
+                                                    {category}
+                                                </h3>
+                                                <h3 className={`category-title-text liquid-fill-text text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r ${gradientClass} text-center relative z-10`} style={{ clipPath: 'inset(100% 0 0 0)' }}>
+                                                    {category}
+                                                </h3>
+                                            </div>
+                                        ) : index === 1 ? (
+                                            <div className="relative group flex items-center justify-center">
+                                                <h3 className="category-title-text text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-[0.2em] text-center relative z-10 opacity-0" style={{ WebkitTextStroke: '1px #00f2ff', color: 'transparent' }}>
+                                                    {category.split('').map((char, i) => (
+                                                        <span key={i} className="inline-block split-char">
+                                                            {char}
+                                                        </span>
+                                                    ))}
+                                                </h3>
+                                                <div className="hologram-scan-line absolute inset-x-0 top-0 h-[2px] bg-cyan-400/50 shadow-[0_0_10px_#00f2ff] pointer-events-none z-20" />
+                                            </div>
+                                        ) : index === 3 ? (
+                                            <div className="relative flex flex-col items-center">
+                                                <div className="pipeline-line h-[2px] w-full bg-gradient-to-r from-transparent via-cyan-400 to-transparent mb-4 scale-x-0 origin-left" />
+                                                <h3 className="category-title-text text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-[0.2em] [transform-style:preserve-3d] text-center opacity-0">
+                                                    {category.split('').map((char, i) => (
+                                                        <span key={i} className={`inline-block split-char text-transparent bg-clip-text bg-gradient-to-r ${gradientClass}`} style={{ whiteSpace: char === ' ' ? 'pre' : 'normal', paddingBottom: '0.1em' }}>
+                                                            {char}
+                                                        </span>
+                                                    ))}
+                                                </h3>
+                                            </div>
+                                        ) : (
+                                            <h3 className="category-title-text text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-[0.2em] [transform-style:preserve-3d] text-center opacity-0">
+                                                {category.split('').map((char, i) => (
+                                                    <span key={i} className={`inline-block split-char text-transparent bg-clip-text bg-gradient-to-r ${gradientClass}`} style={{ whiteSpace: char === ' ' ? 'pre' : 'normal', paddingBottom: '0.1em' }}>
+                                                        {char}
+                                                    </span>
+                                                ))}
+                                                {index === 6 && <span className="typewriter-cursor inline-block w-[4px] h-[0.8em] bg-cyan-400 ml-2 align-middle" />}
+                                            </h3>
+                                        )}
                                     </div>
 
                                     <div className="skills-grid opacity-0 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
