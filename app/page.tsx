@@ -513,13 +513,13 @@ export default function Portfolio() {
     // ═══════════════════════════════════════════════
     // PHASE 4: MERN Title Transition
     // ═══════════════════════════════════════════════
-    tl.addLabel('mern-transition', 'reveal+=3.5');
+    tl.addLabel('mern-transition', 'reveal+=2.0'); // Decreased from 3.5
 
     // Flip out "Full-Stack Web Developer"
     tl.to('.hero-title-layer-1', {
       rotationX: 90,
       opacity: 0,
-      duration: 0.8,
+      duration: 0.4, // Decreased from 0.8
       ease: 'back.in(1.5)',
       transformOrigin: "center center"
     }, 'mern-transition');
@@ -528,13 +528,13 @@ export default function Portfolio() {
     tl.to('.hero-title-layer-2', {
       rotationX: 0,
       opacity: 1,
-      duration: 0.8,
+      duration: 0.4, // Decreased from 0.8
       ease: 'back.out(1.5)',
       transformOrigin: "center center"
-    }, 'mern-transition+=0.2');
+    }, 'mern-transition+=0.1'); // Decreased from 0.2
 
-    // Wait 1 second before flipping icons to letters
-    tl.addLabel('mern-flip', 'mern-transition+=1.8');
+    // Wait before flipping icons to letters
+    tl.addLabel('mern-flip', 'mern-transition+=0.9'); // Decreased from 1.8
 
     // Make the parent container visible so children can be seen when they animate
     tl.set('.hero-title-layer-3', { opacity: 1, rotationX: 0 }, 'mern-flip');
@@ -543,8 +543,8 @@ export default function Portfolio() {
     tl.to('.mern-icon', {
       rotationY: 90,
       opacity: 0,
-      duration: 0.4,
-      stagger: 0.1,
+      duration: 0.2, // Decreased from 0.4
+      stagger: 0.05, // Decreased from 0.1
       ease: 'power2.in',
       transformOrigin: "center center"
     }, 'mern-flip');
@@ -556,22 +556,22 @@ export default function Portfolio() {
     tl.to('.mern-letter', {
       rotationY: 0,
       opacity: 1,
-      duration: 0.6,
-      stagger: 0.1,
+      duration: 0.3, // Decreased from 0.6
+      stagger: 0.05, // Decreased from 0.1
       ease: 'back.out(1.5)',
       transformOrigin: "center center"
-    }, 'mern-flip+=0.2');
+    }, 'mern-flip+=0.1'); // Decreased from 0.2
 
     // ═══════════════════════════════════════════════
     // PHASE 5: Design. Develop. Deploy. (Sliced Kinetic)
     // ═══════════════════════════════════════════════
-    tl.addLabel('sliced-text-phase', 'mern-flip+=4'); // Wait 4 seconds after MERN letters
+    tl.addLabel('sliced-text-phase', 'mern-flip+=2'); // Wait 2 seconds instead of 4 after MERN letters
 
     // Flip MERN letters out
     tl.to('.mern-letter', {
       rotationX: 90,
       opacity: 0,
-      duration: 0.6,
+      duration: 0.3, // Decreased from 0.6
       stagger: 0.05,
       ease: 'back.in(1.5)',
       transformOrigin: "center center"
