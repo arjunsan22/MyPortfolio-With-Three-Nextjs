@@ -64,15 +64,6 @@ export default function Portfolio() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Detect actual mobile device (not just small desktop viewport)
-  const isMobileRef = useRef(false);
-  useEffect(() => {
-    isMobileRef.current = (
-      (navigator.maxTouchPoints > 0 && window.innerWidth < 768) ||
-      /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-    );
-  }, []);
-
   useEffect(() => {
     // If the page has already fully loaded before this effect runs
     if (document.readyState === 'complete') {
@@ -384,7 +375,10 @@ export default function Portfolio() {
     // ═══════════════════════════════════════════════
     tl.addLabel('glitch');
 
-    if (isMobileRef.current) {
+    const isMobile = (navigator.maxTouchPoints > 0 && window.innerWidth < 768) ||
+      /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobile) {
       // ── MOBILE: Smooth fade-out (no heavy filters that cause white/black flashing) ──
       tl.to('.coder-intro-image', {
         scale: 1.3,
