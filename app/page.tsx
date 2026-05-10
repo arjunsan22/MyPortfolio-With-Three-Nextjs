@@ -109,12 +109,20 @@ export default function Portfolio() {
       0.1,
       1000
     );
+    const isMobileDevice = (navigator.maxTouchPoints > 0 && window.innerWidth < 768) ||
+      /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
-      alpha: true,
-      antialias: true,
-      powerPreference: "high-performance"
+      alpha: !isMobileDevice,
+      antialias: !isMobileDevice,
+      powerPreference: isMobileDevice ? 'low-power' : 'high-performance'
     });
+
+    // On mobile, use opaque dark background to prevent white canvas bug
+    if (isMobileDevice) {
+      renderer.setClearColor(0x030305, 1);
+    }
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -123,7 +131,7 @@ export default function Portfolio() {
     // Custom Particles
     const particlesGeometry = new THREE.BufferGeometry();
     // Reduce particles on mobile for better GPU performance
-    const particlesCount = (navigator.maxTouchPoints > 0 && window.innerWidth < 768) ? 600 : 2000;
+    const particlesCount = isMobileDevice ? 600 : 2000;
     const posArray = new Float32Array(particlesCount * 3);
     const colorsArray = new Float32Array(particlesCount * 3);
 
@@ -692,11 +700,11 @@ export default function Portfolio() {
       {/* Three.js Canvas */}
       <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-80" />
 
-      {/* Decorative ambient gradients */}
-      <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-cyan-900/10 blur-[150px] pointer-events-none z-0"></div>
-      <div className="fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-900/10 blur-[150px] pointer-events-none z-0"></div>
+      {/* Decorative ambient gradients — hidden on mobile to prevent white blob rendering */}
+      <div className="hidden md:block fixed top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-cyan-900/10 blur-[150px] pointer-events-none z-0"></div>
+      <div className="hidden md:block fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-900/10 blur-[150px] pointer-events-none z-0"></div>
 
-      <div className="fixed inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none z-0 mix-blend-overlay"></div>
+      <div className="hidden md:block fixed inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none z-0 mix-blend-overlay"></div>
 
       {/* Content */}
       <div className="relative z-10">
@@ -762,7 +770,7 @@ export default function Portfolio() {
           {/* ── Coder Intro Overlay ── */}
           <div className="coder-intro-overlay absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
             {/* Ambient glow behind image */}
-            <div className="coder-intro-glow absolute w-[500px] h-[500px] md:w-[700px] md:h-[700px] rounded-full bg-gradient-radial from-cyan-500/20 via-purple-600/10 to-[#030305]/0 blur-[80px] pointer-events-none" />
+            <div className="coder-intro-glow absolute w-[300px] h-[300px] md:w-[700px] md:h-[700px] rounded-full bg-gradient-radial from-cyan-500/10 via-purple-600/5 to-[#030305]/0 blur-[40px] md:blur-[80px] pointer-events-none" />
 
             {/* Scanline effect */}
             <div className="coder-scanline absolute left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent pointer-events-none z-10" style={{ top: '-5%' }} />
