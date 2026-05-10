@@ -36,15 +36,18 @@ const CircuitBackground: React.FC<CircuitBackgroundProps> = ({ id = 'default' })
         const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
         camera.position.z = 150;
 
+        const isMobileDevice = (navigator.maxTouchPoints > 0 && window.innerWidth < 768) ||
+            /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
         const renderer = new THREE.WebGLRenderer({
             canvas,
-            alpha: true,
-            antialias: true,
-            powerPreference: 'high-performance'
+            alpha: !isMobileDevice,
+            antialias: !isMobileDevice,
+            powerPreference: isMobileDevice ? 'low-power' : 'high-performance'
         });
         renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.setClearColor(0x000000, 0);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobileDevice ? 1.5 : 2));
+        renderer.setClearColor(0x030305, isMobileDevice ? 1 : 0);
 
         // ── Generate Canvas Textures for Code Symbols ──
         // const symbols = ['{', '}', '< / >', '()', '=>', '01', '10', 'const', 'let', '++', '[]', ';', '||', '&&', '!='];
