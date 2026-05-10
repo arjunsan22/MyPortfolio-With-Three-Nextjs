@@ -64,6 +64,15 @@ export default function Portfolio() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Detect actual mobile device (not just small desktop viewport)
+  const isMobileRef = useRef(false);
+  useEffect(() => {
+    isMobileRef.current = (
+      (navigator.maxTouchPoints > 0 && window.innerWidth < 768) ||
+      /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    );
+  }, []);
+
   useEffect(() => {
     // If the page has already fully loaded before this effect runs
     if (document.readyState === 'complete') {
@@ -122,7 +131,8 @@ export default function Portfolio() {
 
     // Custom Particles
     const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 2000;
+    // Reduce particles on mobile for better GPU performance
+    const particlesCount = (navigator.maxTouchPoints > 0 && window.innerWidth < 768) ? 600 : 2000;
     const posArray = new Float32Array(particlesCount * 3);
     const colorsArray = new Float32Array(particlesCount * 3);
 
@@ -374,82 +384,108 @@ export default function Portfolio() {
     // ═══════════════════════════════════════════════
     tl.addLabel('glitch');
 
-    // Harsh Black & White / Invert Flashes (Frames)
-    tl.to('.coder-intro-image', {
-      x: 15, skewX: 20, scale: 1.05, filter: 'grayscale(1) brightness(2) contrast(3)', duration: 0.05, ease: 'steps(1)',
-    }, 'glitch');
-    tl.to('.coder-intro-image', {
-      x: -20, skewX: -15, scale: 0.95, filter: 'invert(1) brightness(1.5)', duration: 0.05, ease: 'steps(1)',
-    }, 'glitch+=0.05');
-    tl.to('.coder-intro-image', {
-      x: 10, skewX: 30, scale: 1.1, filter: 'grayscale(1) brightness(0.2) contrast(4)', duration: 0.05, ease: 'steps(1)',
-    }, 'glitch+=0.1');
-    tl.to('.coder-intro-image', {
-      x: -25, skewX: -25, scale: 1.15, filter: 'invert(1) hue-rotate(180deg)', duration: 0.05, ease: 'steps(1)',
-    }, 'glitch+=0.15');
-    tl.to('.coder-intro-image', {
-      x: 5, skewX: 10, scale: 0.9, filter: 'grayscale(1) brightness(3)', duration: 0.05, ease: 'steps(1)',
-    }, 'glitch+=0.2');
-    tl.to('.coder-intro-image', {
-      x: -10, skewX: 0, scale: 1.2, filter: 'invert(1)', duration: 0.05, ease: 'steps(1)',
-    }, 'glitch+=0.25');
+    if (isMobileRef.current) {
+      // ── MOBILE: Smooth fade-out (no heavy filters that cause white/black flashing) ──
+      tl.to('.coder-intro-image', {
+        scale: 1.3,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.in',
+      }, 'glitch');
 
-    // Final chaotic shatter — extreme zoom + dissolve + blur
-    tl.to('.coder-intro-image', {
-      scale: 2.5,
-      rotation: 10,
-      opacity: 0,
-      filter: 'grayscale(1) brightness(5) blur(40px)',
-      duration: 0.6,
-      ease: 'power4.in',
-    }, 'glitch+=0.3');
+      tl.to('.coder-intro-glow', {
+        scale: 3,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.in',
+      }, 'glitch');
 
-    // Glow explodes outward intensely
-    tl.to('.coder-intro-glow', {
-      scale: 5,
-      opacity: 0,
-      filter: 'brightness(3)',
-      duration: 0.6,
-      ease: 'power3.in',
-    }, 'glitch+=0.3');
+      tl.set('.coder-intro-overlay', { display: 'none' });
 
-    // Hide the entire overlay
-    tl.set('.coder-intro-overlay', { display: 'none' });
+      // ── MOBILE: Skip hacker-glitch entirely (it uses invert which flashes white on mobile) ──
+      tl.addLabel('hacker-glitch');
+      tl.set('.hacker-glitch-overlay', { display: 'none' }, 'hacker-glitch');
 
-    // ═══════════════════════════════════════════════
-    // PHASE 2.5: Hacker Glitch Screen
-    // ═══════════════════════════════════════════════
-    tl.addLabel('hacker-glitch');
+    } else {
+      // ── DESKTOP: Full glitch experience (unchanged) ──
 
-    tl.set('.hacker-glitch-overlay', { display: 'flex', opacity: 1 }, 'hacker-glitch');
+      // Harsh Black & White / Invert Flashes (Frames)
+      tl.to('.coder-intro-image', {
+        x: 15, skewX: 20, scale: 1.05, filter: 'grayscale(1) brightness(2) contrast(3)', duration: 0.05, ease: 'steps(1)',
+      }, 'glitch');
+      tl.to('.coder-intro-image', {
+        x: -20, skewX: -15, scale: 0.95, filter: 'invert(1) brightness(1.5)', duration: 0.05, ease: 'steps(1)',
+      }, 'glitch+=0.05');
+      tl.to('.coder-intro-image', {
+        x: 10, skewX: 30, scale: 1.1, filter: 'grayscale(1) brightness(0.2) contrast(4)', duration: 0.05, ease: 'steps(1)',
+      }, 'glitch+=0.1');
+      tl.to('.coder-intro-image', {
+        x: -25, skewX: -25, scale: 1.15, filter: 'invert(1) hue-rotate(180deg)', duration: 0.05, ease: 'steps(1)',
+      }, 'glitch+=0.15');
+      tl.to('.coder-intro-image', {
+        x: 5, skewX: 10, scale: 0.9, filter: 'grayscale(1) brightness(3)', duration: 0.05, ease: 'steps(1)',
+      }, 'glitch+=0.2');
+      tl.to('.coder-intro-image', {
+        x: -10, skewX: 0, scale: 1.2, filter: 'invert(1)', duration: 0.05, ease: 'steps(1)',
+      }, 'glitch+=0.25');
 
-    tl.fromTo('.hacker-glitch-overlay', {
-      filter: 'hue-rotate(0deg) contrast(1)',
-      scale: 1,
-      skewX: 0
-    }, {
-      filter: 'hue-rotate(90deg) contrast(2) invert(1)',
-      scale: 1.05,
-      skewX: 10,
-      duration: 0.1,
-      ease: 'steps(1)',
-      yoyo: true,
-      repeat: 3
-    }, 'hacker-glitch');
+      // Final chaotic shatter — extreme zoom + dissolve + blur
+      tl.to('.coder-intro-image', {
+        scale: 2.5,
+        rotation: 10,
+        opacity: 0,
+        filter: 'grayscale(1) brightness(5) blur(40px)',
+        duration: 0.6,
+        ease: 'power4.in',
+      }, 'glitch+=0.3');
 
-    tl.to('.hacker-glitch-overlay', {
-      x: -20, scale: 1.1, filter: 'grayscale(1) brightness(2)', duration: 0.05, ease: 'steps(1)'
-    }, 'hacker-glitch+=0.2');
+      // Glow explodes outward intensely
+      tl.to('.coder-intro-glow', {
+        scale: 5,
+        opacity: 0,
+        filter: 'brightness(3)',
+        duration: 0.6,
+        ease: 'power3.in',
+      }, 'glitch+=0.3');
 
-    tl.to('.hacker-glitch-overlay', {
-      x: 15, scale: 0.9, filter: 'invert(1) brightness(1.5)', duration: 0.05, ease: 'steps(1)'
-    }, 'hacker-glitch+=0.25');
+      // Hide the entire overlay
+      tl.set('.coder-intro-overlay', { display: 'none' });
 
-    tl.to('.hacker-glitch-overlay', {
-      x: 0, scale: 2, opacity: 0, filter: 'blur(20px) brightness(3)', duration: 0.4, ease: 'power4.in'
-    }, 'hacker-glitch+=0.4');
+      // ═══════════════════════════════════════════════
+      // PHASE 2.5: Hacker Glitch Screen
+      // ═══════════════════════════════════════════════
+      tl.addLabel('hacker-glitch');
 
-    tl.set('.hacker-glitch-overlay', { display: 'none' }, 'hacker-glitch+=0.8');
+      tl.set('.hacker-glitch-overlay', { display: 'flex', opacity: 1 }, 'hacker-glitch');
+
+      tl.fromTo('.hacker-glitch-overlay', {
+        filter: 'hue-rotate(0deg) contrast(1)',
+        scale: 1,
+        skewX: 0
+      }, {
+        filter: 'hue-rotate(90deg) contrast(2) invert(1)',
+        scale: 1.05,
+        skewX: 10,
+        duration: 0.1,
+        ease: 'steps(1)',
+        yoyo: true,
+        repeat: 3
+      }, 'hacker-glitch');
+
+      tl.to('.hacker-glitch-overlay', {
+        x: -20, scale: 1.1, filter: 'grayscale(1) brightness(2)', duration: 0.05, ease: 'steps(1)'
+      }, 'hacker-glitch+=0.2');
+
+      tl.to('.hacker-glitch-overlay', {
+        x: 15, scale: 0.9, filter: 'invert(1) brightness(1.5)', duration: 0.05, ease: 'steps(1)'
+      }, 'hacker-glitch+=0.25');
+
+      tl.to('.hacker-glitch-overlay', {
+        x: 0, scale: 2, opacity: 0, filter: 'blur(20px) brightness(3)', duration: 0.4, ease: 'power4.in'
+      }, 'hacker-glitch+=0.4');
+
+      tl.set('.hacker-glitch-overlay', { display: 'none' }, 'hacker-glitch+=0.8');
+    }
 
     // ═══════════════════════════════════════════════
     // PHASE 3: Hero Content Reveal
@@ -660,7 +696,7 @@ export default function Portfolio() {
   return (
     <div ref={containerRef} className="min-h-screen bg-[#030305] text-slate-200 relative overflow-hidden font-sans selection:bg-cyan-500/30 selection:text-white">
       {/* Three.js Canvas */}
-      <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-80 mix-blend-screen" />
+      <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-80" />
 
       {/* Decorative ambient gradients */}
       <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-cyan-900/10 blur-[150px] pointer-events-none z-0"></div>
@@ -732,7 +768,7 @@ export default function Portfolio() {
           {/* ── Coder Intro Overlay ── */}
           <div className="coder-intro-overlay absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
             {/* Ambient glow behind image */}
-            <div className="coder-intro-glow absolute w-[500px] h-[500px] md:w-[700px] md:h-[700px] rounded-full bg-gradient-radial from-cyan-500/20 via-purple-600/10 to-transparent blur-[80px] pointer-events-none" />
+            <div className="coder-intro-glow absolute w-[500px] h-[500px] md:w-[700px] md:h-[700px] rounded-full bg-gradient-radial from-cyan-500/20 via-purple-600/10 to-[#030305]/0 blur-[80px] pointer-events-none" />
 
             {/* Scanline effect */}
             <div className="coder-scanline absolute left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-cyan-400/60 to-transparent pointer-events-none z-10" style={{ top: '-5%' }} />
